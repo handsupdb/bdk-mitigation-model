@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Build outputs
+dist/
+dist-single/
+build/
+*.tsbuildinfo
+
+# Derived extraction artifacts.
+# Regenerable at any time via: .venv/bin/python extract_xlsx.py excel_mitigation_model.xlsx
+# The golden test fixtures (tests/fixtures/golden/) are the committed, curated form
+# of the values data used by the test suite.
+extracted/*__formulas.tsv
+extracted/*__values.tsv
+extracted/metadata.json
+
+# OS / editor
+.DS_Store

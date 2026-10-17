@@ -1,0 +1,35 @@
+===== SOURCE: mitigation_model_support.docx =====
+[meta] m:oMath occurrences in document.xml: 0
+[meta] w:drawing occurrences: 0
+[meta] a:blip (image refs): 0
+
+Why are we interested in using a Mitigation Model for BDK?
+
+Other forms of modeling (namely SimC) lack ways to quantify survivability-oriented metrics such as Mitigation and Effective Health (EHP), though, since it does not utilize simulation, these models are deterministic steady-state models that lack the rotational nuance of SimC and they rely on certain analysis assumptions to function. That being said, they offer a much more granular perspective on how the overall class kit is affected by different changes and allows for certain types of comparison that are not normally possible.
+
+How is Survivability being quantified and why?
+
+Currently survivability is measured as two separate generalized characteristics, Mitigation and EHP.
+
+Mitigation reduces down to some measure of how much healing a tank needs from an external player in order to self-sustain themselves indefinitely, and, as such, is basically a measure of self-sufficiency. Notably, this means that self-healing effects are a form of mitigation as it is being used here. For tanks sufficiently far away from self-sufficiency, the superior measure of this is currently considered to be “Unmitigated Damage Taken Per Second” over “External Healing Required Per Second”, where unmitigated damage is before any damage reduction or attack avoidance effects. This measure captures the increasing marginal value of unmitigated damage, but becomes volatile and unreliable as tanks approach self-sufficiency, where BDKs often find themselves. As such, (“Unmitigated Damage Taken Per Second” -”External Healing Required Per Second”) over “Unmitigated Damage Taken Per Second” solves volatility problems when close to or paat self-sufficiency. Depending on analysis assumptions it is very possible to be fully self-sufficient and with surplus healing to spare, though the most important objective to this measuring tool is to be able to, as accurately as possible, compare the relative quantity of mitigation benefit among all sources of mitigation. Cross-metric valuation is a separate part of the optimization process.
+
+EHP is the amount of “Unmitigated Damage” needed to kill a player from 100% health. In a sense, it measures the player's susceptibility of dying to burst damage. It is fairly easy to measure, with the main complicating factor being how much to credit less reliable, less controllable, and more situational forms of effective health relative to flat baseline increases. Attack avoidance benefits, like parry and dodge, are usually a part of that discussion since their actual impact on survivability is significantly lower than their average benefit would imply (For example, a baseline 10% damage reduction multiplier is much more effective at increasing player survivbility than a baseline 10% attack avoidance multiplier, though a precisely appropriate penalty factor isn’t agreed upon).
+
+It is currently of the belief that different situations place a different amount of emphasis on Mitigation and EHP style benefits and that it is more appropriate to track these benefits separately. For example, if you were just trying to survive one big hit, EHP would be your main concern, while an extremely flat incoming damage profile would put a much higher relative weight on EHP.
+
+Baseline Concerns with Mitigation Modeling Functionality
+
+Some effects, when averaged, show unrealistically high benefits.
+
+While damage specializations would be more concerned with the loss of ability to sync up certain effects, the opposite has historically been an issue when modeling tanks. Specifically, effects that provide a large concentration of increased resource generation (such as Empower Rune Weapon and even RP generation from AMS) can be processed much more efficiently when averaged compared to the real-world situation where the player gets flooded with resources in a short amount of time. This can be alleviated with correction factors developed from targeted SimC analysis, but it is something to keep in mind.
+
+Abilities with complicated rotational implications may be captured less accurately.
+
+Soul Reaper was always a good example of this before it was removed in Midnight, since it was an ability that could never be fully utilized and its exact usage is affected by larger rotational considerations. As is the case for a lot of these things, targeted supporting SimC analysis can provide for assumption refinement, but this is something to keep in mind.
+
+The goal is to set conditions and input in a way that is representative of when the player’s survivability is being challenged.
+
+There is little point in trying to quantify survivability outputs for situations that are not representative of dangerous situations for the player, though this also means that input and assumption development requires some amount of parsing during development. It is never a process that is 100% clean cut, but is, instead, one of continuous refinement.
+
+===== MEDIA FILES =====
+(none)
