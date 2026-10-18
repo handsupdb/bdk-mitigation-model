@@ -71,7 +71,7 @@ the saved profile's 3966.55 is stale.
 npm test
 ```
 
-11 test files / 653 tests, including the golden suite above plus unit
+13 test files / 656 tests, including the golden suite above plus unit
 tests for the engine's Excel-semantics helpers (number formatting, string
 math, comparison operators, lazy/cyclic evaluation).
 
@@ -135,9 +135,21 @@ World of Warcraft and Blizzard Entertainment are trademarks or registered
 trademarks of Blizzard Entertainment, Inc. This project is not affiliated
 with Blizzard Entertainment, SimulationCraft, or Wowhead.
 
+## Development & pull requests
+
+- **Branches** — name working branches with a `feature/`, `fix/`, or
+  `docs/` prefix (e.g. `feature/talent-editor`, `fix/haste-rounding`).
+- **Before pushing** — run `npm test` (656/656) and the pipeline tests
+  (`python3 tools/pipeline/test_pipeline.py`, 40/40) locally.
+- **PRs are squash-merged** — keep one PR per focused change; the PR title
+  becomes the squashed commit message.
+- **CI must pass** — `.github/workflows/ci.yml` runs the Node test/build
+  job and the Python pipeline-tests job on every push and pull request;
+  a green run is required before merge.
+
 ## Contributing
 
-Issues and PRs are welcome. The golden suite (`npm test`, 653/653) must
+Issues and PRs are welcome. The golden suite (`npm test`, 656/656) must
 stay green — outputs are bit-exact vs the original workbook, so anything
 that would change a golden value should be discussed against
 [`docs/FLAGGED_ISSUES.md`](docs/FLAGGED_ISSUES.md) first. For data changes,
