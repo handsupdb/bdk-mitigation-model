@@ -1,0 +1,29 @@
+{
+  "note": "Talents present in the Wowhead 12.1.5 trees but NOT modeled in our Inputs sheet, so they would otherwise surface as 'new' nodes in every wowhead_diff run. Our Inputs sheet only lists the build-SELECTED hero talents, so the rest of the hero trees always look new — this list turns that index artifact into a 'known-unmodeled' category and keeps NEW clean for genuinely-new nodes. 'unmodeled' = in the Wowhead trees, not in our index (the 21 hero nodes from the 2026-10-18 report). 'removed_known' = in our index, known to be absent from the Wowhead trees (Death's Bargain). Keep this list in sync with the Inputs sheet: when a talent becomes modeled, remove it here; when a new unmatched node is reviewed and accepted as expected, add it here. Tree names match game.json index.talents tree values / the report's tree labels.",
+  "unmodeled": [
+    {"name": "Reaper's Mark", "tree": "Deathbringer"},
+    {"name": "Wave of Souls", "tree": "Deathbringer"},
+    {"name": "Wither Away", "tree": "Deathbringer"},
+    {"name": "Bind in Darkness", "tree": "Deathbringer"},
+    {"name": "Frigid Resolve", "tree": "Deathbringer"},
+    {"name": "Soul Rupture", "tree": "Deathbringer"},
+    {"name": "Grim Reaper", "tree": "Deathbringer"},
+    {"name": "Deathly Blows", "tree": "Deathbringer"},
+    {"name": "Swift and Painful", "tree": "Deathbringer"},
+    {"name": "Echoing Fury", "tree": "Deathbringer"},
+    {"name": "Exterminate", "tree": "Deathbringer"},
+    {"name": "Vampiric Strike", "tree": "San'layn"},
+    {"name": "Thrill of Blood", "tree": "San'layn"},
+    {"name": "Infliction of Sorrow", "tree": "San'layn"},
+    {"name": "Frenzied Bloodthirst", "tree": "San'layn"},
+    {"name": "The Blood is Life", "tree": "San'layn"},
+    {"name": "Visceral Strength", "tree": "San'layn"},
+    {"name": "Inevitable", "tree": "San'layn"},
+    {"name": "Incite Terror", "tree": "San'layn"},
+    {"name": "Transfusion", "tree": "San'layn"},
+    {"name": "Gift of the San'layn", "tree": "San'layn"}
+  ],
+  "removed_known": [
+    {"name": "Death's Bargain", "tree": "Deathbringer"}
+  ]
+}

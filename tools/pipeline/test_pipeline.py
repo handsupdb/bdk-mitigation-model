@@ -28,7 +28,9 @@ states, SpellEffect row decode with offsets hardcoded independently of the
 module's layout table, spellId-pinned hotfix value resolution, 1-based
 effectIndex conversion, overlay verdicts, corrupt-container rejection), and
 wowhead_diff parsing (page-data blocks, Blood DK tree discovery, node
-counts, name matching, spellModifiers reversal, the full diff model).
+counts, name matching, spellModifiers reversal, the full diff model, and
+known-unmodeled/removed-known classification against the committed curated
+list tools/pipeline/wowhead_known_unmodeled.json).
 
 NOT covered (needs the network or the full caches): simc_data.fetch /
 wowhead_diff.fetch / fetch_tooltip (curl), per_rank_progression (live
@@ -568,6 +570,57 @@ class WowheadAnalyzeTests(unittest.TestCase):
         self.assertEqual(res["unmatched_options"][0]["unmatched"],
                          ["Pact of the Deathbringer"])
 
+    def test_load_known_unmodeled_list(self):
+        # pins the committed curated list: the 21 hero nodes not modeled in
+        # our Inputs sheet (11 Deathbringer + 10 San'layn) + Death's Bargain
+        unmodeled, removed_known = wowhead_diff.load_known_unmodeled()
+        self.assertEqual(len(unmodeled), 21)
+        self.assertEqual(
+            len({n for n, t in unmodeled if t == "Deathbringer"}), 11)
+        self.assertEqual(
+            len({n for n, t in unmodeled if t == "San'layn"}), 10)
+        self.assertIn(("Reaper's Mark", "Deathbringer"), unmodeled)
+        self.assertIn(("Gift of the San'layn", "San'layn"), unmodeled)
+        self.assertEqual(removed_known,
+                         frozenset({("Death's Bargain", "Deathbringer")}))
+
+    def test_known_unmodeled_classification(self):
+        # every spell name on the list for that tree -> known-unmodeled,
+        # not NEW; a name not on the list stays NEW
+        known = frozenset({("Reaper's Mark", "Deathbringer")})
+        res = wowhead_diff.analyze_tree(
+            self.tree[65569], "Deathbringer", ["Rune Carved Plates"], known)
+        self.assertEqual([e["names"] for e in res["known_unmodeled_nodes"]],
+                         [["Reaper's Mark"]])
+        self.assertEqual(res["new_nodes"], [])
+        res2 = wowhead_diff.analyze_tree(
+            self.tree[6], "Death Knight",
+            ["Icebound Fortitude", "Death Strike", "Wraith Walk"], known)
+        self.assertEqual(res2["known_unmodeled_nodes"], [])
+        self.assertEqual([e["names"] for e in res2["new_nodes"]],
+                         [["Enfeeble"]])
+
+    def test_known_unmodeled_is_tree_marked(self):
+        # the list matches (name, tree) pairs: Reaper's Mark marked for the
+        # wrong tree does not suppress the Deathbringer node
+        wrong_tree = frozenset({("Reaper's Mark", "San'layn")})
+        res = wowhead_diff.analyze_tree(
+            self.tree[65569], "Deathbringer", ["Rune Carved Plates"],
+            wrong_tree)
+        self.assertEqual(res["known_unmodeled_nodes"], [])
+        self.assertEqual([e["names"] for e in res["new_nodes"]],
+                         [["Reaper's Mark"]])
+
+    def test_removed_known_classification(self):
+        res = wowhead_diff.analyze_tree(
+            self.tree[250], "Blood", ["Heart Strike", "Tombstone"],
+            removed_known=frozenset({("Tombstone", "Blood")}))
+        self.assertEqual(res["removed"], ["Tombstone"])
+        self.assertEqual(res["removed_known"], ["Tombstone"])
+        res2 = wowhead_diff.analyze_tree(
+            self.tree[250], "Blood", ["Heart Strike", "Tombstone"])
+        self.assertEqual(res2["removed_known"], [])
+
     def test_build_diff_model(self):
         # end-to-end (offline: no matched multi-rank talent in the fixture,
         # so per_rank_progression / fetch_tooltip is never called)
@@ -593,6 +646,16 @@ class WowheadAnalyzeTests(unittest.TestCase):
         blood = diff["trees"][1]
         self.assertEqual(len(blood["matched_nodes"]), 4)
         self.assertEqual(blood["removed"], [])
+        # build_diff loads the committed known-unmodeled list by default:
+        # the fixture's Reaper's Mark node is on it -> known-unmodeled, not
+        # NEW; Enfeeble (class tree, not on it) stays NEW
+        db = diff["trees"][2]
+        self.assertEqual([e["names"] for e in db["known_unmodeled_nodes"]],
+                         [["Reaper's Mark"]])
+        self.assertEqual(db["new_nodes"], [])
+        cls = diff["trees"][0]
+        self.assertEqual(cls["known_unmodeled_nodes"], [])
+        self.assertEqual([e["names"] for e in cls["new_nodes"]], [["Enfeeble"]])
 
 
 if __name__ == "__main__":
