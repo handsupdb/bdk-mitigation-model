@@ -20,8 +20,19 @@
  * they render from their own specs — checkboxes and a single-select dropdown
  * — between Character Attributes and DK Class Talents, in sheet order.
  *
- * Each NumberField edits one Inputs cell; the override is keyed by the bare
- * Inputs ref (`'C7'`), exactly as `useEngine`/`evaluateWithInputs` expect.
+ * After the baseline groups come the Comparison profile sections — the
+ * Inputs sheet's G/H/I columns: G mirrors the B labels, H holds absolute
+ * 'Set' overrides, I holds '+/-' differentials, and a blank cell inherits
+ * the baseline value. Each row renders a 'Set' input (`H<n>`) beside its
+ * G-column label and, where the Comparison module also reads it, a '+/-'
+ * input (`I<n>`) indented below. The Conditional Variables and Tier Set
+ * groups list only the rows whose H/I cells the generated Comparison
+ * module actually reads (H147 is never read; no I differential in those
+ * rows is read at all).
+ *
+ * Each NumberField/CellInput edits one Inputs cell; the override is keyed
+ * by the bare Inputs ref (`'C7'`, `'H123'`), exactly as
+ * `useEngine`/`evaluateWithInputs` expect.
  * The committed value is always `override ?? savedValue` (empty string when
  * null). While typing, the field shows a local draft so intermediate states
  * like `'0.'` or `'-'` are not clobbered by the committed value re-render;
@@ -287,8 +298,37 @@ const resetStyle: CSSProperties = {
 /** Slight indent tying a row's variable field to the talent row above it. */
 const variableRowStyle: CSSProperties = { paddingLeft: '1.1rem' }
 
-/** One editable Inputs cell: label, number input, edited marker + reset. */
-function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: NumberFieldProps) {
+/** Small muted label naming a comparison input column ('Set' / '+/-'). */
+const miniLabelStyle: CSSProperties = {
+  flexShrink: 0,
+  fontSize: '0.7rem',
+  color: '#999',
+  whiteSpace: 'nowrap',
+}
+
+/**
+ * One editable Inputs cell's control: the number input (with its local
+ * typing draft) plus the edited marker and reset button while an override
+ * is active. It renders bare — no wrapper element — so the caller's flex
+ * row lays the label, input, marker, and button out as direct siblings.
+ */
+function CellInput({
+  savedValue,
+  override,
+  cellRef,
+  onSet,
+  onClear,
+  title,
+}: {
+  savedValue: CellValue | undefined
+  override: CellValue | undefined
+  /** Bare Inputs cell ref, e.g. `'C7'` or `'H123'` (see the file note). */
+  cellRef: string
+  onSet: (ref: string, v: number) => void
+  onClear: (ref: string) => void
+  /** Accessible name for the input and its reset button. */
+  title: string
+}) {
   // Local draft while typing keeps intermediate text stable until blur; the
   // committed value remains `override ?? savedValue` the whole time.
   const [draft, setDraft] = useState<string | null>(null)
@@ -313,13 +353,7 @@ function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: N
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      <label
-        htmlFor={`inputs-${cellRef}`}
-        style={{ flex: 1, minWidth: 0, fontSize: '0.85rem', color: '#555' }}
-      >
-        {label}
-      </label>
+    <>
       <input
         id={`inputs-${cellRef}`}
         type="number"
@@ -327,6 +361,8 @@ function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: N
         value={text}
         onChange={onChange}
         onBlur={() => setDraft(null)}
+        title={title}
+        aria-label={title}
         style={{ ...inputStyle, ...(edited ? editedInputStyle : null) }}
       />
       {edited && (
@@ -336,13 +372,35 @@ function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: N
             type="button"
             onClick={reset}
             title="Reset to saved value"
-            aria-label={`Reset ${label} to saved value`}
+            aria-label={`Reset ${title} to saved value`}
             style={resetStyle}
           >
             ↺
           </button>
         </>
       )}
+    </>
+  )
+}
+
+/** One editable Inputs cell: label, number input, edited marker + reset. */
+function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: NumberFieldProps) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <label
+        htmlFor={`inputs-${cellRef}`}
+        style={{ flex: 1, minWidth: 0, fontSize: '0.85rem', color: '#555' }}
+      >
+        {label}
+      </label>
+      <CellInput
+        savedValue={savedValue}
+        override={override}
+        cellRef={cellRef}
+        onSet={onSet}
+        onClear={onClear}
+        title={label}
+      />
     </div>
   )
 }
@@ -532,8 +590,179 @@ function RaceSection({
 }
 
 /**
+ * One comparison-profile row: the Inputs row plus whether the generated
+ * Comparison module also reads its '+/-' differential cell (`I<row>`).
+ * Every listed row's `H<row>` 'Set' cell is read.
+ */
+interface ComparisonRowSpec {
+  row: number
+  /** The module reads `Inputs!I<row>` ('+/-' differential). */
+  diff: boolean
+}
+
+/** Rows `lo`..`hi` (inclusive) with the given differential flag. */
+function comparisonRows(lo: number, hi: number, diff: boolean): ComparisonRowSpec[] {
+  const rows: ComparisonRowSpec[] = []
+  for (let row = lo; row <= hi; row++) rows.push({ row, diff })
+  return rows
+}
+
+/**
+ * Character Attributes comparison rows (7-17): the Comparison module reads
+ * every row's H cell and every I cell except I17 (Base Weapon Speed's
+ * differential is never read; the input still renders so the block mirrors
+ * the sheet's G/H/I layout).
+ */
+const COMPARISON_ATTRIBUTE_ROWS: ComparisonRowSpec[] = comparisonRows(7, 17, true)
+
+/**
+ * Conditional Variables (146-156) and Tier Set (159-160) comparison rows:
+ * only the H cells the Comparison module actually reads — H146 and
+ * H148-H156 (H147, 'Damage Taken Per Sec.', is never read) plus H159/H160.
+ * No I differential in any of these rows is read, so only 'Set' inputs
+ * render. (Verified by grepping `G('Inputs','H1..'` / `G('Inputs','I1..'`
+ * over src/engine/generated/Comparison.ts.)
+ */
+const COMPARISON_CONDITIONAL_ROWS: ComparisonRowSpec[] = [
+  146, 148, 149, 150, 151, 152, 153, 154, 155, 156,
+].map((row) => ({ row, diff: false }))
+const COMPARISON_TIER_ROWS: ComparisonRowSpec[] = [159, 160].map((row) => ({ row, diff: false }))
+
+/** One comparison-profile section: its G-column header cell plus rows. */
+interface ComparisonSectionSpec {
+  /** G-column header cell naming the group (mirror of the B header). */
+  titleRef: string
+  /** Header text when the G cell is missing or blank. */
+  fallbackTitle: string
+  /** Optional note line under the title. */
+  note?: string
+  /** Row specs: the H/I cells the Comparison module reads. */
+  rows: ComparisonRowSpec[]
+}
+
+const COMPARISON_SECTIONS: ComparisonSectionSpec[] = [
+  {
+    titleRef: 'Inputs!G6',
+    fallbackTitle: 'Character Attributes',
+    note: 'Set = absolute override, +/- = differential; blank inherits the baseline value.',
+    rows: COMPARISON_ATTRIBUTE_ROWS,
+  },
+  {
+    titleRef: 'Inputs!G145',
+    fallbackTitle: 'Conditional Variables',
+    rows: COMPARISON_CONDITIONAL_ROWS,
+  },
+  {
+    titleRef: 'Inputs!G158',
+    fallbackTitle: 'Tier Set',
+    rows: COMPARISON_TIER_ROWS,
+  },
+]
+
+/**
+ * One comparison-profile row: the row label (the G-column mirror of the B
+ * label), its absolute 'Set' input (`H<row>`) on the label line, and its
+ * '+/-' differential input (`I<row>`) indented below when the module reads
+ * it. Blank inputs clear the override, inheriting the baseline value.
+ */
+function ComparisonRow({
+  label,
+  row,
+  diff,
+  grid,
+  overrides,
+  setOverride,
+  clearOverride,
+}: {
+  label: string
+  row: number
+  diff: boolean
+  grid: Grid
+  overrides: Record<string, CellValue>
+  setOverride: (ref: string, v: CellValue) => void
+  clearOverride: (ref: string) => void
+}) {
+  const setRef = `H${row}`
+  const diffRef = `I${row}`
+  return (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <label
+          htmlFor={`inputs-${setRef}`}
+          style={{ flex: 1, minWidth: 0, fontSize: '0.85rem', color: '#555' }}
+        >
+          {label}
+        </label>
+        <label htmlFor={`inputs-${setRef}`} style={miniLabelStyle}>
+          Set
+        </label>
+        <CellInput
+          savedValue={grid[`Inputs!${setRef}`]}
+          override={overrides[setRef]}
+          cellRef={setRef}
+          onSet={setOverride}
+          onClear={clearOverride}
+          title={`${label} — Set (absolute override)`}
+        />
+      </div>
+      {diff && (
+        <div style={{ ...variableRowStyle, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <label htmlFor={`inputs-${diffRef}`} style={miniLabelStyle}>
+            +/-
+          </label>
+          <CellInput
+            savedValue={grid[`Inputs!${diffRef}`]}
+            override={overrides[diffRef]}
+            cellRef={diffRef}
+            onSet={setOverride}
+            onClear={clearOverride}
+            title={`${label} — +/- (differential)`}
+          />
+        </div>
+      )}
+    </>
+  )
+}
+
+/** One comparison-profile group: G-column header title, note, and rows. */
+function ComparisonSection({
+  spec,
+  grid,
+  overrides,
+  setOverride,
+  clearOverride,
+}: {
+  spec: ComparisonSectionSpec
+  grid: Grid
+  overrides: Record<string, CellValue>
+  setOverride: (ref: string, v: CellValue) => void
+  clearOverride: (ref: string) => void
+}) {
+  return (
+    <Section title={`Comparison: ${pickLabel(grid[spec.titleRef], spec.fallbackTitle)}`}>
+      {spec.note !== undefined && (
+        <p style={{ margin: 0, fontSize: '0.75rem', color: '#999' }}>{spec.note}</p>
+      )}
+      {spec.rows.map(({ row, diff }) => (
+        <ComparisonRow
+          key={row}
+          row={row}
+          diff={diff}
+          label={pickLabel(grid[`Inputs!G${row}`], pickLabel(grid[`Inputs!B${row}`], `Row ${row}`))}
+          grid={grid}
+          overrides={overrides}
+          setOverride={setOverride}
+          clearOverride={clearOverride}
+        />
+      ))}
+    </Section>
+  )
+}
+
+/**
  * The Inputs pane: every SECTIONS group plus the Runeforging and Race flag
- * blocks, all in sheet order.
+ * blocks in sheet order, then the Comparison profile sections (the sheet's
+ * G/H/I columns).
  */
 export default function InputsEditor({
   overrides,
@@ -572,6 +801,19 @@ export default function InputsEditor({
             </>
           )}
         </Fragment>
+      ))}
+      {/* The Comparison profile (G/H/I columns) follows the baseline
+          groups: absolute 'Set' overrides and '+/-' differentials that
+          re-run the Comparison model against the baseline above. */}
+      {COMPARISON_SECTIONS.map((spec) => (
+        <ComparisonSection
+          key={spec.titleRef}
+          spec={spec}
+          grid={grid}
+          overrides={overrides}
+          setOverride={setOverride}
+          clearOverride={clearOverride}
+        />
       ))}
     </div>
   )
