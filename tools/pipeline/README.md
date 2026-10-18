@@ -18,6 +18,7 @@ Python: `.venv/bin/python` (repo venv). Node (only for `npm test` in step d):
 | `gamedata_diff.py` | compare our ability coefficients against the live WoW hotfix cache `DBCache.bin` (XFTH SpellEffect overlay) via the same `simc_mapping.json` → `extracted/gamedata_proposed_diffs.md` |
 | `simc_mapping.json` | **curated** mapping: our ability → SimC spell/effect/field + our cell (see below) |
 | `wowhead_diff.py` | compare our talent index against Wowhead talent trees → `extracted/wowhead_proposed_diffs.md` |
+| `wowhead_known_unmodeled.json` | **curated** list of talents present in the Wowhead trees but not modeled in our Inputs sheet (reported as known-unmodeled, not NEW) plus removed-known entries (Death's Bargain) |
 | `test_pipeline.py` | network-free unit tests (see [Tests](#tests)) |
 
 ## Workflow
@@ -42,8 +43,12 @@ compact summary and write a full Markdown report:
   `CHANGED` (proposed diff) / `unmapped`, with our value + formula, the SimC
   value + spell/effect source, and the delta.
 - `extracted/wowhead_proposed_diffs.md` — (a) Wowhead nodes not in our
-  index, (b) our talents not in the Wowhead trees, (c) text-derived per-rank
-  values for multi-rank talents (reference only).
+  index, split into **known-unmodeled** (on the curated list
+  `wowhead_known_unmodeled.json` — expected: our Inputs sheet only models
+  the build-SELECTED hero talents) vs **NEW** (genuinely new/renamed —
+  review), (b) our talents not in the Wowhead trees (removed-known entries
+  marked), (c) text-derived per-rank values for multi-rank talents
+  (reference only).
 - `extracted/gamedata_proposed_diffs.md` — per-ability verdicts against the
   hotfix overlay: `match` / `CHANGED` / `not-in-cache` (normal — the cache
   only carries rows Blizzard hotfixed since the last full push) /
@@ -93,7 +98,7 @@ For every sheet whose TSV or literals changed (see the repo README's
 export PATH="/opt/homebrew/bin:$PATH" && npm test
 ```
 
-`npm test` (vitest, 653 tests) is the gate: the golden suite verifies every
+`npm test` (vitest, 656 tests) is the gate: the golden suite verifies every
 cell still matches the frozen workbook values.
 
 ## The curated mapping (`simc_mapping.json`)
@@ -199,7 +204,8 @@ group not shifting field positions, tolerance classification, arithmetic
 formula evaluation, `spellId` pinning, verdicts, game.json constant targets
 (`ourConstant` + per-entry `transform`), Wowhead page-data parsing,
 Blood DK tree discovery, node counts, name matching, the full diff model,
-and the XFTH hotfix-cache parser (container header + exact EOF, entry
+known-unmodeled/removed-known classification (against the committed curated
+list), and the XFTH hotfix-cache parser (container header + exact EOF, entry
 states, SpellEffect row decode, `spellId`-pinned hotfix value resolution,
 1-based `effectIndex` conversion, overlay verdicts, constant-target
 verdicts, corrupt-container rejection). Not covered (needs network / the

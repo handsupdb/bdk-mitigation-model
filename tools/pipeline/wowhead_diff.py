@@ -36,15 +36,20 @@ entries: ``spell``, ``definition``, ``name``, ``points``,
 coefficients — ``hasRankDescription``).
 
 Report sections:
-  (a) Wowhead 12.1.5 nodes NOT in our index (new/renamed) — name, tree, node
-      type. A node matches when ANY of its spell names is in our index for
-      that tree; unmatched choice options inside matched nodes are listed
-      separately. CAVEAT: our hero-tree index only covers the talents the
-      current build selects, so unmatched hero nodes are usually "not
-      indexed" rather than new in 12.1.5.
+  (a) Wowhead 12.1.5 nodes NOT in our index, split into two categories:
+      * known-unmodeled — on the curated list
+        ``tools/pipeline/wowhead_known_unmodeled.json``: talents present in
+        the Wowhead trees but not modeled in our Inputs sheet. Our Inputs
+        sheet only lists the build-SELECTED hero talents, so the rest of the
+        hero trees always looked "new" — that index artifact is tracked in
+        the list (and reported as expected noise), keeping NEW clean.
+      * NEW — genuinely new/renamed nodes (review). A node matches when ANY
+        of its spell names is in our index for that tree; unmatched choice
+        options inside matched nodes are listed separately.
   (b) our index talents NOT in the Wowhead trees (removed/renamed); names
       absent from the entire payload (all classes) are flagged as likely
-      removed/renamed.
+      removed/renamed; entries on the list's removed_known section (e.g.
+      Death's Bargain) are marked removed-known.
   (c) per-rank values for matched multi-rank talents (``points`` > 1) —
       best-effort and TEXT-DERIVED: the per-rank arrays from the base spell's
       ``/tooltip/spell/{id}?locale=0`` JSON ``spells`` field where
@@ -72,12 +77,14 @@ import re
 import subprocess
 import sys
 from datetime import date
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, FrozenSet, List, Optional, Tuple
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CACHE_PATH = os.path.join(REPO_ROOT, "extracted", "wowhead_talents.js")
 GAME_PATH = os.path.join(REPO_ROOT, "data", "wow-12.1", "game.json")
 REPORT_PATH = os.path.join(REPO_ROOT, "extracted", "wowhead_proposed_diffs.md")
+KNOWN_UNMODELED_PATH = os.path.join(
+    REPO_ROOT, "tools", "pipeline", "wowhead_known_unmodeled.json")
 TALENTS_URL = "https://nether.wowhead.com/data/talents-dragonflight?dv=41&db=1791976965"
 TOOLTIP_URL = "https://nether.wowhead.com/tooltip/spell/{spell_id}?locale=0"
 MIN_CACHE_BYTES = 1_000_000  # a cached copy larger than this is trusted
@@ -258,12 +265,38 @@ def per_rank_progression(spell_id: int, base_ids: List[int]) -> Tuple[Optional[s
     return None, ""
 
 
-def analyze_tree(tree: dict, label: str, our_names: List[str]) -> dict:
-    """Name-match one Wowhead tree against our index talents for that tree."""
+def load_known_unmodeled(path: str = KNOWN_UNMODELED_PATH
+                         ) -> Tuple[FrozenSet[Tuple[str, str]],
+                                    FrozenSet[Tuple[str, str]]]:
+    """(known_unmodeled, removed_known) sets of (name, tree) pairs from the
+    curated list of talents present in the Wowhead 12.1.5 trees but not
+    modeled in our Inputs sheet (plus our index names already known to be
+    absent from the Wowhead trees). See the JSON's note field."""
+    with open(path, encoding="utf-8") as fh:
+        data = json.load(fh)
+    unmodeled = frozenset(
+        (e["name"], e["tree"]) for e in data.get("unmodeled", []))
+    removed_known = frozenset(
+        (e["name"], e["tree"]) for e in data.get("removed_known", []))
+    return unmodeled, removed_known
+
+
+def analyze_tree(tree: dict, label: str, our_names: List[str],
+                 known_unmodeled: FrozenSet[Tuple[str, str]] = frozenset(),
+                 removed_known: FrozenSet[Tuple[str, str]] = frozenset()) -> dict:
+    """Name-match one Wowhead tree against our index talents for that tree.
+
+    A node with no name in our index is known-unmodeled when every spell
+    name is on the known_unmodeled list for this tree (expected — not
+    modeled in our Inputs sheet), else NEW (genuinely new/renamed — review).
+    Removed entries on the removed_known list are reported as removed_known
+    in addition to removed.
+    """
     our = set(our_names)
     nodes = tree_nodes(tree)
     wh_names: set = set()
     matched: List[dict] = []
+    known_unmodeled_nodes: List[dict] = []
     new_nodes: List[dict] = []
     unmatched_options: List[dict] = []
     multi_rank: List[dict] = []
@@ -280,6 +313,8 @@ def analyze_tree(tree: dict, label: str, our_names: List[str]) -> dict:
             miss = [x for x in names if x not in our]
             if miss:
                 unmatched_options.append(dict(entry, unmatched=miss, matched=hits))
+        elif names and all((x, label) in known_unmodeled for x in names):
+            known_unmodeled_nodes.append(entry)
         else:
             new_nodes.append(entry)
         for s in spells:
@@ -295,25 +330,40 @@ def analyze_tree(tree: dict, label: str, our_names: List[str]) -> dict:
         "label": label, "wh_id": tree.get("id"), "wh_type": tree.get("type"),
         "node_count": len(nodes), "wh_spell_count": len(wh_names),
         "wh_spell_names": wh_names, "our_count": len(our_names),
-        "matched_nodes": matched, "new_nodes": new_nodes,
+        "matched_nodes": matched, "known_unmodeled_nodes": known_unmodeled_nodes,
+        "new_nodes": new_nodes,
         "unmatched_options": unmatched_options, "multi_rank": multi_rank,
         "removed": sorted(our - wh_names),
+        "removed_known": sorted(
+            n for n in (our - wh_names) if (n, label) in removed_known),
     }
 
 
-def build_diff(page: dict, game: dict) -> dict:
-    """Run the full tree discovery + name match; returns the report model."""
+def build_diff(page: dict, game: dict,
+               known: Optional[Tuple[FrozenSet[Tuple[str, str]],
+                                     FrozenSet[Tuple[str, str]]]] = None) -> dict:
+    """Run the full tree discovery + name match; returns the report model.
+
+    known: optional (known_unmodeled, removed_known) (name, tree) sets;
+    loaded from KNOWN_UNMODELED_PATH when omitted.
+    """
+    if known is None:
+        known = load_known_unmodeled()
+    known_unmodeled, removed_known = known
     class_tree, blood, heroes, notes = discover_trees(page)
     our_by_tree: Dict[str, List[str]] = {}
     for t in game["index"]["talents"]:
         our_by_tree.setdefault(t["tree"], []).append(t["name"])
 
     results = [analyze_tree(class_tree, "Death Knight",
-                            our_by_tree.get("Death Knight", [])),
-               analyze_tree(blood, "Blood", our_by_tree.get("Blood", []))]
+                            our_by_tree.get("Death Knight", []),
+                            known_unmodeled, removed_known),
+               analyze_tree(blood, "Blood", our_by_tree.get("Blood", []),
+                            known_unmodeled, removed_known)]
     for t in heroes:
         results.append(analyze_tree(t, t.get("name") or f"hero-{t['id']}",
-                                    our_by_tree.get(t.get("name") or "", [])))
+                                    our_by_tree.get(t.get("name") or "", []),
+                                    known_unmodeled, removed_known))
 
     # every spell name in the whole payload (all classes), for (b) flags
     everywhere: set = set()
@@ -368,36 +418,64 @@ def build_report(diff: dict) -> str:
     lines.append("## Summary")
     lines.append("")
     lines.append("| tree | WH id | kind | WH nodes | WH spell names | ours | "
-                 "matched nodes | new nodes | removed ours |")
-    lines.append("|---|---|---|---|---|---|---|---|---|")
+                 "matched nodes | known-unmodeled | NEW nodes | removed ours |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|")
     kinds = ("class", "spec", "hero", "hero")
     for res, kind in zip(trees, kinds):
         lines.append(f"| {res['label']} | {res['wh_id']} | {kind} | "
                      f"{res['node_count']} | {res['wh_spell_count']} | {res['our_count']} | "
-                     f"{len(res['matched_nodes'])} | {len(res['new_nodes'])} | "
+                     f"{len(res['matched_nodes'])} | "
+                     f"{len(res['known_unmodeled_nodes'])} | {len(res['new_nodes'])} | "
                      f"{len(res['removed'])} |")
     lines.append(f"| **total** | | | **{tot('node_count')}** | "
                  f"**{tot('wh_spell_count')}** | **{tot('our_count')}** | "
                  f"**{sum(len(t['matched_nodes']) for t in trees)}** | "
+                 f"**{sum(len(t['known_unmodeled_nodes']) for t in trees)}** | "
                  f"**{sum(len(t['new_nodes']) for t in trees)}** | "
                  f"**{sum(len(t['removed']) for t in trees)}** |")
     lines.append("")
 
-    lines.append("## (a) Wowhead 12.1.5 nodes NOT in our index (new/renamed — review)")
+    lines.append("## (a) Wowhead 12.1.5 nodes NOT in our index")
     lines.append("")
+    any_known = False
+    for res in trees:
+        if not res["known_unmodeled_nodes"]:
+            continue
+        any_known = True
+        lines.append(f"### known-unmodeled — {res['label']} — "
+                     f"{len(res['known_unmodeled_nodes'])} node(s)")
+        lines.append("")
+        for e in res["known_unmodeled_nodes"]:
+            lines.append(f"- cell {e['cell']}, node {e['node']}, {e['type']} — "
+                         + " / ".join(e["names"]))
+        lines.append("")
+    if any_known:
+        lines.append("known-unmodeled = on the curated list "
+                     "`tools/pipeline/wowhead_known_unmodeled.json` — present in "
+                     "the Wowhead trees, not modeled in our Inputs sheet (our "
+                     "Inputs sheet only lists the build-SELECTED hero talents). "
+                     "Expected index artifact, not a 12.1.5 change.")
+        lines.append("")
     any_new = False
     for res in trees:
         if not res["new_nodes"]:
             continue
         any_new = True
-        lines.append(f"### {res['label']} — {len(res['new_nodes'])} node(s)")
+        lines.append(f"### NEW — {res['label']} — {len(res['new_nodes'])} node(s)")
         lines.append("")
         for e in res["new_nodes"]:
             lines.append(f"- cell {e['cell']}, node {e['node']}, {e['type']} — "
                          + " / ".join(e["names"]))
         lines.append("")
     if not any_new:
-        lines.append("None — every node in all four trees matched our index by name.")
+        lines.append("### NEW — genuinely new/renamed (review)")
+        lines.append("")
+        if any_known:
+            lines.append("None — every node not in our index is known-unmodeled "
+                        "(see above).")
+        else:
+            lines.append("None — every node in all four trees matched our index "
+                        "by name.")
         lines.append("")
     opts = [e for res in trees for e in res["unmatched_options"]]
     if opts:
@@ -410,9 +488,12 @@ def build_report(diff: dict) -> str:
                          + " / ".join(e["names"]))
         lines.append("")
     lines.append("CAVEAT: our hero-tree index only covers the talents the current "
-                 "build selects, so unmatched hero nodes are usually \"not "
-                 "indexed\" rather than new in 12.1.5 — verify against the 12.1 "
-                 "workbook before treating any of the above as new.")
+                 "build selects, so hero nodes absent from our Inputs sheet are "
+                 "tracked as known-unmodeled in `tools/pipeline/"
+                 "wowhead_known_unmodeled.json` instead of surfacing as NEW. Keep "
+                 "that list in sync with the Inputs sheet: when a talent becomes "
+                 "modeled, remove it there; when a NEW node is reviewed and "
+                 "accepted as expected, add it there.")
     lines.append("")
 
     lines.append("## (b) Our index talents NOT in the Wowhead 12.1.5 trees "
@@ -425,7 +506,10 @@ def build_report(diff: dict) -> str:
             flag = (" — no spell by this name anywhere in the Wowhead payload "
                     "(all classes) -> likely removed or renamed in 12.1.5"
                     if absent else "")
-            lines.append(f"- **{name}** ({res['label']}){flag}.")
+            mark = (" — removed-known (tracked in `tools/pipeline/"
+                    "wowhead_known_unmodeled.json`)"
+                    if name in res["removed_known"] else "")
+            lines.append(f"- **{name}** ({res['label']}){mark}{flag}.")
     else:
         lines.append("None.")
     lines.append("")
@@ -466,25 +550,41 @@ def print_compact(diff: dict, report_path: str) -> None:
                       for t in trees)
     n_nodes = sum(t["node_count"] for t in trees)
     n_matched = sum(len(t["matched_nodes"]) for t in trees)
+    n_known = sum(len(t["known_unmodeled_nodes"]) for t in trees)
     n_new = sum(len(t["new_nodes"]) for t in trees)
     n_removed = sum(len(t["removed"]) for t in trees)
+    n_removed_known = sum(len(t["removed_known"]) for t in trees)
     n_ours_matched = diff["our_total"] - n_removed
+    per_tree = ", ".join(
+        f"{t['label']} {len(t['matched_nodes'])}/{t['node_count']}"
+        for t in trees)
     print(f"trees: {desc} -> {n_nodes} nodes vs our {diff['our_total']} talents")
-    print(f"matched {n_matched}/{n_nodes} nodes, {n_ours_matched}/{diff['our_total']} "
-          f"talents | new nodes {n_new} | removed {n_removed}")
+    print(f"matched {n_matched}/{n_nodes} nodes ({per_tree}), "
+          f"{n_ours_matched}/{diff['our_total']} talents")
+    print(f"known-unmodeled {n_known} | NEW {n_new} | removed {n_removed} "
+          f"({n_removed_known} removed-known)")
+    known_list = [(t["label"], e) for t in trees
+                  for e in t["known_unmodeled_nodes"]]
+    print(f"KNOWN-UNMODELED (in the Wowhead trees, not modeled in our Inputs "
+          f"sheet; {min(10, len(known_list))} of {len(known_list)} shown):")
+    for tree, e in known_list[:10]:
+        print(f"  - {' / '.join(e['names'])} ({tree}, {e['type']})")
+    if len(known_list) > 10:
+        print(f"  ... +{len(known_list) - 10} more in the report")
     new_list = [e for t in trees for e in t["new_nodes"]]
-    print(f"NEW (Wowhead nodes not in our index; {min(10, len(new_list))} "
+    print(f"NEW (genuinely new/renamed — review; {min(10, len(new_list))} "
           f"of {len(new_list)} shown):")
     for e in new_list[:10]:
         tree = next(t["label"] for t in trees if e in t["new_nodes"])
         print(f"  - {' / '.join(e['names'])} ({tree}, {e['type']})")
     if len(new_list) > 10:
         print(f"  ... +{len(new_list) - 10} more in the report")
-    removed_list = [(t["label"], name) for t in trees for name in t["removed"]]
+    removed_list = [(t["label"], name, name in t["removed_known"])
+                    for t in trees for name in t["removed"]]
     print(f"REMOVED (our talents not in Wowhead trees; "
           f"{min(10, len(removed_list))} of {len(removed_list)} shown):")
-    for tree, name in removed_list[:10]:
-        print(f"  - {name} ({tree})")
+    for tree, name, known in removed_list[:10]:
+        print(f"  - {name} ({tree})" + (" — removed-known" if known else ""))
     if len(removed_list) > 10:
         print(f"  ... +{len(removed_list) - 10} more in the report")
     multi = [(t, e) for t in trees for e in t["multi_rank"]]
