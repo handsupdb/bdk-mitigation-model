@@ -15,6 +15,16 @@ Mapping entry schema (one per ability):
     field        parsed field to compare (ap_coeff / sp_coeff / base_value / …);
     ourCell      our cell holding the coefficient, e.g. "Baseline!H25"; null
                  when no cell in the ability's row matched (unmapped);
+    ourConstant  alternative to ourCell: a game.json constants name (e.g.
+                 "vbHealingAmpBase") when the value lives in a constant,
+                 not a cell — resolved from game.json constants and diffed
+                 like a cell value;
+    transform    optional per-entry transform applied to the EXTERNAL value
+                 (SimC field / hotfix column) to convert it into our
+                 representation so the comparison is apples-to-apples;
+                 "percentToMultiplier": external bonus percent (30 = +30%)
+                 -> our multiplier (1 + 30/100 = 1.3); our value is never
+                 transformed;
     spellId      optional: pin the exact spell when the name is ambiguous —
                  lookup() resolves names to the FIRST id (e.g. "Consumption"
                  -> 205223, which has no ap_coeff; the damage spell SimC's
@@ -26,6 +36,8 @@ Our value sources for a cell (first match wins):
     2. extracted/<Sheet>__values.tsv                          (cached values);
     3. extracted/<Sheet>__formulas.tsv, evaluated when the formula is pure
        arithmetic (numbers and + - * / ^ parentheses; Excel ^ = power).
+When the entry carries ourConstant instead of ourCell, the value comes from
+game.json constants[<name>].value (no cell/TSV lookup is involved).
 IMPORTANT: the ability coefficient cells are Baseline column H ("Attack Power
 Multiplier") FORMULA cells (e.g. H25 = 1.4256*1.15) — they are NOT present in
 cellLiterals, so the values/formulas TSVs are required to read them.
@@ -33,8 +45,8 @@ cellLiterals, so the values/formulas TSVs are required to read them.
 Verdicts per entry:
     match     both values present and |our - simc| <= max(0.0005, 0.1%*|simc|);
     CHANGED   both present but beyond tolerance — a proposed diff to review;
-    unmapped  no ourCell, our value unresolvable, or the spell/effect/field is
-              absent from the SimC 12.1.5 data.
+    unmapped  no ourCell/ourConstant, our value unresolvable, or the
+              spell/effect/field is absent from the SimC 12.1.5 data.
 
 Curation rule for ourCell (used to build the initial mapping; re-runnable via
 --discover): compare the SimC 12.1.5 value against every cell in that
@@ -186,6 +198,30 @@ def resolve_our_value(game: dict, ref: str) -> dict:
             "cell": cell}
 
 
+def resolve_our_constant(game: dict, name: str) -> dict:
+    """Resolve one of our game.json constants (mapping ourConstant).
+
+    game.json constants is a list of {name, value, meaning, occurrences}
+    (the {{name}} placeholders in the formula TSVs); the value is diffed
+    like a cell value. Same result shape as resolve_our_value.
+    """
+    for const in game.get("constants", []):
+        if isinstance(const, dict) and const.get("name") == name:
+            value = const.get("value")
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                source = f"constant {name} (game.json constants)"
+                if const.get("meaning"):
+                    source += f" — {const['meaning']}"
+                return {"value": float(value), "source": source,
+                        "formula": None, "sheet": None, "cell": None}
+            return {"value": None, "source": f"constant {name!r} has a "
+                    f"non-numeric value {value!r}", "formula": None,
+                    "sheet": None, "cell": None}
+    return {"value": None, "source": f"constant {name!r} not found in "
+            "game.json constants", "formula": None, "sheet": None,
+            "cell": None}
+
+
 # -- SimC access --------------------------------------------------------------
 
 
@@ -225,6 +261,48 @@ def resolve_simc_value(entry: dict) -> dict:
             f"effectN({idx}) {field}", "error": None}
 
 
+# -- per-entry transforms ------------------------------------------------------
+
+# Mapping key "transform": converts the EXTERNAL value (SimC field / hotfix
+# column) into OUR representation so the comparison is apples-to-apples.
+# Our value (cell or constant) is never transformed.
+ENTRY_TRANSFORMS = {
+    # SimC base_value stores a bonus PERCENT (30 = +30%); our game.json
+    # constant is the corresponding MULTIPLIER (1.3 = 1 + 30/100) — e.g.
+    # vbHealingAmpBase, used in Baseline formulas as a plain multiplier:
+    # ({{vbHealingAmpBase}}+0.05*C92).
+    "percentToMultiplier": lambda v: 1.0 + v / 100.0,
+}
+
+
+def apply_transform(entry: dict, ext: dict) -> dict:
+    """Apply the entry's transform to an external (SimC/hotfix) value dict.
+
+    Returns ext extended with: value = the transformed value in OUR
+    representation (what our cell/constant is compared against), raw_value
+    = the untransformed external value, transform = the transform name
+    (None when the entry has none). An unknown transform name is a mapping
+    error (value None + error); an unresolvable external value keeps its
+    resolve error untouched.
+    """
+    name = entry.get("transform")
+    out = dict(ext)
+    out["raw_value"] = ext.get("value")
+    out["transform"] = name or None
+    if not name:
+        return out
+    fn = ENTRY_TRANSFORMS.get(name)
+    if fn is None:
+        out["value"] = None
+        out["error"] = f"unknown mapping transform {name!r} (known: " \
+                       f"{', '.join(sorted(ENTRY_TRANSFORMS))})"
+        return out
+    if ext.get("value") is None:
+        return out  # nothing to transform; keep the resolve error
+    out["value"] = fn(float(ext["value"]))
+    return out
+
+
 # -- comparison ---------------------------------------------------------------
 
 
@@ -236,17 +314,48 @@ def classify(our: Optional[float], simc: Optional[float]) -> Tuple[str, Optional
     return ("match" if abs(delta) <= tol else "CHANGED"), delta
 
 
+def our_target(row: dict) -> str:
+    """Display label for our value target: cell ref, constant, or em-dash."""
+    if row.get("our_cell"):
+        return row["our_cell"]
+    if row.get("our_constant"):
+        return f"constant {row['our_constant']}"
+    return "—"
+
+
+def fmt_ext(ext: dict, with_error: bool = True) -> str:
+    """Format an external (SimC/hotfix) value dict, transform-aware.
+
+    Shows the raw → transformed pair when a per-entry transform applied
+    (e.g. "30 → 1.3 (percentToMultiplier)"). with_error=False keeps the
+    compact prints' old shape (bare em-dash; the error is printed
+    separately there).
+    """
+    if ext.get("value") is None:
+        if with_error and ext.get("error"):
+            return f"— ({ext['error']})"
+        return "—"
+    if ext.get("transform") and ext.get("raw_value") is not None:
+        return (f"{fmt(ext['raw_value'])} → {fmt(ext['value'])} "
+                f"({ext['transform']})")
+    return fmt(ext["value"])
+
+
 def evaluate_entry(entry: dict, game: dict) -> dict:
     ability = entry.get("ability", "?")
     our_cell = entry.get("ourCell")
+    our_constant = entry.get("ourConstant")
     if our_cell:
         our = resolve_our_value(game, our_cell)
+    elif our_constant:
+        our = resolve_our_constant(game, our_constant)
     else:
-        our = {"value": None, "source": "no ourCell (unmapped)", "formula": None,
-               "sheet": None, "cell": None}
-    simc = resolve_simc_value(entry)
+        our = {"value": None, "source": "no ourCell/ourConstant (unmapped)",
+               "formula": None, "sheet": None, "cell": None}
+    simc = apply_transform(entry, resolve_simc_value(entry))
     verdict, delta = classify(our["value"], simc["value"])
-    return {"ability": ability, "our_cell": our_cell, "our": our, "simc": simc,
+    return {"ability": ability, "our_cell": our_cell,
+            "our_constant": our_constant, "our": our, "simc": simc,
             "verdict": verdict, "delta": delta, "note": entry.get("note")}
 
 
@@ -292,18 +401,16 @@ def build_report(rows: List[dict], mapping_path: str, report_path: str) -> str:
     lines.append("")
     lines.append("## Verdicts")
     lines.append("")
-    lines.append("| Ability | Our cell | Our value | SimC value | Δ (our−simc) "
+    lines.append("| Ability | Our target | Our value | SimC value | Δ (our−simc) "
                  "| SimC source | Verdict |")
     lines.append("|---|---|---|---|---|---|---|")
     for r in rows:
         our_val = fmt(r["our"]["value"])
         if r["our"]["formula"]:
             our_val += f" (`{r['our']['formula']}`)"
-        simc_val = fmt(r["simc"]["value"])
-        if r["simc"]["value"] is None and r["simc"]["error"]:
-            simc_val = f"— ({r['simc']['error']})"
+        simc_val = fmt_ext(r["simc"])
         lines.append(
-            f"| {r['ability']} | {r['our_cell'] or '—'} | {our_val} "
+            f"| {r['ability']} | {our_target(r)} | {our_val} "
             f"| {simc_val} | {fmt_delta(r['delta'])} "
             f"| {r['simc']['display'] or '—'} | {r['verdict']} |")
     lines.append("")
@@ -314,7 +421,7 @@ def build_report(rows: List[dict], mapping_path: str, report_path: str) -> str:
     if changed:
         for r in changed:
             lines.append(
-                f"- **{r['ability']}**: our {r['our_cell']} "
+                f"- **{r['ability']}**: our {our_target(r)} "
                 f"{fmt(r['our']['value'])} → SimC {fmt(r['simc']['value'])} "
                 f"({r['simc']['display']}); Δ {fmt_delta(r['delta'])}.")
     else:
@@ -348,18 +455,18 @@ def build_report(rows: List[dict], mapping_path: str, report_path: str) -> str:
 def print_compact(rows: List[dict], report_path: str) -> None:
     for r in rows:
         our = fmt(r["our"]["value"]) if r["our"]["value"] is not None else "—"
-        if r["our_cell"]:
-            our = f"{r['our_cell']} our {our}"
-        simc = fmt(r["simc"]["value"]) if r["simc"]["value"] is not None else "—"
+        if r["our_cell"] or r["our_constant"]:
+            our = f"{our_target(r)} our {our}"
+        simc = fmt_ext(r["simc"], with_error=False)
         if r["simc"]["display"]:
             simc += f" ({r['simc']['display']})"
         extra = ""
         if r["verdict"] == "unmapped":
             bits = []
-            if not r["our_cell"]:
-                bits.append("no ourCell")
+            if not r["our_cell"] and not r["our_constant"]:
+                bits.append("no ourCell/ourConstant")
             elif r["our"]["value"] is None:
-                bits.append(f"our cell {r['our']['source']}")
+                bits.append(f"our {r['our']['source']}")
             if r["simc"]["value"] is None and r["simc"]["error"]:
                 bits.append(str(r["simc"]["error"])[:60])
             extra = " (" + "; ".join(bits) + ")" if bits else ""

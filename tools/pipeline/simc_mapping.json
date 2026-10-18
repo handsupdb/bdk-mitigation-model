@@ -62,7 +62,8 @@
     "simcSpell": "Vampiric Blood",
     "effectIndex": 1,
     "field": "base_value",
-    "ourCell": null,
-    "note": "row 76 has no coefficient cell (only R76=90 base cooldown); the 30% health/healing values live outside the ability row (e.g. healing amp 1.3 embedded in X10; SimC class module reads effectN(3)/(4) percent)"
+    "ourConstant": "vbHealingAmpBase",
+    "transform": "percentToMultiplier",
+    "note": "row 76 has no coefficient cell (only R76=90 base cooldown); the 30% healing amp lives in the game.json constant vbHealingAmpBase = 1.3, used in Baseline formulas as a plain multiplier (e.g. X10: ...*({{vbHealingAmpBase}}+0.05*C92)...). Transform percentToMultiplier maps the SimC base_value bonus percent (30 = +30%) into our multiplier representation 1 + 30/100 = 1.3, making the two comparable; SimC's class module reads the same value as effectN(3)/(4) percent"
   }
 ]
