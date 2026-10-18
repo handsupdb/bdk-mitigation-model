@@ -10,6 +10,7 @@ node_modules/
 dist/
 dist-single/
 build/
+release/
 *.tsbuildinfo
 
 # Derived extraction artifacts.
