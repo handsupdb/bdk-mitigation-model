@@ -1,0 +1,63 @@
+[
+  {
+    "ability": "Heart Strike",
+    "simcSpell": "Heart Strike",
+    "effectIndex": 2,
+    "field": "ap_coeff",
+    "ourCell": "Baseline!H51"
+  },
+  {
+    "ability": "Blood Boil",
+    "simcSpell": "Blood Boil",
+    "effectIndex": 1,
+    "field": "ap_coeff",
+    "ourCell": "Baseline!H25"
+  },
+  {
+    "ability": "Marrowrend",
+    "simcSpell": "Marrowrend",
+    "effectIndex": 2,
+    "field": "ap_coeff",
+    "ourCell": "Baseline!H57"
+  },
+  {
+    "ability": "Death's Caress",
+    "simcSpell": "Death's Caress",
+    "effectIndex": 1,
+    "field": "ap_coeff",
+    "ourCell": "Baseline!H43"
+  },
+  {
+    "ability": "Blooddrinker",
+    "simcSpell": "Blooddrinker",
+    "effectIndex": 1,
+    "field": "ap_coeff",
+    "ourCell": null,
+    "note": "unmapped on both sides: no Blooddrinker row in our workbook (58 abilities; midnight replaced it with Vampiric Strike, our row 74) and no 'Blooddrinker' spell in SimC midnight 12.1.5 spell data"
+  },
+  {
+    "ability": "Consumption",
+    "simcSpell": "Consumption",
+    "spellId": 1263825,
+    "effectIndex": 1,
+    "field": "ap_coeff",
+    "ourCell": "Baseline!H35",
+    "note": "spellId pins the damage spell 1263825 (sc_death_knight.cpp: spell.consumption_damage); the name 'Consumption' resolves first to 205223, which has no ap_coeff on any effect"
+  },
+  {
+    "ability": "Soul Reaper",
+    "simcSpell": "Soul Reaper",
+    "effectIndex": 1,
+    "field": "ap_coeff",
+    "ourCell": null,
+    "note": "no Soul Reaper row in our workbook (closest name, Soul Rupture row 69, is a different spell)"
+  },
+  {
+    "ability": "Vampiric Blood",
+    "simcSpell": "Vampiric Blood",
+    "effectIndex": 1,
+    "field": "base_value",
+    "ourCell": null,
+    "note": "row 76 has no coefficient cell (only R76=90 base cooldown); the 30% health/healing values live outside the ability row (e.g. healing amp 1.3 embedded in X10; SimC class module reads effectN(3)/(4) percent)"
+  }
+]

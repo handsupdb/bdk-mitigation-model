@@ -6194,5 +6194,1240 @@
       "D171": 10.0,
       "E171": 1.0
     }
+  },
+  "index": {
+    "abilities": [
+      {
+        "name": "Anti-Magic Shell",
+        "row": 19,
+        "cells": {
+          "R": "Baseline!R19"
+        }
+      },
+      {
+        "name": "Anti-Magic Zone",
+        "row": 20,
+        "cells": {
+          "R": "Baseline!R20"
+        }
+      },
+      {
+        "name": "Arcane Pulse",
+        "row": 21,
+        "cells": {
+          "H": "Baseline!H21",
+          "R": "Baseline!R21"
+        }
+      },
+      {
+        "name": "Arcane Torrent",
+        "row": 22,
+        "cells": {
+          "R": "Baseline!R22"
+        }
+      },
+      {
+        "name": "Auto-Attack",
+        "row": 23,
+        "cells": {}
+      },
+      {
+        "name": "Blood Beasts",
+        "row": 24,
+        "cells": {
+          "I": "Baseline!I24"
+        }
+      },
+      {
+        "name": "Blood Boil",
+        "row": 25,
+        "cells": {
+          "I": "Baseline!I25",
+          "R": "Baseline!R25"
+        }
+      },
+      {
+        "name": "Blood Draw",
+        "row": 26,
+        "cells": {
+          "H": "Baseline!H26",
+          "I": "Baseline!I26",
+          "R": "Baseline!R26",
+          "S": "Baseline!S26"
+        }
+      },
+      {
+        "name": "Blood Feast",
+        "row": 27,
+        "cells": {}
+      },
+      {
+        "name": "Blood Mist",
+        "row": 28,
+        "cells": {
+          "H": "Baseline!H28",
+          "I": "Baseline!I28"
+        }
+      },
+      {
+        "name": "Blood Plague",
+        "row": 29,
+        "cells": {
+          "I": "Baseline!I29"
+        }
+      },
+      {
+        "name": "Blood Shield",
+        "row": 30,
+        "cells": {}
+      },
+      {
+        "name": "Bloody Demise",
+        "row": 31,
+        "cells": {
+          "H": "Baseline!H31"
+        }
+      },
+      {
+        "name": "Bloodworms",
+        "row": 32,
+        "cells": {
+          "I": "Baseline!I32"
+        }
+      },
+      {
+        "name": "Bloody Reflection",
+        "row": 33,
+        "cells": {
+          "H": "Baseline!H33",
+          "I": "Baseline!I33",
+          "R": "Baseline!R33"
+        }
+      },
+      {
+        "name": "Brush it Off",
+        "row": 34,
+        "cells": {}
+      },
+      {
+        "name": "Consumption",
+        "row": 35,
+        "cells": {
+          "I": "Baseline!I35",
+          "R": "Baseline!R35"
+        }
+      },
+      {
+        "name": "Corrosive Vial",
+        "row": 36,
+        "cells": {
+          "H": "Baseline!H36",
+          "R": "Baseline!R36"
+        }
+      },
+      {
+        "name": "Dance of Midnight (Runes)",
+        "row": 37,
+        "cells": {
+          "N": "Baseline!N37"
+        }
+      },
+      {
+        "name": "Dancing Rune Weapon",
+        "row": 38,
+        "cells": {
+          "I": "Baseline!I38",
+          "R": "Baseline!R38"
+        }
+      },
+      {
+        "name": "Dancing Rune Weapon (DoM)",
+        "row": 39,
+        "cells": {
+          "I": "Baseline!I39"
+        }
+      },
+      {
+        "name": "Death and Decay",
+        "row": 40,
+        "cells": {
+          "R": "Baseline!R40"
+        }
+      },
+      {
+        "name": "Death Pact",
+        "row": 41,
+        "cells": {
+          "R": "Baseline!R41"
+        }
+      },
+      {
+        "name": "Death Strike",
+        "row": 42,
+        "cells": {}
+      },
+      {
+        "name": "Death's Caress",
+        "row": 43,
+        "cells": {
+          "I": "Baseline!I43",
+          "N": "Baseline!N43",
+          "O": "Baseline!O43",
+          "P": "Baseline!P43",
+          "R": "Baseline!R43"
+        }
+      },
+      {
+        "name": "Embrace of Bwonsamdi",
+        "row": 44,
+        "cells": {}
+      },
+      {
+        "name": "Embrace of Kimbul",
+        "row": 45,
+        "cells": {
+          "H": "Baseline!H45"
+        }
+      },
+      {
+        "name": "Exterminate (First)",
+        "row": 46,
+        "cells": {
+          "I": "Baseline!I46"
+        }
+      },
+      {
+        "name": "Exterminate (Second)",
+        "row": 47,
+        "cells": {
+          "I": "Baseline!I47"
+        }
+      },
+      {
+        "name": "Gift of the Naaru",
+        "row": 48,
+        "cells": {
+          "R": "Baseline!R48"
+        }
+      },
+      {
+        "name": "Gorefiend's Grasp",
+        "row": 49,
+        "cells": {
+          "R": "Baseline!R49"
+        }
+      },
+      {
+        "name": "Healing Vial",
+        "row": 50,
+        "cells": {
+          "H": "Baseline!H50",
+          "R": "Baseline!R50"
+        }
+      },
+      {
+        "name": "Heart Strike",
+        "row": 51,
+        "cells": {
+          "I": "Baseline!I51",
+          "N": "Baseline!N51"
+        }
+      },
+      {
+        "name": "Icebound Fortitude",
+        "row": 52,
+        "cells": {
+          "R": "Baseline!R52",
+          "S": "Baseline!S52"
+        }
+      },
+      {
+        "name": "Infliction of Sorrow",
+        "row": 53,
+        "cells": {}
+      },
+      {
+        "name": "Lichborne",
+        "row": 54,
+        "cells": {
+          "R": "Baseline!R54"
+        }
+      },
+      {
+        "name": "Lifeblood",
+        "row": 55,
+        "cells": {}
+      },
+      {
+        "name": "Light's Judgment",
+        "row": 56,
+        "cells": {
+          "H": "Baseline!H56",
+          "R": "Baseline!R56"
+        }
+      },
+      {
+        "name": "Marrowrend",
+        "row": 57,
+        "cells": {
+          "I": "Baseline!I57",
+          "N": "Baseline!N57",
+          "P": "Baseline!P57"
+        }
+      },
+      {
+        "name": "Mind Freeze",
+        "row": 58,
+        "cells": {
+          "R": "Baseline!R58"
+        }
+      },
+      {
+        "name": "Pact of the San'layn",
+        "row": 59,
+        "cells": {}
+      },
+      {
+        "name": "Permafrost",
+        "row": 60,
+        "cells": {}
+      },
+      {
+        "name": "Raise Dead",
+        "row": 61,
+        "cells": {
+          "I": "Baseline!I61",
+          "R": "Baseline!R61"
+        }
+      },
+      {
+        "name": "Razorice",
+        "row": 62,
+        "cells": {
+          "H": "Baseline!H62",
+          "I": "Baseline!I62"
+        }
+      },
+      {
+        "name": "Reaper's Mark",
+        "row": 63,
+        "cells": {
+          "I": "Baseline!I63",
+          "N": "Baseline!N63",
+          "R": "Baseline!R63"
+        }
+      },
+      {
+        "name": "Reaper's Mark (Debuff)",
+        "row": 64,
+        "cells": {
+          "I": "Baseline!I64"
+        }
+      },
+      {
+        "name": "Rocket Barrage",
+        "row": 65,
+        "cells": {
+          "H": "Baseline!H65",
+          "R": "Baseline!R65"
+        }
+      },
+      {
+        "name": "Rune of Sanguination",
+        "row": 66,
+        "cells": {
+          "R": "Baseline!R66",
+          "S": "Baseline!S66"
+        }
+      },
+      {
+        "name": "Runic Attenuation",
+        "row": 67,
+        "cells": {
+          "O": "Baseline!O67"
+        }
+      },
+      {
+        "name": "Sanguinary Burst",
+        "row": 68,
+        "cells": {
+          "H": "Baseline!H68"
+        }
+      },
+      {
+        "name": "Soul Rupture",
+        "row": 69,
+        "cells": {
+          "I": "Baseline!I69"
+        }
+      },
+      {
+        "name": "Stoneform",
+        "row": 70,
+        "cells": {
+          "R": "Baseline!R70",
+          "S": "Baseline!S70"
+        }
+      },
+      {
+        "name": "Touch of the Grave",
+        "row": 71,
+        "cells": {
+          "R": "Baseline!R71"
+        }
+      },
+      {
+        "name": "Umbilicus Eternus",
+        "row": 72,
+        "cells": {}
+      },
+      {
+        "name": "Unholy Strength",
+        "row": 73,
+        "cells": {}
+      },
+      {
+        "name": "Vampiric Strike",
+        "row": 74,
+        "cells": {
+          "I": "Baseline!I74"
+        }
+      },
+      {
+        "name": "Wave of Souls",
+        "row": 75,
+        "cells": {
+          "I": "Baseline!I75"
+        }
+      },
+      {
+        "name": "Vampiric Blood",
+        "row": 76,
+        "cells": {}
+      }
+    ],
+    "talents": [
+      {
+        "tree": "Death Knight",
+        "name": "Icebound Fortitude",
+        "row": 40,
+        "cells": {
+          "C": "Inputs!C40"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death Strike",
+        "row": 41,
+        "cells": {
+          "C": "Inputs!C41"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Raise Dead",
+        "row": 42,
+        "cells": {
+          "C": "Inputs!C42"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Runic Attenuation",
+        "row": 43,
+        "cells": {
+          "C": "Inputs!C43"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Improved Death Strike",
+        "row": 44,
+        "cells": {
+          "C": "Inputs!C44"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Cleaving Strikes",
+        "row": 45,
+        "cells": {
+          "C": "Inputs!C45"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Mind Freeze",
+        "row": 46,
+        "cells": {
+          "C": "Inputs!C46",
+          "D": "Inputs!D46"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Blinding Sleet",
+        "row": 47,
+        "cells": {
+          "C": "Inputs!C47"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Gloom Ward",
+        "row": 48,
+        "cells": {
+          "C": "Inputs!C48"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "March of Darkness",
+        "row": 49,
+        "cells": {
+          "C": "Inputs!C49"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Wraith Walk",
+        "row": 50,
+        "cells": {
+          "C": "Inputs!C50"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Unholy Momentum",
+        "row": 51,
+        "cells": {
+          "C": "Inputs!C51"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Control Undead",
+        "row": 52,
+        "cells": {
+          "C": "Inputs!C52"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Enfeeble",
+        "row": 53,
+        "cells": {
+          "C": "Inputs!C53"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Coldthirst",
+        "row": 54,
+        "cells": {
+          "C": "Inputs!C54"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Proliferating Chill",
+        "row": 55,
+        "cells": {
+          "C": "Inputs!C55"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Permafrost",
+        "row": 56,
+        "cells": {
+          "C": "Inputs!C56"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Veteran of the Third War",
+        "row": 57,
+        "cells": {
+          "C": "Inputs!C57"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death Pact",
+        "row": 58,
+        "cells": {
+          "C": "Inputs!C58"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Brittle",
+        "row": 59,
+        "cells": {
+          "C": "Inputs!C59"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Blood Bond",
+        "row": 60,
+        "cells": {
+          "C": "Inputs!C60"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Icy Talons",
+        "row": 61,
+        "cells": {
+          "C": "Inputs!C61",
+          "D": "Inputs!D61"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death Notes",
+        "row": 62,
+        "cells": {
+          "C": "Inputs!C62"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Anti-Magic Zone",
+        "row": 63,
+        "cells": {
+          "C": "Inputs!C63",
+          "D": "Inputs!D63"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death Defiance",
+        "row": 64,
+        "cells": {
+          "C": "Inputs!C64"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Unholy Bond",
+        "row": 65,
+        "cells": {
+          "C": "Inputs!C65"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Ice Prison",
+        "row": 66,
+        "cells": {
+          "C": "Inputs!C66"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death's Reach",
+        "row": 67,
+        "cells": {
+          "C": "Inputs!C67"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Asphyxiate",
+        "row": 68,
+        "cells": {
+          "C": "Inputs!C68"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Assimilation",
+        "row": 69,
+        "cells": {
+          "C": "Inputs!C69"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Anti-Magic Barrier",
+        "row": 70,
+        "cells": {
+          "C": "Inputs!C70"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Grip of the Dead",
+        "row": 71,
+        "cells": {
+          "C": "Inputs!C71"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Suppression",
+        "row": 72,
+        "cells": {
+          "C": "Inputs!C72"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Blood Scent",
+        "row": 73,
+        "cells": {
+          "C": "Inputs!C73"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Unholy Endurance",
+        "row": 74,
+        "cells": {
+          "C": "Inputs!C74"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Osmosis",
+        "row": 75,
+        "cells": {
+          "C": "Inputs!C75"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Insidious Chill",
+        "row": 76,
+        "cells": {
+          "C": "Inputs!C76"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Runic Protection",
+        "row": 77,
+        "cells": {
+          "C": "Inputs!C77"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Blood Draw",
+        "row": 78,
+        "cells": {
+          "C": "Inputs!C78"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Rune Mastery",
+        "row": 79,
+        "cells": {
+          "C": "Inputs!C79"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Subduing Grasp",
+        "row": 80,
+        "cells": {
+          "C": "Inputs!C80"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Will of the Necropolis",
+        "row": 81,
+        "cells": {
+          "C": "Inputs!C81"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Null Magic",
+        "row": 82,
+        "cells": {
+          "C": "Inputs!C82"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Unyielding Will",
+        "row": 83,
+        "cells": {
+          "C": "Inputs!C83"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Death's Echo",
+        "row": 84,
+        "cells": {
+          "C": "Inputs!C84"
+        }
+      },
+      {
+        "tree": "Death Knight",
+        "name": "Vestigial Shell",
+        "row": 85,
+        "cells": {
+          "C": "Inputs!C85"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Heart Strike",
+        "row": 88,
+        "cells": {
+          "C": "Inputs!C88"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Marrowrend",
+        "row": 89,
+        "cells": {
+          "C": "Inputs!C89",
+          "D": "Inputs!D89"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Blood Boil",
+        "row": 90,
+        "cells": {
+          "C": "Inputs!C90"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Vampiric Blood",
+        "row": 91,
+        "cells": {
+          "C": "Inputs!C91"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Bone Collector",
+        "row": 92,
+        "cells": {
+          "C": "Inputs!C92"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Ossuary",
+        "row": 93,
+        "cells": {
+          "C": "Inputs!C93"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Improved Vampiric Blood",
+        "row": 94,
+        "cells": {
+          "C": "Inputs!C94"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Improved Heart Strike",
+        "row": 95,
+        "cells": {
+          "C": "Inputs!C95"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Relish in Blood",
+        "row": 96,
+        "cells": {
+          "C": "Inputs!C96"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Leeching Strike",
+        "row": 97,
+        "cells": {
+          "C": "Inputs!C97"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Heartbreaker",
+        "row": 98,
+        "cells": {
+          "C": "Inputs!C98"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Foul Bulwark",
+        "row": 99,
+        "cells": {
+          "C": "Inputs!C99",
+          "D": "Inputs!D99"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Dancing Rune Weapon",
+        "row": 100,
+        "cells": {
+          "C": "Inputs!C100"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Hemostasis",
+        "row": 101,
+        "cells": {
+          "C": "Inputs!C101"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Perseverance of the Ebon Blade",
+        "row": 102,
+        "cells": {
+          "C": "Inputs!C102",
+          "D": "Inputs!D102"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Bloodworms",
+        "row": 103,
+        "cells": {
+          "C": "Inputs!C103",
+          "D": "Inputs!D103"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Abomination Limb",
+        "row": 104,
+        "cells": {
+          "C": "Inputs!C104",
+          "D": "Inputs!D104"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Gorefiend's Grasp",
+        "row": 105,
+        "cells": {
+          "C": "Inputs!C105",
+          "D": "Inputs!D105"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Improved Bone Shield",
+        "row": 106,
+        "cells": {
+          "C": "Inputs!C106"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Insatiable Blade",
+        "row": 107,
+        "cells": {
+          "C": "Inputs!C107",
+          "D": "Inputs!D107"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Deadly Reach",
+        "row": 108,
+        "cells": {
+          "C": "Inputs!C108"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Rapid Decomposition",
+        "row": 109,
+        "cells": {
+          "C": "Inputs!C109"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Boiling Point",
+        "row": 110,
+        "cells": {
+          "C": "Inputs!C110"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Lifeblood",
+        "row": 111,
+        "cells": {
+          "C": "Inputs!C111"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Everlasting Bond",
+        "row": 112,
+        "cells": {
+          "C": "Inputs!C112"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Voracious",
+        "row": 113,
+        "cells": {
+          "C": "Inputs!C113"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Blood Feast",
+        "row": 114,
+        "cells": {
+          "C": "Inputs!C114"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Plague Infusion",
+        "row": 115,
+        "cells": {
+          "C": "Inputs!C115"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Bloody Reflection",
+        "row": 116,
+        "cells": {
+          "C": "Inputs!C116"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Iron Heart",
+        "row": 117,
+        "cells": {
+          "C": "Inputs!C117"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Bloodied Blade",
+        "row": 118,
+        "cells": {
+          "C": "Inputs!C118"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Coagulopathy",
+        "row": 119,
+        "cells": {
+          "C": "Inputs!C119",
+          "D": "Inputs!D119"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Blood Mist",
+        "row": 120,
+        "cells": {
+          "C": "Inputs!C120"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Sanguine Ground",
+        "row": 121,
+        "cells": {
+          "C": "Inputs!C121"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Bloodshot",
+        "row": 122,
+        "cells": {
+          "C": "Inputs!C122",
+          "D": "Inputs!D122"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Consumption",
+        "row": 123,
+        "cells": {
+          "C": "Inputs!C123",
+          "D": "Inputs!D123"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Red Thirst",
+        "row": 124,
+        "cells": {
+          "C": "Inputs!C124"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Sanguinary Burst",
+        "row": 125,
+        "cells": {
+          "C": "Inputs!C125"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Purgatory",
+        "row": 126,
+        "cells": {
+          "C": "Inputs!C126"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Carnage",
+        "row": 127,
+        "cells": {
+          "C": "Inputs!C127"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Umbilicus Eternus",
+        "row": 128,
+        "cells": {
+          "C": "Inputs!C128"
+        }
+      },
+      {
+        "tree": "Blood",
+        "name": "Dance of Midnight",
+        "row": 129,
+        "cells": {
+          "C": "Inputs!C129"
+        }
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Death's Bargain",
+        "row": 136,
+        "cells": {}
+      },
+      {
+        "tree": "San'layn",
+        "name": "Newly Turned",
+        "row": 136,
+        "cells": {}
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Rune Carved Plates",
+        "row": 137,
+        "cells": {
+          "C": "Inputs!C137"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Vampiric Speed",
+        "row": 137,
+        "cells": {}
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Dark Talons",
+        "row": 138,
+        "cells": {
+          "C": "Inputs!C138"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Blood-Soaked Ground",
+        "row": 138,
+        "cells": {
+          "E": "Inputs!E138"
+        }
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Reaper's Onslaught",
+        "row": 139,
+        "cells": {
+          "C": "Inputs!C139"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Desecrate",
+        "row": 139,
+        "cells": {
+          "E": "Inputs!E139"
+        }
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Death's Messenger",
+        "row": 140,
+        "cells": {
+          "C": "Inputs!C140"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Vampiric Aura",
+        "row": 140,
+        "cells": {
+          "E": "Inputs!E140"
+        }
+      },
+      {
+        "tree": "Deathbringer",
+        "name": "Expelling Shield",
+        "row": 141,
+        "cells": {}
+      },
+      {
+        "tree": "San'layn",
+        "name": "Bloody Fortitude",
+        "row": 141,
+        "cells": {
+          "E": "Inputs!E141"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Sanguine Scent",
+        "row": 142,
+        "cells": {
+          "E": "Inputs!E142"
+        }
+      },
+      {
+        "tree": "San'layn",
+        "name": "Pact of the San'layn",
+        "row": 143,
+        "cells": {
+          "E": "Inputs!E143"
+        }
+      }
+    ]
   }
 }
