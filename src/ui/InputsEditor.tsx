@@ -1,9 +1,16 @@
 /**
  * Inputs editor: editable fields over the Inputs sheet's saved profile.
  *
- * Two sections render (add more to SECTIONS as the editor grows):
- *   - Character Attributes  (rows 7-17:  label `Inputs!B<row>`, value `Inputs!C<row>`)
- *   - Conditional Variables (rows 146-156: same columns)
+ * One SECTIONS entry renders per group, in sheet order:
+ *   - Character Attributes  (rows 7-17:    label `Inputs!B<row>`, value `Inputs!C<row>`)
+ *   - DK Class Talents      (rows 40-85:   label B, rank C, plus a variable D
+ *                                         input only where the sheet has one)
+ *   - Blood Talents         (rows 88-129:  same label/rank/variable pattern)
+ *   - Hero Class            (rows 132-133: label B, value C, uptime D)
+ *   - Deathbringer Talents  (rows 136-141: label B, value C)
+ *   - San'layn Talents      (rows 138-143: label D, value E)
+ *   - Conditional Variables (rows 146-156: label B, value C)
+ *   - Tier Set              (rows 159-160: label B, value C)
  *
  * Each NumberField edits one Inputs cell; the override is keyed by the bare
  * Inputs ref (`'C7'`), exactly as `useEngine`/`evaluateWithInputs` expect.
@@ -18,7 +25,7 @@
  * function, an object returned by React.createRef(), or undefined/null."),
  * so a prop literally named `ref` cannot carry a cell ref like 'C7'.
  */
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { ChangeEvent, CSSProperties, ReactNode } from 'react'
 import type { CellValue, Grid } from '../engine/cells'
 
@@ -28,12 +35,28 @@ interface SectionSpec {
   titleRef: string
   /** Title when the header cell is missing or blank. */
   fallbackTitle: string
-  /** First data row (label B<row>, value C<row>). */
+  /** First data row. */
   firstRow: number
   /** Last data row (inclusive). */
   lastRow: number
-  /** Per-row label fallbacks, indexed by `row - firstRow`. */
-  fallbackLabels: string[]
+  /** Column holding each row's label; defaults to `'B'`. */
+  labelCol?: string
+  /** Column holding each row's primary editable value; defaults to `'C'`. */
+  valueCol?: string
+  /** Optional second editable column per row (talent variable / uptime). */
+  variableCol?: string
+  /** Header cell naming the variable column (e.g. `Inputs!D39` -> 'Variable'). */
+  variableTitleRef?: string
+  /** Variable field label when its header cell is missing or blank. */
+  fallbackVariableLabel?: string
+  /** Render the variable input even when its saved cell is null. */
+  variableAlways?: boolean
+  /**
+   * Per-row label fallbacks, indexed by `row - firstRow`. Optional for the
+   * data-driven sections: the grid itself carries every label there, so a
+   * missing label falls back to `Row <n>`.
+   */
+  fallbackLabels?: string[]
 }
 
 const SECTIONS: SectionSpec[] = [
@@ -57,6 +80,47 @@ const SECTIONS: SectionSpec[] = [
     ],
   },
   {
+    titleRef: 'Inputs!B39',
+    fallbackTitle: 'DK Class Talents',
+    firstRow: 40,
+    lastRow: 85,
+    variableCol: 'D',
+    variableTitleRef: 'Inputs!D39',
+    fallbackVariableLabel: 'Variable',
+  },
+  {
+    titleRef: 'Inputs!B87',
+    fallbackTitle: 'Blood Talents',
+    firstRow: 88,
+    lastRow: 129,
+    variableCol: 'D',
+    variableTitleRef: 'Inputs!D87',
+    fallbackVariableLabel: 'Variable',
+  },
+  {
+    titleRef: 'Inputs!B131',
+    fallbackTitle: 'Hero Class',
+    firstRow: 132,
+    lastRow: 133,
+    variableCol: 'D',
+    fallbackVariableLabel: 'Uptime',
+    variableAlways: true,
+  },
+  {
+    titleRef: 'Inputs!B135',
+    fallbackTitle: 'Deathbringer Talents',
+    firstRow: 136,
+    lastRow: 141,
+  },
+  {
+    titleRef: 'Inputs!D135',
+    fallbackTitle: "San'layn Talents",
+    firstRow: 138,
+    lastRow: 143,
+    labelCol: 'D',
+    valueCol: 'E',
+  },
+  {
     titleRef: 'Inputs!B145',
     fallbackTitle: 'Conditional Variables',
     firstRow: 146,
@@ -74,6 +138,12 @@ const SECTIONS: SectionSpec[] = [
       'Target Level',
       'Armor Constant',
     ],
+  },
+  {
+    titleRef: 'Inputs!B158',
+    fallbackTitle: 'Tier Set',
+    firstRow: 159,
+    lastRow: 160,
   },
 ]
 
@@ -145,6 +215,9 @@ const resetStyle: CSSProperties = {
   background: '#fff',
   cursor: 'pointer',
 }
+
+/** Slight indent tying a row's variable field to the talent row above it. */
+const variableRowStyle: CSSProperties = { paddingLeft: '1.1rem' }
 
 /** One editable Inputs cell: label, number input, edited marker + reset. */
 function NumberField({ label, savedValue, override, cellRef, onSet, onClear }: NumberFieldProps) {
@@ -240,25 +313,61 @@ export default function InputsEditor({
       {SECTIONS.map((section) => {
         const rows: number[] = []
         for (let row = section.firstRow; row <= section.lastRow; row++) rows.push(row)
+        const labelCol = section.labelCol ?? 'B'
+        const valueCol = section.valueCol ?? 'C'
+        // The variable field's label: the sheet's own column header
+        // ('Variable' for talents; 'Uptime' fallback for hero class).
+        const variableLabel =
+          section.variableCol !== undefined
+            ? pickLabel(
+                section.variableTitleRef !== undefined
+                  ? grid[section.variableTitleRef]
+                  : undefined,
+                section.fallbackVariableLabel ?? 'Variable',
+              )
+            : ''
         return (
           <Section
             key={section.titleRef}
             title={pickLabel(grid[section.titleRef], section.fallbackTitle)}
           >
-            {rows.map((row) => (
-              <NumberField
-                key={row}
-                label={pickLabel(
-                  grid[`Inputs!B${row}`],
-                  section.fallbackLabels[row - section.firstRow],
-                )}
-                savedValue={grid[`Inputs!C${row}`]}
-                override={overrides[`C${row}`]}
-                cellRef={`C${row}`}
-                onSet={setOverride}
-                onClear={clearOverride}
-              />
-            ))}
+            {rows.map((row) => {
+              const valueRef = `${valueCol}${row}`
+              const variableRef =
+                section.variableCol !== undefined ? `${section.variableCol}${row}` : null
+              // A variable input renders only where the sheet carries a value
+              // for it — unless the section always wants it (hero uptime).
+              const hasVariable =
+                variableRef !== null &&
+                (section.variableAlways || (grid[`Inputs!${variableRef}`] ?? null) !== null)
+              return (
+                <Fragment key={row}>
+                  <NumberField
+                    label={pickLabel(
+                      grid[`Inputs!${labelCol}${row}`],
+                      section.fallbackLabels?.[row - section.firstRow] ?? `Row ${row}`,
+                    )}
+                    savedValue={grid[`Inputs!${valueRef}`]}
+                    override={overrides[valueRef]}
+                    cellRef={valueRef}
+                    onSet={setOverride}
+                    onClear={clearOverride}
+                  />
+                  {hasVariable && variableRef !== null && (
+                    <div style={variableRowStyle}>
+                      <NumberField
+                        label={variableLabel}
+                        savedValue={grid[`Inputs!${variableRef}`]}
+                        override={overrides[variableRef]}
+                        cellRef={variableRef}
+                        onSet={setOverride}
+                        onClear={clearOverride}
+                      />
+                    </div>
+                  )}
+                </Fragment>
+              )
+            })}
           </Section>
         )
       })}
