@@ -6,12 +6,20 @@ Usage: .venv/bin/python tools/emit_module.py <safe_sheet>
 
 Reads
   data/wow-12.1/formulas/<safe>.tsv   formula cells (cell_ref TAB content)
-  extracted/<safe>__values.tsv        literals for the non-formula cells
-  data/wow-12.1/game.json            {{name}} -> value game-data constants
+  data/wow-12.1/game.json            {{name}} -> value game-data constants,
+                                      plus cellLiterals: {sheet: {ref: value}}
+                                      — every sheet's literal (non-formula)
+                                      cells, frozen by tools/extract_literals.py
+                                      (numbers as JSON numbers, strings as
+                                      strings) and reconstructed here exactly
+                                      (bool -> 'True'/'False', int -> str,
+                                      float -> repr), so the emitted TS is
+                                      byte-identical to the pre-freeze output
+                                      sourced from extracted/<safe>__values.tsv
 
 Game-data templates: before parsing, every {{name}} in a formula is
-resolved to its constant's value from game.json (loaded once per run, only
-if some formula carries a template) as the Python repr of the float — the
+resolved to its constant's value from game.json (loaded once per run) as
+the Python repr of the float — the
 shortest string that round-trips — so the parsed number, and therefore the
 emitted TS (formula_ts canonicalizes numbers by float value: integral ->
 str(int(v)), else repr(v)), is identical to the pre-templatization literal.
@@ -35,7 +43,8 @@ Const kinds
   formula cells               formula_ts.emit_ts(formula_ast.parse(formula, sheet),
                              sheet, module_sheet=sheet) — same-sheet ranges
                              expand to bare identifier lists (see below)
-  literal cells              typed like make_golden_fixtures.py: 'True'/
+  literal cells              from game.json's cellLiterals (see Reads),
+                             typed like make_golden_fixtures.py: 'True'/
                              'False' as booleans, numbers as Python repr,
                              the rest as escaped '...' literals (a trailing
                              '\n'/'\r' — the TSV file's final newline — is
@@ -99,7 +108,6 @@ import formula_ts
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FORMULAS_DIR = os.path.join(ROOT, "data", "wow-12.1", "formulas")
-VALUES_DIR = os.path.join(ROOT, "extracted")
 OUT_DIR = os.path.join(ROOT, "src", "engine", "generated")
 GAME_JSON_PATH = os.path.join(ROOT, "data", "wow-12.1", "game.json")
 
@@ -151,24 +159,50 @@ def load_tsv_cells(path):
     return cells
 
 
-# ------------------------------------------------- game-data templates
-_CONSTANTS = None
+# ------------------------------------------------------ game.json data
+_GAME_DATA = None
 
 
-def load_constants():
-    """{{name}} -> float value from game.json (loaded once per run)."""
-    global _CONSTANTS
-    if _CONSTANTS is None:
+def load_game_data():
+    """game.json, loaded once per run: (constants, cellLiterals).
+
+    constants: {{name}} -> float value. cellLiterals: {sheet: {ref: value}}
+    — every sheet's literal (non-formula) cells, frozen by
+    tools/extract_literals.py with numbers as JSON numbers and strings as
+    strings."""
+    global _GAME_DATA
+    if _GAME_DATA is None:
         try:
             with open(GAME_JSON_PATH, encoding="utf-8") as f:
                 data = json.load(f)
-            _CONSTANTS = {c["name"]: float(c["value"])
-                          for c in data["constants"]}
+            constants = {c["name"]: float(c["value"])
+                         for c in data["constants"]}
+            cell_literals = data["cellLiterals"]
+            if (not isinstance(cell_literals, dict)
+                    or not all(isinstance(v, dict)
+                               for v in cell_literals.values())):
+                raise TypeError("cellLiterals must be {sheet: {ref: value}}")
         except (OSError, ValueError, KeyError, TypeError) as e:
             print(f"error: cannot load {GAME_JSON_PATH}: {e}",
                   file=sys.stderr)
             sys.exit(1)
-    return _CONSTANTS
+        _GAME_DATA = (constants, cell_literals)
+    return _GAME_DATA
+
+
+def literal_to_string(v):
+    """cellLiterals JSON value -> the TSV-equivalent string that ts_literal
+    types (the inverse of tools/extract_literals.py's freeze): booleans as
+    'True'/'False', ints via str, floats via repr (the shortest round-trip
+    string), strings as-is — so the emitted TS is byte-identical to the
+    pre-freeze output sourced from the values TSVs."""
+    if isinstance(v, bool):              # first: bool is an int subtype
+        return "True" if v else "False"
+    if isinstance(v, int):
+        return str(v)
+    if isinstance(v, float):
+        return repr(v)
+    return v                             # str
 
 
 def resolve_templates(formula, constants):
@@ -349,28 +383,22 @@ def main(argv):
     safe = argv[0]
     real = SAFE_TO_REAL.get(safe, safe)
     fpath = os.path.join(FORMULAS_DIR, f"{safe}.tsv")
-    vpath = os.path.join(VALUES_DIR, f"{safe}__values.tsv")
     if not os.path.isfile(fpath):
         stems = sorted(os.path.splitext(f)[0] for f in os.listdir(FORMULAS_DIR)
                        if f.endswith(".tsv"))
         print(f"error: missing {fpath} (available: {', '.join(stems)})",
               file=sys.stderr)
         return 1
-    if not os.path.isfile(vpath):
-        print(f"error: missing {vpath} — run extract_xlsx.py first",
-              file=sys.stderr)
-        return 1
 
     formulas = {c.upper(): f for c, f in formula_ast.load_formulas(fpath).items()}
-    # resolve {{name}} game-data templates BEFORE parsing (game.json loaded
-    # once, only if some formula carries a template; unknown names abort)
-    constants = None
+    # game.json once per run: constants for the {{name}} templates below +
+    # this sheet's frozen literal cells (see load_game_data)
+    constants, cell_literals = load_game_data()
+    # resolve {{name}} game-data templates BEFORE parsing (unknown names abort)
     templates_resolved = 0
     for cell in sorted(formulas):
         if "{{" not in formulas[cell]:
             continue
-        if constants is None:
-            constants = load_constants()
         try:
             resolved = resolve_templates(formulas[cell], constants)
         except KeyError as e:
@@ -381,13 +409,26 @@ def main(argv):
         templates_resolved += len(TEMPLATE_RE.findall(formulas[cell]))
         formulas[cell] = resolved
     fcells = load_tsv_cells(fpath)
-    values = load_tsv_cells(vpath)
-    literals = {c: v for c, v in values.items() if c not in formulas}
-    known = set(formulas) | set(literals)
+    if real not in cell_literals:
+        print(f"error: no cellLiterals entry for sheet {real!r} in "
+              f"{os.path.relpath(GAME_JSON_PATH, ROOT)} — run "
+              f"tools/extract_literals.py first", file=sys.stderr)
+        return 1
+    sheet_literals = cell_literals[real]
 
     anomalies = []
-    for c in sorted(set(fcells) - set(formulas) - set(values)):
-        anomalies.append(f"{c}: literal cell missing from the values TSV")
+    literals = {}
+    for ref, v in sheet_literals.items():
+        if isinstance(v, (bool, int, float, str)):
+            literals[ref.upper()] = literal_to_string(v)
+        else:
+            anomalies.append(f"{ref}: bad cellLiterals value {v!r} "
+                            f"(expected number or string)")
+    known = set(formulas) | set(literals)
+
+    for c in sorted(set(fcells) - set(formulas) - set(literals)):
+        anomalies.append(f"{c}: literal cell missing from game.json "
+                         f"cellLiterals")
     for c in sorted(literals):
         if literals[c] == NO_CACHED_VALUE:
             anomalies.append(f"{c}: literal cell has no cached value")
