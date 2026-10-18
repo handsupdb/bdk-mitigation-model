@@ -22,7 +22,8 @@ Fixtures (tests/fixtures/pipeline/, committed):
 Covered: simc_data parsing (name -> id -> effect -> coefficient lookups,
 1-based effectN indexing, alias handling, nil-row skipping, class-flags group
 splitting), the network-free simc_diff helpers (tolerance classification,
-arithmetic formula evaluation, cell-ref parsing, spellId pinning, verdicts),
+arithmetic formula evaluation, cell-ref parsing, spellId pinning, verdicts,
+game.json constant targets with per-entry transforms),
 gamedata_diff parsing (synthetic XFTH v9 container: header + exact EOF, entry
 states, SpellEffect row decode with offsets hardcoded independently of the
 module's layout table, spellId-pinned hotfix value resolution, 1-based
@@ -269,6 +270,69 @@ class SimcDiffValueTests(unittest.TestCase):
             dict(entry, ourCell=None), self.game({"H25": 1.64}))
         self.assertEqual(unmapped["verdict"], "unmapped")
 
+    def test_resolve_our_constant(self):
+        game = {"constants": [
+            {"name": "vbHealingAmpBase", "value": 1.3,
+             "meaning": "VB healing amp 30% base (X10)"}],
+            "cellLiterals": {}}
+        our = simc_diff.resolve_our_constant(game, "vbHealingAmpBase")
+        self.assertAlmostEqual(our["value"], 1.3)
+        self.assertIn("constant vbHealingAmpBase", our["source"])
+        missing = simc_diff.resolve_our_constant(game, "nope")
+        self.assertIsNone(missing["value"])
+        self.assertIn("not found", missing["source"])
+        # a game.json without constants resolves nothing
+        empty = simc_diff.resolve_our_constant({"cellLiterals": {}},
+                                              "vbHealingAmpBase")
+        self.assertIsNone(empty["value"])
+
+    def test_apply_transform(self):
+        ext = {"value": 30.0, "display": "Vampiric Blood #55233 "
+               "effectN(1) base_value", "error": None}
+        out = simc_diff.apply_transform(
+            {"transform": "percentToMultiplier"}, ext)
+        self.assertAlmostEqual(out["value"], 1.3)  # 1 + 30/100
+        self.assertAlmostEqual(out["raw_value"], 30.0)
+        self.assertEqual(out["transform"], "percentToMultiplier")
+        # no transform on the entry: passthrough, transform None
+        plain = simc_diff.apply_transform({}, ext)
+        self.assertAlmostEqual(plain["value"], 30.0)
+        self.assertIsNone(plain["transform"])
+        # unknown transform name: mapping error
+        bad = simc_diff.apply_transform({"transform": "bogus"}, ext)
+        self.assertIsNone(bad["value"])
+        self.assertIn("unknown mapping transform", bad["error"])
+        # unresolvable external value: keeps its resolve error
+        none = simc_diff.apply_transform(
+            {"transform": "percentToMultiplier"},
+            {"value": None, "display": None, "error": "lookup failed"})
+        self.assertIsNone(none["value"])
+        self.assertEqual(none["error"], "lookup failed")
+
+    def test_evaluate_entry_constant_target_with_transform(self):
+        # ourConstant + transform (the Vampiric Blood schema): the SimC
+        # base_value is a bonus percent (fixture Heart Strike effectN(3)
+        # = 5.0 = +5%); our game.json constant holds the multiplier
+        # (1.05 = 1 + 5/100) — percentToMultiplier maps between them
+        entry = {"ability": "Heart Strike", "simcSpell": "Heart Strike",
+                 "effectIndex": 3, "field": "base_value",
+                 "ourConstant": "hsBonusMultiplier",
+                 "transform": "percentToMultiplier"}
+        game = {"constants": [{"name": "hsBonusMultiplier", "value": 1.05}],
+                "cellLiterals": {}}
+        res = simc_diff.evaluate_entry(entry, game)
+        self.assertEqual(res["verdict"], "match")
+        self.assertAlmostEqual(res["simc"]["raw_value"], 5.0)
+        self.assertAlmostEqual(res["simc"]["value"], 1.05)
+        self.assertAlmostEqual(res["delta"], 0.0)
+        # without the transform the two scales are not comparable -> CHANGED
+        res2 = simc_diff.evaluate_entry(dict(entry, transform=None), game)
+        self.assertEqual(res2["verdict"], "CHANGED")
+        # unknown constant name -> unmapped
+        res3 = simc_diff.evaluate_entry(dict(entry, ourConstant="nope"),
+                                        game)
+        self.assertEqual(res3["verdict"], "unmapped")
+
 
 # -- gamedata_diff: synthetic XFTH v9 DBCache.bin --------------------------------
 
@@ -459,6 +523,40 @@ class GameDataDiffTests(unittest.TestCase):
         nic = gamedata_diff.evaluate_entry(
             dict(entry, spellId=999999), game, self.se["rows"])
         self.assertEqual(nic["verdict"], "not-in-cache")
+
+    def test_evaluate_entry_constant_target_with_transform(self):
+        # ourConstant + transform (the Vampiric Blood schema): the hotfix
+        # EffectBasePointsF is a bonus percent (30 = +30%); our game.json
+        # constant holds the multiplier (1.3 = 1 + 30/100) —
+        # percentToMultiplier maps between them before comparing. Own tiny
+        # container so the shared setUpClass fixture stays untouched.
+        entries = [(gamedata_diff.SPELLEFFECT_SIG, 2001, 1,
+                    spelleffect_row(55233, 0, 0.0, base_value=30.0))]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "DBCache.bin")
+            with open(path, "wb") as fh:
+                fh.write(xfth_v9_container(entries))
+            se = gamedata_diff.spelleffect_rows(
+                gamedata_diff.parse_dbcache(path))
+        entry = {"ability": "Vampiric Blood", "spellId": 55233,
+                 "effectIndex": 1, "field": "base_value",
+                 "ourConstant": "vbHealingAmpBase",
+                 "transform": "percentToMultiplier"}
+        game = {"constants": [{"name": "vbHealingAmpBase", "value": 1.3}],
+                "cellLiterals": {}}
+        res = gamedata_diff.evaluate_entry(entry, game, se["rows"])
+        self.assertEqual(res["verdict"], "match")
+        self.assertAlmostEqual(res["hotfix"]["raw_value"], 30.0, places=6)
+        self.assertAlmostEqual(res["hotfix"]["value"], 1.3, places=6)
+        self.assertAlmostEqual(res["delta"], 0.0, places=6)
+        # without the transform the two scales differ -> CHANGED
+        res2 = gamedata_diff.evaluate_entry(dict(entry, transform=None),
+                                             game, se["rows"])
+        self.assertEqual(res2["verdict"], "CHANGED")
+        # constant not in game.json but hotfix value exists -> unmapped
+        res3 = gamedata_diff.evaluate_entry(dict(entry, ourConstant="nope"),
+                                            game, se["rows"])
+        self.assertEqual(res3["verdict"], "unmapped")
 
     def test_parse_dbcache_rejects_corrupt_containers(self):
         def raises(blob):

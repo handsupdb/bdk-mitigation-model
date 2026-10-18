@@ -99,7 +99,8 @@ cell still matches the frozen workbook values.
 ## The curated mapping (`simc_mapping.json`)
 
 A JSON list, one entry per ability, comparing **one** SimC effect field
-against **one** of our cells:
+against **one** of our value targets — a workbook cell (`ourCell`) or a
+game.json constant (`ourConstant`):
 
 ```json
 {
@@ -108,6 +109,10 @@ against **one** of our cells:
   "effectIndex": 1,                         // 1-based, SimC effectN() convention
   "field":       "ap_coeff",                // parsed field to compare
   "ourCell":     "Baseline!H25",            // our cell; null = unmapped
+  "ourConstant": null,                       // alternative to ourCell: a
+                                             // game.json constants name
+  "transform":   null,                       // optional: map the external
+                                             // value into our representation
   "spellId":     null,                      // optional: pin an ambiguous name
   "note":        null                       // optional curation note
 }
@@ -122,6 +127,15 @@ against **one** of our cells:
 - `ourCell` is found by curation, not guessing: compare the SimC value
   against every numeric cell in the ability's `Baseline` row (literals +
   cached values + evaluated formulas) and take the one that matches.
+- `ourConstant` is the alternative when the value lives in a game.json
+  constant instead of a cell (e.g. Vampiric Blood's 30% healing amp —
+  `vbHealingAmpBase` = 1.3, used in the formulas as a plain multiplier); it
+  is resolved from `game.json` `constants` and diffed like a cell value.
+- `transform` makes different representations comparable: it converts the
+  **external** value (SimC field / hotfix column) into our representation
+  before comparing; our value is never transformed. `percentToMultiplier`
+  maps a SimC bonus percent (`base_value` 30 = +30%) to our multiplier
+  (1 + 30/100 = 1.3) — the Vampiric Blood entry documents its use.
 
 **Extending the mapping** — to add an ability (or re-derive a cell):
 
@@ -179,15 +193,17 @@ slices (no curl, no caches, no Node):
   state handling, and corrupt-container rejection. Row offsets are
   hardcoded in the test, independently of the module's layout table.
 
-40 tests cover: name → id → effect → coefficient lookups, 1-based
+44 tests cover: name → id → effect → coefficient lookups, 1-based
 `effectN` indexing, alias handling, nil-row skipping, the `_class_flags[4]`
 group not shifting field positions, tolerance classification, arithmetic
-formula evaluation, `spellId` pinning, verdicts, Wowhead page-data parsing,
+formula evaluation, `spellId` pinning, verdicts, game.json constant targets
+(`ourConstant` + per-entry `transform`), Wowhead page-data parsing,
 Blood DK tree discovery, node counts, name matching, the full diff model,
 and the XFTH hotfix-cache parser (container header + exact EOF, entry
 states, SpellEffect row decode, `spellId`-pinned hotfix value resolution,
-1-based `effectIndex` conversion, overlay verdicts, corrupt-container
-rejection). Not covered (needs network / the live cache):
+1-based `effectIndex` conversion, overlay verdicts, constant-target
+verdicts, corrupt-container rejection). Not covered (needs network / the
+live cache):
 `fetch`/`fetch_tooltip`/`per_rank_progression`, and `gamedata_diff` against
 the real retail `DBCache.bin`.
 

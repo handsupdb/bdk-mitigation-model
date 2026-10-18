@@ -7,7 +7,12 @@ SpellEffect hotfix rows, and compares the hotfixed values against our workbook
 through the SAME curated mapping ``tools/pipeline/simc_mapping.json`` used by
 ``simc_diff.py`` — spell resolution is identical (explicit ``spellId`` wins,
 otherwise the spell name resolves to the first id in the SimC spell data), so
-the SimC source and the game-files source always agree on the spell id. Writes
+the SimC source and the game-files source always agree on the spell id. Value
+targets are shared too: an entry's our value is its ``ourCell`` (workbook cell)
+or its ``ourConstant`` (a game.json constants name, resolved via
+``simc_diff.resolve_our_constant``), and the same optional per-entry
+``transform`` (``simc_diff.apply_transform``) converts the hotfix value into
+our representation before comparing. Writes
 a hand-review report to ``extracted/gamedata_proposed_diffs.md`` and prints it
 compactly. Nothing here edits ``game.json`` or any sheet.
 
@@ -60,7 +65,8 @@ Verdicts per mapping entry:
     not-in-cache no enabled SpellEffect hotfix row for that spell+effect in
                  the cache overlay (or the spell/field could not be resolved
                  — the reason is shown);
-    unmapped    a hotfix value exists but our cell is missing/unresolvable.
+    unmapped    a hotfix value exists but our cell/constant is
+                missing/unresolvable.
 
 CLI:
     .venv/bin/python tools/pipeline/gamedata_diff.py
@@ -337,19 +343,24 @@ def evaluate_entry(entry: dict, game: dict,
                    rows: Dict[Tuple[int, int], dict]) -> dict:
     ability = entry.get("ability", "?")
     our_cell = entry.get("ourCell")
+    our_constant = entry.get("ourConstant")
     if our_cell:
         our = simc_diff.resolve_our_value(game, our_cell)
+    elif our_constant:
+        our = simc_diff.resolve_our_constant(game, our_constant)
     else:
-        our = {"value": None, "source": "no ourCell (unmapped)",
+        our = {"value": None, "source": "no ourCell/ourConstant (unmapped)",
                "formula": None, "sheet": None, "cell": None}
-    hotfix = resolve_hotfix_value(entry, rows)
+    hotfix = simc_diff.apply_transform(entry,
+                                       resolve_hotfix_value(entry, rows))
     if hotfix["value"] is None:
         verdict, delta = "not-in-cache", None
     elif our["value"] is None:
         verdict, delta = "unmapped", None
     else:
         verdict, delta = simc_diff.classify(our["value"], hotfix["value"])
-    return {"ability": ability, "our_cell": our_cell, "our": our,
+    return {"ability": ability, "our_cell": our_cell,
+            "our_constant": our_constant, "our": our,
             "hotfix": hotfix, "verdict": verdict, "delta": delta,
             "note": entry.get("note")}
 
@@ -534,18 +545,16 @@ def build_report(cache: dict, se: dict, rows: List[dict], stal: dict,
     # verdicts
     lines.append("## Verdicts")
     lines.append("")
-    lines.append("| Ability | Our cell | Our value | Hotfix value | Δ (our−hotfix) "
+    lines.append("| Ability | Our target | Our value | Hotfix value | Δ (our−hotfix) "
                  "| Hotfix source | Verdict |")
     lines.append("|---|---|---|---|---|---|---|")
     for r in rows:
         our_val = simc_diff.fmt(r["our"]["value"])
         if r["our"]["formula"]:
             our_val += f" (`{r['our']['formula']}`)"
-        hot_val = simc_diff.fmt(r["hotfix"]["value"])
-        if r["hotfix"]["value"] is None and r["hotfix"]["error"]:
-            hot_val = f"— ({r['hotfix']['error']})"
+        hot_val = simc_diff.fmt_ext(r["hotfix"])
         lines.append(
-            f"| {r['ability']} | {r['our_cell'] or '—'} | {our_val} "
+            f"| {r['ability']} | {simc_diff.our_target(r)} | {our_val} "
             f"| {hot_val} | {simc_diff.fmt_delta(r['delta'])} "
             f"| {r['hotfix']['display'] or '—'} | {r['verdict']} |")
     lines.append("")
@@ -557,7 +566,7 @@ def build_report(cache: dict, se: dict, rows: List[dict], stal: dict,
     if changed:
         for r in changed:
             lines.append(
-                f"- **{r['ability']}**: our {r['our_cell']} "
+                f"- **{r['ability']}**: our {simc_diff.our_target(r)} "
                 f"{simc_diff.fmt(r['our']['value'])} → hotfix "
                 f"{simc_diff.fmt(r['hotfix']['value'])} "
                 f"({r['hotfix']['display']}); Δ "
@@ -574,11 +583,13 @@ def build_report(cache: dict, se: dict, rows: List[dict], stal: dict,
     if rest:
         for r in rest:
             why = r["hotfix"]["error"] or "no enabled hotfix row"
-            our_txt = (f"our {r['our_cell']} "
+            our_txt = (f"our {simc_diff.our_target(r)} "
                        f"{simc_diff.fmt(r['our']['value'])}"
                        if r["our"]["value"] is not None
                        else "our value unresolvable"
-                       + (f" ({r['our']['source']})" if not r["our_cell"] else ""))
+                       + (f" ({r['our']['source']})"
+                          if not r["our_cell"] and not r["our_constant"]
+                          else ""))
             lines.append(f"- **{r['ability']}** — {why}. {our_txt}.")
     else:
         lines.append("None.")
@@ -618,10 +629,9 @@ def print_compact(cache: dict, se: dict, rows: List[dict], stal: dict,
     for r in rows:
         our = simc_diff.fmt(r["our"]["value"]) \
             if r["our"]["value"] is not None else "—"
-        if r["our_cell"]:
-            our = f"{r['our_cell']} our {our}"
-        hot = simc_diff.fmt(r["hotfix"]["value"]) \
-            if r["hotfix"]["value"] is not None else "—"
+        if r["our_cell"] or r["our_constant"]:
+            our = f"{simc_diff.our_target(r)} our {our}"
+        hot = simc_diff.fmt_ext(r["hotfix"], with_error=False)
         if r["hotfix"]["display"]:
             hot += f" ({r['hotfix']['display']})"
         extra = ""
