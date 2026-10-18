@@ -3,6 +3,10 @@
  *
  * One SECTIONS entry renders per group, in sheet order:
  *   - Character Attributes  (rows 7-17:    label `Inputs!B<row>`, value `Inputs!C<row>`)
+ *   - Runeforging           (rows 19-23:   one checkbox per 0/1 flag cell, named
+ *                                         by the row-20/row-22 label cells)
+ *   - Race                  (rows 25-37:   one dropdown over the 24 race flag
+ *                                         cells in columns C and E)
  *   - DK Class Talents      (rows 40-85:   label B, rank C, plus a variable D
  *                                         input only where the sheet has one)
  *   - Blood Talents         (rows 88-129:  same label/rank/variable pattern)
@@ -11,6 +15,10 @@
  *   - San'layn Talents      (rows 138-143: label D, value E)
  *   - Conditional Variables (rows 146-156: label B, value C)
  *   - Tier Set              (rows 159-160: label B, value C)
+ *
+ * Runeforging and Race are 0/1 flag blocks rather than label/value rows, so
+ * they render from their own specs — checkboxes and a single-select dropdown
+ * — between Character Attributes and DK Class Talents, in sheet order.
  *
  * Each NumberField edits one Inputs cell; the override is keyed by the bare
  * Inputs ref (`'C7'`), exactly as `useEngine`/`evaluateWithInputs` expect.
@@ -147,6 +155,47 @@ const SECTIONS: SectionSpec[] = [
   },
 ]
 
+/** One 0/1 flag cell plus the label cell that names it. */
+interface FlagSpec {
+  /** Bare Inputs ref of the 0/1 flag cell (e.g. `'B21'`). */
+  ref: string
+  /** Grid key of the label cell naming the flag (e.g. `'Inputs!B20'`). */
+  labelRef: string
+  /** Label when the label cell is missing or blank. */
+  fallbackLabel: string
+}
+
+/**
+ * Runeforging flags: row 21 cells B/C/D/E (labels in row 20) and row 23
+ * cells B/C/D (labels in row 22). The saved profile has Sanguination (C21)
+ * on; the other six cells are blank.
+ */
+const RUNEFORGE_FLAGS: FlagSpec[] = [
+  { ref: 'B21', labelRef: 'Inputs!B20', fallbackLabel: 'Razorice' },
+  { ref: 'C21', labelRef: 'Inputs!C20', fallbackLabel: 'Sanguination' },
+  { ref: 'D21', labelRef: 'Inputs!D20', fallbackLabel: 'Spellwarding' },
+  { ref: 'E21', labelRef: 'Inputs!E20', fallbackLabel: 'Apocalypse' },
+  { ref: 'B23', labelRef: 'Inputs!B22', fallbackLabel: 'Fallen Crusader' },
+  { ref: 'C23', labelRef: 'Inputs!C22', fallbackLabel: 'Stoneskin Gargoyle' },
+  { ref: 'D23', labelRef: 'Inputs!D22', fallbackLabel: 'Unending Thirst' },
+]
+
+/** Race flag rows: two 12-row columns of 0/1 cells, rows 26-37. */
+const RACE_FIRST_ROW = 26
+const RACE_LAST_ROW = 37
+/** Each race column: flag cells in `valueCol`, labels in `labelCol`. */
+const RACE_COLUMNS: { valueCol: string; labelCol: string }[] = [
+  { valueCol: 'C', labelCol: 'B' },
+  { valueCol: 'E', labelCol: 'D' },
+]
+/**
+ * Fixed labels for race label cells the sheet leaves blank: the 24th slot
+ * (D37 names E37) carries no label in the saved profile, so it takes the
+ * next playable race's name; any other missing label falls back to
+ * `Row <n>`.
+ */
+const RACE_FALLBACK_LABELS: Record<string, string> = { D37: 'Dracthyr' }
+
 /** Prefer the grid's own label string; fall back to the fixed label. */
 function pickLabel(v: CellValue | undefined, fallback: string): string {
   return typeof v === 'string' && v.trim() !== '' ? v : fallback
@@ -193,6 +242,25 @@ const editedInputStyle: CSSProperties = {
   borderColor: '#d9a441',
   background: '#fffaf0',
 }
+
+/** Dropdown over the race flags; wide enough for 'Lightforged Draenei'. */
+const selectStyle: CSSProperties = {
+  ...inputStyle,
+  width: '12rem',
+  textAlign: 'left',
+}
+
+/** One runeforging checkbox row: checkbox, label, edited marker. */
+const checkboxRowStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.5rem',
+  fontSize: '0.85rem',
+  color: '#555',
+}
+
+/** Amber text while a checkbox's override is active. */
+const editedLabelStyle: CSSProperties = { color: '#9a6b00' }
 
 const badgeStyle: CSSProperties = {
   flexShrink: 0,
@@ -296,7 +364,177 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-/** The Inputs pane: every SECTIONS group rendered as editable fields. */
+/** One SECTIONS group rendered as label/value/variable number fields. */
+function GenericSection({
+  section,
+  grid,
+  overrides,
+  setOverride,
+  clearOverride,
+}: {
+  section: SectionSpec
+  grid: Grid
+  overrides: Record<string, CellValue>
+  setOverride: (ref: string, v: CellValue) => void
+  clearOverride: (ref: string) => void
+}) {
+  const rows: number[] = []
+  for (let row = section.firstRow; row <= section.lastRow; row++) rows.push(row)
+  const labelCol = section.labelCol ?? 'B'
+  const valueCol = section.valueCol ?? 'C'
+  // The variable field's label: the sheet's own column header
+  // ('Variable' for talents; 'Uptime' fallback for hero class).
+  const variableLabel =
+    section.variableCol !== undefined
+      ? pickLabel(
+          section.variableTitleRef !== undefined ? grid[section.variableTitleRef] : undefined,
+          section.fallbackVariableLabel ?? 'Variable',
+        )
+      : ''
+
+  return (
+    <Section title={pickLabel(grid[section.titleRef], section.fallbackTitle)}>
+      {rows.map((row) => {
+        const valueRef = `${valueCol}${row}`
+        const variableRef =
+          section.variableCol !== undefined ? `${section.variableCol}${row}` : null
+        // A variable input renders only where the sheet carries a value
+        // for it — unless the section always wants it (hero uptime).
+        const hasVariable =
+          variableRef !== null &&
+          (section.variableAlways || (grid[`Inputs!${variableRef}`] ?? null) !== null)
+        return (
+          <Fragment key={row}>
+            <NumberField
+              label={pickLabel(
+                grid[`Inputs!${labelCol}${row}`],
+                section.fallbackLabels?.[row - section.firstRow] ?? `Row ${row}`,
+              )}
+              savedValue={grid[`Inputs!${valueRef}`]}
+              override={overrides[valueRef]}
+              cellRef={valueRef}
+              onSet={setOverride}
+              onClear={clearOverride}
+            />
+            {hasVariable && variableRef !== null && (
+              <div style={variableRowStyle}>
+                <NumberField
+                  label={variableLabel}
+                  savedValue={grid[`Inputs!${variableRef}`]}
+                  override={overrides[variableRef]}
+                  cellRef={variableRef}
+                  onSet={setOverride}
+                  onClear={clearOverride}
+                />
+              </div>
+            )}
+          </Fragment>
+        )
+      })}
+    </Section>
+  )
+}
+
+/** Runeforging: one checkbox per 0/1 flag cell (rows 21 and 23). */
+function RuneforgingSection({
+  grid,
+  overrides,
+  setOverride,
+}: {
+  grid: Grid
+  overrides: Record<string, CellValue>
+  setOverride: (ref: string, v: CellValue) => void
+}) {
+  return (
+    <Section title={pickLabel(grid['Inputs!B19'], 'Runeforging')}>
+      {RUNEFORGE_FLAGS.map(({ ref, labelRef, fallbackLabel }) => {
+        const checked = (overrides[ref] ?? grid[`Inputs!${ref}`]) === 1
+        const edited = overrides[ref] !== undefined
+        return (
+          <label
+            key={ref}
+            style={{ ...checkboxRowStyle, ...(edited ? editedLabelStyle : null) }}
+          >
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={(e) => setOverride(ref, e.target.checked ? 1 : 0)}
+            />
+            {pickLabel(grid[labelRef], fallbackLabel)}
+            {edited && <span style={badgeStyle}>edited</span>}
+          </label>
+        )
+      })}
+    </Section>
+  )
+}
+
+/** Race: one dropdown over the 24 race flag cells (columns C and E). */
+function RaceSection({
+  grid,
+  overrides,
+  setOverride,
+  clearOverride,
+}: {
+  grid: Grid
+  overrides: Record<string, CellValue>
+  setOverride: (ref: string, v: CellValue) => void
+  clearOverride: (ref: string) => void
+}) {
+  // The 24 (label, ref) pairs: column C rows 26-37 (labels in B), then
+  // column E rows 26-37 (labels in D).
+  const options: { ref: string; label: string }[] = []
+  for (const { valueCol, labelCol } of RACE_COLUMNS) {
+    for (let row = RACE_FIRST_ROW; row <= RACE_LAST_ROW; row++) {
+      options.push({
+        ref: `${valueCol}${row}`,
+        label: pickLabel(
+          grid[`Inputs!${labelCol}${row}`],
+          RACE_FALLBACK_LABELS[`${labelCol}${row}`] ?? `Row ${row}`,
+        ),
+      })
+    }
+  }
+  // Current selection: the race whose effective value is 1; the saved
+  // profile has none selected, so this is 'None' until the user picks one.
+  const selected =
+    options.find(({ ref }) => (overrides[ref] ?? grid[`Inputs!${ref}`]) === 1)?.ref ?? ''
+  const edited = options.some(({ ref }) => overrides[ref] !== undefined)
+
+  const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const chosen = e.target.value
+    for (const { ref } of options) {
+      if (chosen === '') clearOverride(ref) // 'None' clears every race override
+      else setOverride(ref, ref === chosen ? 1 : 0)
+    }
+  }
+
+  return (
+    <Section title={pickLabel(grid['Inputs!B25'], 'Race')}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <select
+          aria-label="Race"
+          value={selected}
+          onChange={onChange}
+          style={{ ...selectStyle, ...(edited ? editedInputStyle : null) }}
+        >
+          <option value="">None</option>
+          {options.map(({ ref, label }) => (
+            <option key={ref} value={ref}>
+              {label}
+            </option>
+          ))}
+        </select>
+        {edited && <span style={badgeStyle}>edited</span>}
+      </div>
+    </Section>
+  )
+}
+
+/**
+ * The Inputs pane: every SECTIONS group plus the Runeforging and Race flag
+ * blocks, all in sheet order.
+ */
 export default function InputsEditor({
   overrides,
   setOverride,
@@ -310,67 +548,31 @@ export default function InputsEditor({
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-      {SECTIONS.map((section) => {
-        const rows: number[] = []
-        for (let row = section.firstRow; row <= section.lastRow; row++) rows.push(row)
-        const labelCol = section.labelCol ?? 'B'
-        const valueCol = section.valueCol ?? 'C'
-        // The variable field's label: the sheet's own column header
-        // ('Variable' for talents; 'Uptime' fallback for hero class).
-        const variableLabel =
-          section.variableCol !== undefined
-            ? pickLabel(
-                section.variableTitleRef !== undefined
-                  ? grid[section.variableTitleRef]
-                  : undefined,
-                section.fallbackVariableLabel ?? 'Variable',
-              )
-            : ''
-        return (
-          <Section
-            key={section.titleRef}
-            title={pickLabel(grid[section.titleRef], section.fallbackTitle)}
-          >
-            {rows.map((row) => {
-              const valueRef = `${valueCol}${row}`
-              const variableRef =
-                section.variableCol !== undefined ? `${section.variableCol}${row}` : null
-              // A variable input renders only where the sheet carries a value
-              // for it — unless the section always wants it (hero uptime).
-              const hasVariable =
-                variableRef !== null &&
-                (section.variableAlways || (grid[`Inputs!${variableRef}`] ?? null) !== null)
-              return (
-                <Fragment key={row}>
-                  <NumberField
-                    label={pickLabel(
-                      grid[`Inputs!${labelCol}${row}`],
-                      section.fallbackLabels?.[row - section.firstRow] ?? `Row ${row}`,
-                    )}
-                    savedValue={grid[`Inputs!${valueRef}`]}
-                    override={overrides[valueRef]}
-                    cellRef={valueRef}
-                    onSet={setOverride}
-                    onClear={clearOverride}
-                  />
-                  {hasVariable && variableRef !== null && (
-                    <div style={variableRowStyle}>
-                      <NumberField
-                        label={variableLabel}
-                        savedValue={grid[`Inputs!${variableRef}`]}
-                        override={overrides[variableRef]}
-                        cellRef={variableRef}
-                        onSet={setOverride}
-                        onClear={clearOverride}
-                      />
-                    </div>
-                  )}
-                </Fragment>
-              )
-            })}
-          </Section>
-        )
-      })}
+      {SECTIONS.map((section) => (
+        <Fragment key={section.titleRef}>
+          <GenericSection
+            section={section}
+            grid={grid}
+            overrides={overrides}
+            setOverride={setOverride}
+            clearOverride={clearOverride}
+          />
+          {/* In sheet order, the Runeforging (rows 19-23) and Race (rows
+              25-37) flag blocks follow Character Attributes (Inputs!B6)
+              and precede DK Class Talents. */}
+          {section.titleRef === 'Inputs!B6' && (
+            <>
+              <RuneforgingSection grid={grid} overrides={overrides} setOverride={setOverride} />
+              <RaceSection
+                grid={grid}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
+              />
+            </>
+          )}
+        </Fragment>
+      ))}
     </div>
   )
 }
