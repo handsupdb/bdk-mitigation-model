@@ -19,12 +19,16 @@ server, no install.
 **Just want to use it?** Download the release zip
 (`bdk-mitigation-model-<version>.zip` — attached to GitHub Releases, or
 built locally with `tools/make_release.sh`), unzip it anywhere, and open
-`index.html` in a browser. That's it — the app is fully self-contained
-(all JS/CSS inlined, ~1.2 MB), so it works offline, from a local folder,
-a USB stick, or an email attachment. No server, no install.
+`index.html` directly in a browser. That's it — the app is fully
+self-contained (all JS/CSS inlined, ~1.2 MB), so it works offline, from a
+local folder, a USB stick, or an email attachment. No server, no install.
 
 Cloned the repo instead? Open `dist-single/index.html` directly (build it
 first with `npm run build:single` if it's not there yet).
+
+Note: `dist/index.html` (from `npm run build`) is **not** self-contained —
+it needs a local server, e.g. `npx serve dist` or
+`python3 -m http.server`.
 
 **Contributing?**
 
