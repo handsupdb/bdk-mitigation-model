@@ -14,9 +14,11 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 // attribute), and in <head> it runs before <body> is parsed — #root does not
 // exist yet and createRoot(null) throws (React error #299, blank page).
 
-// Rewrites inlined <script type="module" ...> tags to classic <script> tags
-// and moves them to the end of <body>. Runs after vite-plugin-singlefile
-// inlines the bundle (same enforce tier, later in the plugins array).
+// Strips the dev-only file:// guard (<script data-dev-only> in index.html)
+// from the built HTML, rewrites inlined <script type="module" ...> tags to
+// classic <script> tags, and moves them to the end of <body>. Runs after
+// vite-plugin-singlefile inlines the bundle (same enforce tier, later in the
+// plugins array).
 function classicScriptTags(): Plugin {
   return {
     name: 'classic-script-tags',
@@ -24,7 +26,16 @@ function classicScriptTags(): Plugin {
     generateBundle(_options, bundle) {
       for (const file of Object.values(bundle)) {
         if (file.type === 'asset' && /\.html?$/.test(file.fileName)) {
-          let source = String(file.source).replace(
+          let source = String(file.source)
+          // Strip the guard first: dist-single/index.html is built to open
+          // directly from file://, so the guard must not fire there — and the
+          // relocation below grabs the first <script> in the document, which
+          // would otherwise be the guard, not the app bundle.
+          source = source.replace(
+            /[ \t]*<script\b[^>]*\bdata-dev-only\b[^>]*>[\s\S]*?<\/script>[ \t]*(?:\r?\n)?/g,
+            '',
+          )
+          source = source.replace(
             /<script\b([^>]*\stype="module"[^>]*)>/g,
             (_match, attrs: string) =>
               '<script' + attrs.replace(/\s+(?:type="module"|crossorigin)/g, '') + '>',

@@ -4,6 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BDK Mitigation Model</title>
+    <script data-dev-only>
+      // file:// guard: this file is the Vite dev template. Its entry below is
+      // a module script (/src/main.tsx), which browsers block from file://
+      // origins (CORS) — opening this file directly from disk would render a
+      // blank page. Instead, replace the body with a guidance panel. Inert
+      // when served over http(s) (dev server / preview), and stripped from
+      // the offline single-file build (vite.singlefile.config.ts), which is
+      // built to open directly from file://.
+      (function () {
+        if (location.protocol !== 'file:') return
+        function showGuard() {
+          if (!document.body) return
+          document.title = 'This page needs a web server'
+          document.body.innerHTML =
+            '<main style="font-family: system-ui, sans-serif; max-width: 42rem; margin: 4rem auto; padding: 0 1.25rem; line-height: 1.6;">' +
+            '<h1>This page needs a web server</h1>' +
+            '<p>You opened the repository root <code>index.html</code> directly from disk. It is the development template: its scripts only load when served by a web server, so opening it as a file shows a blank page.</p>' +
+            '<ul style="padding-left: 1.25rem;">' +
+            '<li>Open the ready-to-run single-file version instead: <a href="dist-single/index.html">dist-single/index.html</a> (works directly from disk).</li>' +
+            '<li>Or run <code>npm install &amp;&amp; npm run dev</code> and open the local URL it prints.</li>' +
+            '<li>Or run <code>npm run build:single</code> to (re)generate <code>dist-single/index.html</code>.</li>' +
+            '</ul>' +
+            '</main>'
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', showGuard)
+        } else {
+          showGuard()
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
