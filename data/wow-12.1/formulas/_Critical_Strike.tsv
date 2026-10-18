@@ -10,7 +10,7 @@ C5	=H5*(1+C21*0.05*(1+0.2*C63))
 G5	Base Armor
 H5	=Baseline!H5
 I5	Modified Armor
-J5	=(C5*1.45+((J6*(1+E116)*(1+D157)*1.8)+IF(E28=3,1,0)*1.13*(1-exp(-1*$J$9*12/60))*($J$6*(1+E116)*(1+D157)*0.02*$J$10)))*(1+0.06*C75)
+J5	=(C5*{{sheetArmorMultiplier}}+((J6*(1+E116)*(1+D157)*{{armorPerStrength}})+IF(E28=3,1,0)*{{rppmBadLuckProtection}}*(1-exp(-1*$J$9*{{reapersMarkWindowSeconds}}/60))*($J$6*(1+E116)*(1+D157)*{{maxHpHealFractionM74}}*$J$10)))*(1+0.06*C75)
 K5	Physical Damage Reduction
 L5	=(J5 / (J5 + C154))
 N5	Damage Taken Per Second
@@ -29,72 +29,72 @@ C6	=(H6+C34*33)*(1+C21*0.05*(1+0.2*C63))
 G6	Base Strength
 H6	=Baseline!H6
 I6	Modified Strength
-J6	=(C6+E32*252*8/120+E34*50)*(1+B21*1.13*(1-exp(-3*J9*15/60))*0.15*(1+0.2*C63))*(1+0.03*C77*(1-(0.85)^(8*L9)))*(1+0.1*12*(1/S40)*C131*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1)))*(1+0.1*T69*8*IF(C152=1,1,0))
+J6	=(C6+E32*252*8/120+E34*50)*(1+B21*{{rppmBadLuckProtection}}*(1-exp(-3*J9*15/60))*0.15*(1+0.2*C63))*(1+{{baseDodgeParryChance}}*C77*(1-(0.85)^(8*L9)))*(1+{{ibfBloodyFortitudeBonus}}*{{reapersMarkWindowSeconds}}*(1/S40)*C131*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1)))*(1+{{ibfBloodyFortitudeBonus}}*T69*8*IF(C152=1,1,0))
 K6	Raw Parry from Strength
-L6	=(J6-622)/19130
+L6	=(J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}
 N6	Physical ST Damage
 O6	=Baseline!O6
-P6	=(O6-E26*C152/2*C7*0.0003*30)*(1-$L$14)*(1-$L$5)*$L$10*(1-0.01*E32)*(1-0.2/C152*C74)*(1-C51*0.12/C152*1.13*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-$C$131*E136*10/S40*0.08)*(1-F116)*(1-E157)*(1-IF(C127>1,1)*0.06*E127)*(1-(0.04*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1))))*(1-C120*0.025)
-Q6	=P6*(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))*MIN(0.3/(1-$L$14),1)))
-R6	=Q6*(1-($T$52*8)*(0.3+0.1*$E$139))
-S6	=R6*(1-($T$70*8)*0.1)*(1-($T$26*8)*0.1)
+P6	=(O6-E26*C152/2*C7*0.0003*30)*(1-$L$14)*(1-$L$5)*$L$10*(1-0.01*E32)*(1-0.2/C152*C74)*(1-C51*{{enfeebleSlowFraction}}/C152*{{rppmBadLuckProtection}}*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-$C$131*E136*10/S40*0.08)*(1-F116)*(1-E157)*(1-IF(C127>1,1)*0.06*E127)*(1-({{maxHpHealFractionM73}}*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1))))*(1-C120*{{bloodshotDamageReduction}})
+Q6	=P6*(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))*MIN(0.3/(1-$L$14),1)))
+R6	=Q6*(1-($T$52*8)*(0.3+{{ibfBloodyFortitudeBonus}}*$E$139))
+S6	=R6*(1-($T$70*8)*{{ibfBloodyFortitudeBonus}})*(1-($T$26*8)*{{ibfBloodyFortitudeBonus}})
 T6	=S6
 B7	Stamina
-C7	=(H7+C26*99)*(1+C21*0.05*(1+0.2*C63))*1.05*(1+0.2*C55)*(1.4)
+C7	=(H7+C26*99)*(1+C21*0.05*(1+0.2*C63))*{{bloodPresenceStamBonus}}*(1+0.2*C55)*({{bloodPresenceStamMultiplier}})
 G7	Base Stamina
 H7	=Baseline!H7
 I7	Total Health
-J7	=C7*20
+J7	=C7*{{hpPerStamina}}
 K7	Modified Health
-L7	=(J7+IF(E28=3,1,0)*1.13*(1-exp(-1*$J$9*12/60))*($J$6*1.3*$J$10))*(1+0.01*C97*(D97+2*C104))
+L7	=(J7+IF(E28=3,1,0)*{{rppmBadLuckProtection}}*(1-exp(-1*$J$9*{{reapersMarkWindowSeconds}}/60))*($J$6*{{vbHealingAmpBase}}*$J$10))*(1+0.01*C97*(D97+2*C104))
 N7	Physical AoE Damage
 O7	=Baseline!O7
-P7	=O7*$J$13*(1-$L$5)*$L$10*(1-0.01*E32)*(1-C51*0.12/C152*1.13*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-$C$131*E136*10/S40*0.08)*(1-IF(C127>1,1)*0.06*E127)*(1-(0.04*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1))))*(1-C120*0.025)
-R7	=P7*(1-($T$52*8)*(0.3+0.1*$E$139))
-S7	=R7*(1-($T$70*8)*0.1)*(1-($T$26*8)*0.1)
+P7	=O7*$J$13*(1-$L$5)*$L$10*(1-0.01*E32)*(1-C51*{{enfeebleSlowFraction}}/C152*{{rppmBadLuckProtection}}*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-$C$131*E136*10/S40*0.08)*(1-IF(C127>1,1)*0.06*E127)*(1-({{maxHpHealFractionM73}}*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1))))*(1-C120*{{bloodshotDamageReduction}})
+R7	=P7*(1-($T$52*8)*(0.3+{{ibfBloodyFortitudeBonus}}*$E$139))
+S7	=R7*(1-($T$70*8)*{{ibfBloodyFortitudeBonus}})*(1-($T$26*8)*{{ibfBloodyFortitudeBonus}})
 T7	=S7
 B8	Critical Strike Rating
 C8	=Inputs!C10+10
-D8	=(C8+225*15/2/120*IF(1<(IF(C8>C9,1,0)+IF(C8>C10,1,0)+IF(C8>C11,1,0)),E27,0))*(1+0.02*C30)/(1+0.02*Baseline!C30)
-E8	=IF(D8<=1380,D8,IF(D8<=1840,1380+0.9*(D8-1380),IF(D8<=2300,1794+0.8*(D8-1840),IF(D8<=2760,2162+0.7*(D8-2300),IF(D8<=3680,2484+0.6*(D8-2760),IF(D8<=9200,3036+0.5*(D8-3680),5796))))))
+D8	=(C8+225*15/2/120*IF(1<(IF(C8>C9,1,0)+IF(C8>C10,1,0)+IF(C8>C11,1,0)),E27,0))*(1+{{maxHpHealFractionM74}}*C30)/(1+{{maxHpHealFractionM74}}*Baseline!C30)
+E8	=IF(D8<=1380,D8,IF(D8<=1840,1380+0.9*(D8-1380),IF(D8<={{masteryRatingPerPercent}},1794+0.8*(D8-1840),IF(D8<=2760,2162+0.7*(D8-{{masteryRatingPerPercent}}),IF(D8<={{avoidanceRatingPerPercent}},2484+0.6*(D8-2760),IF(D8<=9200,3036+0.5*(D8-{{avoidanceRatingPerPercent}}),5796))))))
 G8	Critical Strike
-H8	=E8/4600+0.05+(C28+C32+C35)*0.01+IF(E28=4,1,0)*1.13*(1-exp(-1*$J$9*12/60))*0.04
+H8	=E8/{{critRatingPerPercent}}+0.05+(C28+C32+C35)*0.01+IF(E28={{drwEverlastingBondSeconds}},1,0)*{{rppmBadLuckProtection}}*(1-exp(-1*$J$9*{{reapersMarkWindowSeconds}}/60))*{{maxHpHealFractionM73}}
 I8	Critical Strike Multiplier
-J8	=1+H8*(1+2*0.02*(C26+C31))
+J8	=1+H8*(1+2*{{maxHpHealFractionM74}}*(C26+C31))
 K8	Raw Parry from Critical Strike
-L8	=E8/5200/(1+0.02*C30)
+L8	=E8/{{parryFromCritRatingPerPercent}}/(1+{{maxHpHealFractionM74}}*C30)
 N8	Magical ST Damage
 O8	=Baseline!O8
-P8	=O8*$L$10*(1-C51*0.12/C152*1.13*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-0.08*$C$80)*(1-IF(C127>1,1)*0.06*E127)*(1-(0.04*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1))))*(1-C120*0.025)
-R8	=P8*(1-($T$52*8)*(0.3+0.1*$E$139))
-S8	=R8*(1-($T$26*8)*0.1)
+P8	=O8*$L$10*(1-C51*{{enfeebleSlowFraction}}/C152*{{rppmBadLuckProtection}}*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-0.08*$C$80)*(1-IF(C127>1,1)*0.06*E127)*(1-({{maxHpHealFractionM73}}*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1))))*(1-C120*{{bloodshotDamageReduction}})
+R8	=P8*(1-($T$52*8)*(0.3+{{ibfBloodyFortitudeBonus}}*$E$139))
+S8	=R8*(1-($T$26*8)*{{ibfBloodyFortitudeBonus}})
 T8	=S8
 U8	=T8*(T20*(6+2*C67))*0.15
 V8	=IF(T8-U8-$T$19*(($L$7*0.3*$J$10*(1+0.4*$C$68)*(1+0.15*$C$46)))>0,$T$19*($L$7*0.3*$J$10*(1+0.4*$C$68)*(1+0.15*$C$46)),T8-U8)
 B9	Haste Rating
 C9	=Inputs!C11
-D9	=(C9+225*15/2/120*IF(1<(IF(C9>C8,1,0)+IF(C9>C10,1,0)+IF(C9>C11,1,0)),E27,0))*(1+0.02*C30)/(1+0.02*Baseline!C30)
+D9	=(C9+225*15/2/120*IF(1<(IF(C9>C8,1,0)+IF(C9>C10,1,0)+IF(C9>C11,1,0)),E27,0))*(1+{{maxHpHealFractionM74}}*C30)/(1+{{maxHpHealFractionM74}}*Baseline!C30)
 E9	=IF(D9<=1320,D9,IF(D9<=1760,1320+0.9*(D9-1320),IF(D9<=2200,1716+0.8*(D9-1760),IF(D9<=2640,2068+0.7*(D9-2200),IF(D9<=3520,2376+0.6*(D9-2640),IF(D9<=8800,2904+0.5*(D9-3520),5544))))))
 G9	Haste
-H9	=(1+(C29+C33)*0.01)*E9/4400+(C29+C33)*0.01
+H9	=(1+(C29+C33)*0.01)*E9/{{hasteRatingPerPercent}}+(C29+C33)*0.01
 I9	Haste Multiplier
-J9	=(1+H9)*(1+C27*0.15/18)*(1+0.1*C104)*(1+0.02*C49)*(1+0.01*K134)
+J9	=(1+H9)*(1+C27*0.15/18)*(1+{{ibfBloodyFortitudeBonus}}*C104)*(1+{{maxHpHealFractionM74}}*C49)*(1+0.01*K134)
 K9	Rune Regeneration
 L9	=3/10*J9
 N9	Magical AoE Damage
 O9	=Baseline!O9
-P9	=O9*$J$13*$L$10*(1-C51*0.12/C152*1.13*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-0.08*$C$80)*(1-IF(C127>1,1)*0.06*E127)*(1-(0.04*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1))))*(1-C120*0.025)
-R9	=P9*(1-($T$52*8)*(0.3+0.1*$E$139))
-S9	=R9*(1-($T$26*8)*0.1)
+P9	=O9*$J$13*$L$10*(1-C51*{{enfeebleSlowFraction}}/C152*{{rppmBadLuckProtection}}*(1-exp(-3*6/60*55/120)))*(1-$C$135*$C$130*$D$130*0.075)*(1-0.08*$C$80)*(1-IF(C127>1,1)*0.06*E127)*(1-({{maxHpHealFractionM73}}*10*(1/S40)*C100*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1))))*(1-C120*{{bloodshotDamageReduction}})
+R9	=P9*(1-($T$52*8)*(0.3+{{ibfBloodyFortitudeBonus}}*$E$139))
+S9	=R9*(1-($T$26*8)*{{ibfBloodyFortitudeBonus}})
 T9	=S9
 U9	=T8*(T20*(6+2*C67))*0.15
 V9	=IF(T8+T9-U8-U9-V8>0,MIN($T$19*($L$7*0.3*$J$10*(1+0.4*$C$68)*(1+0.15*$C$46))-V8,T8+T9-U8-U9-V8),0)\n
 B10	Versatility Rating
 C10	=Inputs!C12
-D10	=(C10+65*E24+225*15/2/120*IF(1<(IF(C10>C8,1,0)+IF(C10>C9,0)+IF(C10>C11,1,0)),E27,0))*(1+0.02*C30)/(1+0.02*Baseline!C30)
+D10	=(C10+65*E24+225*15/2/120*IF(1<(IF(C10>C8,1,0)+IF(C10>C9,0)+IF(C10>C11,1,0)),E27,0))*(1+{{maxHpHealFractionM74}}*C30)/(1+{{maxHpHealFractionM74}}*Baseline!C30)
 E10	=IF(D10<=1620,D10,IF(D10<=2160,1622+0.9*(D10-1620),IF(D10<=2700,2106+0.8*(D10-2160),IF(D10<=3240,2538+0.7*(D10-2700),IF(D10<=4320,2916+0.6*(D10-3240),IF(D10<=10800,3564+0.5*(D10-4320),6804))))))
 G10	Versatility
-H10	=E10/5400+(E26+E33)*0.01
+H10	=E10/{{versRatingPerPercent}}+(E26+E33)*0.01
 I10	Damage/Healing Multiplier
 J10	=1+H10
 K10	Damage Taken Multiplier
@@ -109,13 +109,13 @@ T10	=SUM(T6:T9)
 U10	=SUM(U6:U9)
 V10	=sum(V6:V9)
 W10	=(Y77+C27*0.0011*L7*(1-C144))
-X10	=(MAX((T10-U10-V10-W10),0)*(1-$T$76*(10+2*C92))+MAX((T10-U10-V10-W10*(1.3+0.05*C92)),0)*($T$76*(10+2*C92))/(1.3+0.05*C92))/IF(D100=2,(1+0.06*(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15)))),(1+0.02*C49))
+X10	=(MAX((T10-U10-V10-W10),0)*(1-$T$76*(10+2*C92))+MAX((T10-U10-V10-W10*({{vbHealingAmpBase}}+0.05*C92)),0)*($T$76*(10+2*C92))/({{vbHealingAmpBase}}+0.05*C92))/IF(D100=2,(1+0.06*(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15)))),(1+{{maxHpHealFractionM74}}*C49))
 B11	Mastery Rating
 C11	=Inputs!C13
-D11	=(C11+225*15/2/120*IF(1<(IF(C11>C8,1,0)+IF(C11>C10,1,0)+IF(C11>C9,1,0)),E27,0))*(1+0.02*C30)/(1+0.02*Baseline!C30)
-E11	=IF(D11<=1380,D11,IF(D11<=1840,1380+0.9*(D11-1380),IF(D11<=2300,1794+0.8*(D11-1840),IF(D11<=2760,2162+0.7*(D11-2300),IF(D11<=3680,2484+0.6*(D11-2760),IF(D11<=9200,3036+0.5*(D11-3680),5796))))))
+D11	=(C11+225*15/2/120*IF(1<(IF(C11>C8,1,0)+IF(C11>C10,1,0)+IF(C11>C9,1,0)),E27,0))*(1+{{maxHpHealFractionM74}}*C30)/(1+{{maxHpHealFractionM74}}*Baseline!C30)
+E11	=IF(D11<=1380,D11,IF(D11<=1840,1380+0.9*(D11-1380),IF(D11<={{masteryRatingPerPercent}},1794+0.8*(D11-1840),IF(D11<=2760,2162+0.7*(D11-{{masteryRatingPerPercent}}),IF(D11<={{avoidanceRatingPerPercent}},2484+0.6*(D11-2760),IF(D11<=9200,3036+0.5*(D11-{{avoidanceRatingPerPercent}}),5796))))))
 G11	Mastery
-H11	=0.16+E11/2300+0.002*(C131*K134)
+H11	={{baseBloodShieldMastery}}+E11/{{masteryRatingPerPercent}}+0.002*(C131*K134)
 I11	Blood Shield Multiplier
 J11	=H11
 K11	Attack Power Multiplier
@@ -125,7 +125,7 @@ C12	=Inputs!C14
 D12	=C12
 E12	=IF(D12<=690,D12,IF(D12<=1035,690+0.8*(D12-690),IF(D12<=1380,966+0.6*(D12-1035),1173+0.4*(D12-1380))))
 G12	Leech
-H12	=E12/6900+C71*0.03+C131*E138*0.02
+H12	=E12/{{leechRatingPerPercent}}+C71*{{baseDodgeParryChance}}+C131*E138*{{maxHpHealFractionM74}}
 I12	Leech Healing Multiplier
 J12	=H12
 K12	Modified Leech Multiplier
@@ -135,20 +135,20 @@ C13	=Inputs!C15
 D13	=C13
 E13	=IF(D13<=368,D13,IF(D13<=552,368+0.8*(D13-368),IF(D13<=736,515.2+0.6*(D13-552),625.6+0.4*(D13-736))))
 G13	Avoidance
-H13	=E13/3680+C70*0.03
+H13	=E13/{{avoidanceRatingPerPercent}}+C70*{{baseDodgeParryChance}}
 I13	AoE Damage Taken Multiplier
 J13	=1-H13
 K13	Total Parry Chance
-L13	=622/19130+0.03+(L6+L8)/((L6+L8)*1+1/0.94)+0.05*8*T28
+L13	={{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+(L6+L8)/((L6+L8)*1+1/{{parryDrCoefficient}})+0.05*8*T28
 N13	Performance Measures
 B14	Base Weapon DPS
 C14	=Inputs!C16
 G14	Dodge
-H14	=0.03+0.02*C32
+H14	={{baseDodgeParryChance}}+{{maxHpHealFractionM74}}*C32
 I14	Misc. Damage Done Multiplier
-J14	=(1+E30*0.05*(1.13*(1-exp(-1*J9*15/60))))*(1+C57*0.06*(1-0.85^(5/(3/((1/(1-0.15*C107))*(1+C130))))))*(1+C117*0.05)*IF(D100=2,(1+0.06*C119*(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15)))),(1+0.06*(14-5*C131*E137)*C119*(1/S40)))*(1+IF(C127>2,2,IF(C127=2,1,0))*0.03*E127)
+J14	=(1+E30*0.05*({{rppmBadLuckProtection}}*(1-exp(-1*J9*15/60))))*(1+C57*0.06*(1-0.85^(5/(3/((1/(1-0.15*C107))*(1+C130))))))*(1+C117*0.05)*IF(D100=2,(1+0.06*C119*(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15)))),(1+0.06*(14-5*C131*E137)*C119*(1/S40)))*(1+IF(C127>2,2,IF(C127=2,1,0))*{{baseDodgeParryChance}}*E127)
 K14	Attack Avoidance Chance
-L14	=MAX(L13-0.015*(C153-90),0)+MAX(H14-0.015*(C153-90),0)+MAX(0.03-0.015*(C153-90),0)
+L14	=MAX(L13-{{avoidanceSuppressionPerLevel}}*(C153-90),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-90),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-90),0)
 N14	Mitigation Factor
 O14	Overall DPS
 P14	Priority DPS
@@ -158,16 +158,16 @@ S14	Unreliable EHP
 B15	Base Weapon Speed
 C15	=Inputs!C17
 G15	Ave. Weapon Speed
-H15	=C15/(J9*(1+0.06*(3+1.5*C130*C136)*C59*D59))/((195.5+21.9*C152-0.673*C152^2)/195.5)
+H15	=C15/(J9*(1+0.06*(3+{{gcdSeconds}}*C130*C136)*C59*D59))/(({{targetCountAttackSpeedBase}}+{{targetCountAttackSpeedLinear}}*C152-{{targetCountAttackSpeedQuadratic}}*C152^2)/{{targetCountAttackSpeedBase}})
 I15	Misc. Healing Done Multiplier
-J15	=(1+E30*0.05*(1.13*(1-exp(-1*J9*15/60))))*IF(D100=2,(1+0.06*C119*(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15)))),(1+0.02*C49))*(1+C73*0.15*(5+2*C68)*(1/S19*C149*(1-C150)))*(1+0.01*E31)
+J15	=(1+E30*0.05*({{rppmBadLuckProtection}}*(1-exp(-1*J9*15/60))))*IF(D100=2,(1+0.06*C119*(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15)))),(1+{{maxHpHealFractionM74}}*C49))*(1+C73*0.15*(5+2*C68)*(1/S19*C149*(1-C150)))*(1+0.01*E31)
 K15	Bone Shield Consumption
-L15	=IF(C127=4,1/(2.5+(2/(1-(L14+0.3*(0.151+0.367*(J8)-0.0791*(J8)^2+0.0086*(J8)^3)))-1+IF(C152=1,0.5,0))/C152),1/(2.5+(2/(1-(L14+0.3*T38*(8+C110*4)))-1+IF(C152=1,0.5,0))/C152))
-N15	=IF(X10=0,"Self-Sufficient (+"&Round(-((T10-U10-V10-W10)*(1-$T$76*(10+2*C92))+(T10-U10-V10-W10*(1.3+0.05*C92))*($T$76*(10+2*C92)))/O10%,2)&"%)",($O$10-$X$10)/$O$10)
+L15	=IF(C127={{drwEverlastingBondSeconds}},1/({{boneShieldRechargeSeconds}}+(2/(1-(L14+0.3*({{domBoneShellCubicC0}}+{{domBoneShellCubicC1}}*(J8)-{{domBoneShellCubicC2}}*(J8)^2+{{domBoneShellCubicC3}}*(J8)^3)))-1+IF(C152=1,0.5,0))/C152),1/({{boneShieldRechargeSeconds}}+(2/(1-(L14+0.3*T38*(8+C110*{{drwEverlastingBondSeconds}})))-1+IF(C152=1,0.5,0))/C152))
+N15	=IF(X10=0,"Self-Sufficient (+"&Round(-((T10-U10-V10-W10)*(1-$T$76*(10+2*C92))+(T10-U10-V10-W10*({{vbHealingAmpBase}}+0.05*C92))*($T$76*(10+2*C92)))/O10%,2)&"%)",($O$10-$X$10)/$O$10)
 O15	=V77
 P15	=W77
-Q15	=$L$7/(1-(1-(1-$L$5)*(1-$C$131*E136*10/S40*0.08))*(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9))/$L$10*(0.7+0.3/(1-0.15*C79-0.05*IF(C79>0,1,0)))/(1-$C$135*$C$130*$D$130*0.075)/(1-(0.08*$C$80)*(1-(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))/(1-(0.05*C131*E136)*((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))
-R15	=$L$7/(1-(1-(1-$L$5)*(1-$C$131*E136*10/S40*0.08))*(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9))/$L$10*(0.7+0.3/(1-0.15*C79-0.05*IF(C79>0,1,0)))/(T10/(Q10+P7+P8+P9))*(1+$T$76*(10+2*C92)*0.3)/(1-$C$135*$C$130*$D$130*0.075)/(1-(0.08*$C$80)*(1-(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))/(1-(0.05*C131*E136)*((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))
+Q15	=$L$7/(1-(1-(1-$L$5)*(1-$C$131*E136*10/S40*0.08))*(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9))/$L$10*(0.7+0.3/(1-0.15*C79-0.05*IF(C79>0,1,0)))/(1-$C$135*$C$130*$D$130*0.075)/(1-(0.08*$C$80)*(1-(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))/(1-(0.05*C131*E136)*((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))
+R15	=$L$7/(1-(1-(1-$L$5)*(1-$C$131*E136*10/S40*0.08))*(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9))/$L$10*(0.7+0.3/(1-0.15*C79-0.05*IF(C79>0,1,0)))/(T10/(Q10+P7+P8+P9))*(1+$T$76*(10+2*C92)*0.3)/(1-$C$135*$C$130*$D$130*0.075)/(1-(0.08*$C$80)*(1-(($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))/(1-(0.05*C131*E136)*((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))/((($T$6/(1-$L$14)/(1-((1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)))*MIN(0.3/(1-$L$14),1)))+$T$7)/(1-$L$5))+$T$8+$T$9)))
 S15	=$L$7*O10/T10*(0.7+0.3/(1-0.15*C79-0.05*IF(C79>0,1,0)))*(1+($T$76*(10+2*C92))*0.3)
 B17	Runeforging
 G17	Abilities
@@ -197,7 +197,7 @@ C18	Sanguination
 D18	Spellwarding
 E18	Apocalypse
 G18	Abomination Limb
-Q18	=1.5/$J$9
+Q18	={{gcdSeconds}}/$J$9
 R18	120.0
 S18	=R18+$C$151
 T18	=1/S18*C102*D102
@@ -207,14 +207,14 @@ C19	=Inputs!C21
 G19	Anti-Magic Shell
 O19	=AA19/T19
 R19	60.0
-S19	=(R19-20*C68+20*C81)
+S19	=(R19-{{hpPerStamina}}*C68+{{hpPerStamina}}*C81)
 T19	=1/S19*C149*C150
-AA19	=T19*$J$10*(1+0.4*$C$68)*(1+0.15*$C$46)*25
+AA19	=T19*$J$10*(1+0.4*$C$68)*(1+0.15*$C$46)*{{amsRpGen}}
 B20	Fallen Crusader
 C20	Stoneskin Gargoyle
 D20	Unending Thirst
 G20	Anti-Magic Zone
-Q20	=1.5/$J$9
+Q20	={{gcdSeconds}}/$J$9
 R20	240.0
 S20	=240-60*C67
 T20	=1/S20*C61*D61
@@ -227,7 +227,7 @@ J21	=($J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H21*$J$10*$L$11*(1+0.01*E25)
 K21	=J21*$J$8*$C$152*$J$14*(1+0.08*C120*D120)\n
 L21	=K21/$C$152
 M21	=K21*$L$12
-Q21	=1.5/$J$9
+Q21	={{gcdSeconds}}/$J$9
 R21	180.0
 S21	=R21+$C$151
 T21	=1/S21*E25
@@ -237,8 +237,8 @@ W21	=T21*L21
 X21	=T21*M21
 Y21	=X21*(1-$C$144)
 G22	Arcane Torrent
-O22	=20
-Q22	=1.5/$J$9
+O22	={{hpPerStamina}}
+Q22	={{gcdSeconds}}/$J$9
 R22	120.0
 S22	=R22+$C$151
 T22	=1/S22*C28
@@ -246,8 +246,8 @@ U22	=T22*Q22
 AA22	=T22*O22
 B23	Race
 G23	Auto-Attack
-H23	=5*C15/12*1.25*1.2
-J23	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H23*$J$10*$L$11
+H23	=5*C15/{{reapersMarkWindowSeconds}}*1.25*1.2
+J23	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H23*$J$10*$L$11
 K23	=J23*$J$8*0.7*$J$14*(1+0.08*C120*D120)\n
 L23	=K23
 M23	=K23*$L$12
@@ -263,9 +263,9 @@ C24	=Inputs!C26
 D24	Pandaren
 E24	=Inputs!E26
 G24	Blood Beasts
-H24	=0.1115*1.4/6*1.36*1.075*15
+H24	=0.1115*{{bloodPresenceStamMultiplier}}/6*1.36*1.075*15
 I24	1.15
-J24	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H24*$J$10*$L$11*I24*(1+0.01*C24)
+J24	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H24*$J$10*$L$11*I24*(1+0.01*C24)
 K24	=(J24*$J$8*INT($J$9*10/1+1)*0.7*$J$14+J24*7.875*1.25*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14)*(1+0.15*$C$152/SQRT(MAX(1,$C$152/8))*(1+$C$131*0.05*MIN(1,5/$C$152))*J10)
 L24	=(J24*$J$8*INT($J$9*10/1+1)*0.7*$J$14+J24*7.875*1.25*$J$8/SQRT(MAX(1,$C$152/8))*$J$14)+(K24/(1+0.15*$C$152/SQRT(MAX(1,$C$152/8))*(1+$C$131*0.05*MIN(1,5/$C$152))*J10))*(0.15*1/SQRT(MAX(1,$C$152/8))*(1+$C$131*0.05)*J10)
 M24	=K24/((1+$C$131*0.05*MIN(1,5/$C$152)))/$C$152
@@ -280,20 +280,20 @@ C25	=Inputs!C27
 D25	Nightborne
 E25	=Inputs!E27
 G25	Blood Boil
-H25	=1.4256*1.15
+H25	=1.4256*{{bloodSpecDamageMultiplier}}
 I25	1.15
-J25	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H25*$J$10*$L$11*I25*(1+0.01*$E$25)*(1+0.3*C130)
+J25	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H25*$J$10*$L$11*I25*(1+0.01*$E$25)*(1+0.3*C130)
 K25	=J25*$J$8*$C$152*$J$14*(1+C130*0.15*$B$19*(1+0.2*$C$63))*(1+$C$131*0.05*MIN(1,5/$C$152))*$H$135*(1+0.08*C120*D120)\n
 L25	=K25/$C$152
 M25	=K25*$L$12
-Q25	=1.5/$J$9
+Q25	={{gcdSeconds}}/$J$9
 R25	7.5
 S25	=1/((1/(R25/J9))+(C113/((R25/J9)/((1/(1-0.15*C107))/3*(1+C130)*(1-(1-H8)^C152)*0.25))))
-T25	=MIN(1/S25,MAX((1-SUM(U19:U23,U29:U41,U43:U50,U52:U76)-($L$9+SUM(Z19:Z50,Z52:Z76))*Q51/(-N51)+(SUM(AA19:AA24,AA26:AA41,AA43:AA50,AA52:AA76)+(($L$9+SUM(Z19:Z50)+SUM(Z52:Z76))*O51/(-N51)))/O42*Q42)/Q25*(-O42/(O25-O42)),(1+C130)/24-T47*C130*0.5))
+T25	=MIN(1/S25,MAX((1-SUM(U19:U23,U29:U41,U43:U50,U52:U76)-($L$9+SUM(Z19:Z50,Z52:Z76))*Q51/(-N51)+(SUM(AA19:AA24,AA26:AA41,AA43:AA50,AA52:AA76)+(($L$9+SUM(Z19:Z50)+SUM(Z52:Z76))*O51/(-N51)))/O42*Q42)/Q25*(-O42/(O25-O42)),(1+C130)/{{bloodPlagueDamageWindowSeconds}}-T47*C130*0.5))
 U25	=T25*Q25
-V25	=(T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX(4,C152-1)))*1.5)*K25
-W25	=(T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX(4,C152-1)))*1.5)*L25
-X25	=(T25+C108*T51*0.15*1.5)*M25
+V25	=(T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX({{drwEverlastingBondSeconds}},C152-1)))*{{gcdSeconds}})*K25
+W25	=(T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX({{drwEverlastingBondSeconds}},C152-1)))*{{gcdSeconds}})*L25
+X25	=(T25+C108*T51*0.15*{{gcdSeconds}})*M25
 Y25	=X25*(1-$C$144)
 B26	Tauren
 C26	=Inputs!C28
@@ -302,7 +302,7 @@ E26	=Inputs!E28
 G26	Blood Draw
 H26	1.2
 I26	1.15
-J26	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H26*$J$10*$L$11*I26*(1+0.01*$E$25)
+J26	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H26*$J$10*$L$11*I26*(1+0.01*$E$25)
 K26	=J26*$J$8*$C$152*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*(1+0.08*C120*D120)\n
 L26	=K26/$C$152
 M26	=K26*(1+$L$12)*1.25
@@ -329,7 +329,7 @@ E28	=Inputs!E30
 G28	Blood Mist
 H28	0.64
 I28	1.15
-J28	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H28*$J$10*$L$11*I28*(1+0.01*E25)
+J28	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H28*$J$10*$L$11*I28*(1+0.01*E25)
 K28	=J28*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14*9*(1+0.08*C120*D120)*(1+$C$131*0.05*MIN(1,5/$C$152))
 L28	=K28/$C$152
 M28	=K28*$L$12
@@ -345,22 +345,22 @@ C29	=Inputs!C31
 D29	Vulpera
 E29	=Inputs!E31
 G29	Blood Plague
-H29	=0.3348*24/3*(1/(1-0.15*C107))
+H29	=0.3348*{{bloodPlagueDamageWindowSeconds}}/3*(1/(1-0.15*C107))
 I29	1.15
-J29	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H29*$J$10*$L$11*I29*(1+0.01*E25)
+J29	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H29*$J$10*$L$11*I29*(1+0.01*E25)
 K29	=J29*$J$8*$C$152*$J$14*(1+0.4*C117*D117)*(1+$C$131*0.05*MIN(1,5/$C$152))*(1+0.08*C120*D120)*(1+0.15*C131)/(1+0.05*C117)\n
 L29	=K29/$C$152
 M29	=K29*(1+0.85*$C$107+$L$12)*1.25
-V29	=K29/24*(1+C130)
-W29	=L29/24*(1+C130)
-X29	=M29/24*(1+C130)
+V29	=K29/{{bloodPlagueDamageWindowSeconds}}*(1+C130)
+W29	=L29/{{bloodPlagueDamageWindowSeconds}}*(1+C130)
+X29	=M29/{{bloodPlagueDamageWindowSeconds}}*(1+C130)
 Y29	=X29*(1-$C$144)
 B30	Human
 C30	=Inputs!C32
 D30	Void Elf
 E30	=Inputs!E32
 G30	Blood Shield
-M30	=MIN(J11*(MAX(5*0.2*T10*(1+0.05*C111),7/100*L7)*(1+0.15*C42))*$J$10*(1+0.15*C46)*(1+0.2*C115),(0.5+0.15*C114)*L7*MAX(1,T42/0.2)/(1+($T$76*(10+2*C92))*(0.3+0.05*C92)))
+M30	=MIN(J11*(MAX(5*0.2*T10*(1+0.05*C111),{{sanlaynStackCount}}/100*L7)*(1+0.15*C42))*$J$10*(1+0.15*C46)*(1+0.2*C115),(0.5+0.15*C114)*L7*MAX(1,T42/0.2)/(1+($T$76*(10+2*C92))*(0.3+0.05*C92)))
 T30	=T42
 X30	=MIN(T30,0.2)*M30
 Y30	=X30
@@ -370,7 +370,7 @@ D31	Lightforged Draenei
 E31	=Inputs!E33
 G31	Bloody Demise
 H31	9.0
-J31	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H31*$J$10*$L$11*(1+0.01*E25)
+J31	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H31*$J$10*$L$11*(1+0.01*E25)
 K31	=J31*$J$8*(2*$C$152/3+1/3)*(1+$C$131*0.05*MIN(1,5.5/($C$152+0.5)))*$H$135\n
 L31	=K31/(2*$C$152/3+1/3)
 M31	=K31*$L$12
@@ -384,14 +384,14 @@ C32	=Inputs!C34
 D32	Dark Iron Dwarf
 E32	=Inputs!E34
 G32	Bloodworms
-H32	=0.235*1.4/6*1.075
+H32	=0.235*{{bloodPresenceStamMultiplier}}/6*1.075
 I32	1.0
-J32	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H32*$J$10*$L$11*I32*(1+0.01*C24)
-K32	=J32*$J$8*INT($J$9*D101/1.4+1)*0.7*$J$14
+J32	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H32*$J$10*$L$11*I32*(1+0.01*C24)
+K32	=J32*$J$8*INT($J$9*D101/{{bloodPresenceStamMultiplier}}+1)*0.7*$J$14
 L32	=K32
 M32	=L7*0.5*0.15
 R32	=60/5
-S32	=R32/1.13
+S32	=R32/{{rppmBadLuckProtection}}
 T32	=1/S32*C101
 V32	=T32*K32
 W32	=T32*L32
@@ -404,7 +404,7 @@ E33	=Inputs!E35
 G33	Bloody Reflection
 H33	1.1
 I33	1.15
-J33	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H33*$J$10*$L$11*I33*(1+0.01*$E$25)
+J33	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H33*$J$10*$L$11*I33*(1+0.01*$E$25)
 K33	=J33*$J$8*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*$H$135*(1+0.08*C127)\n
 L33	=K33/C$152
 M33	=K33*$L$12
@@ -420,21 +420,21 @@ C34	=Inputs!C36
 D34	Mechagnome
 E34	=Inputs!E36
 G34	Brush it Off
-X34	=T10*0.02*E33
+X34	=T10*{{maxHpHealFractionM74}}*E33
 Y34	=X34*(1-$C$144)
 B35	Worgen
 C35	=Inputs!C37
 E35	=Inputs!E37
 G35	Consumption
-H35	=4.8084*1.3
+H35	=4.8084*{{vbHealingAmpBase}}
 I35	1.15
-J35	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H35*$J$10*$L$11*I35*(1+0.01*$E$25)
-K35	=J35*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*(1+0.08*C120*D120)+24/(1+C130)*V29*D121*0.25*(1+0.08*C120*D120)
+J35	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H35*$J$10*$L$11*I35*(1+0.01*$E$25)
+K35	=J35*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*(1+0.08*C120*D120)+{{bloodPlagueDamageWindowSeconds}}/(1+C130)*V29*D121*0.25*(1+0.08*C120*D120)
 L35	=K35/$C$152
-M35	=K35*$L$12+24/(1+C130)*V29*D121*0.25*(1+0.08*C120*D120)*(1+0.5*$C$107+$L$12)*1.25+K35*C125*1.5*J11*J10*(1+0.15*C46)*(1+0.2*C115)/(1-$C$144)
+M35	=K35*$L$12+{{bloodPlagueDamageWindowSeconds}}/(1+C130)*V29*D121*0.25*(1+0.08*C120*D120)*(1+0.5*$C$107+$L$12)*1.25+K35*C125*{{gcdSeconds}}*J11*J10*(1+0.15*C46)*(1+0.2*C115)/(1-$C$144)
 Q35	=(1+0.5*D121)/$J$9
 R35	45.0
-S35	=(R35/(1+$C$125*22.5*1.1/60*1.13*$J$9))+$C$151
+S35	=(R35/(1+$C$125*22.5*1.1/60*{{rppmBadLuckProtection}}*$J$9))+$C$151
 T35	=1/S35*C121
 U35	=T35*Q35
 V35	=T35*K35
@@ -446,7 +446,7 @@ H36	2.52
 J36	=($J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H36*$J$10*$L$11
 K36	=J36*$J$8*$J$14*(1+0.08*C120*D120)
 L36	=K36
-Q36	=1.5/$J$9
+Q36	={{gcdSeconds}}/$J$9
 R36	90.0
 S36	=R36+$C$151
 T36	=1/S36*IF($E$29=1,1,0)
@@ -467,10 +467,10 @@ B38	Icebound Fortitude
 C38	=Inputs!C40
 G38	Dancing Rune Weapon
 I38	1.0
-K38	=(SUM(V25,V42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))*MAX(1,MIN(1+C106*0.75*(C152-1),1+C106*1.5))/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*0.75*(C152-1),(1+0.2*C63*C19)+C106*1.5)),V43,IF(C131=1,0,V51),V57,IF(C131=1,V74*T51/T74,V74))*(8+4*C110)+INT((8+4*C110+H15/2)/H15)*V23+V29*(24/(1+C130)+(IF((8+4*C110)*T25-1>0,MIN((8+4*C110)*T25-1,1),0))*(8+4*C110)/2+(IF((8+4*C110)*T25-2>0,MIN((8+4*C110)*T25-2,1),0))*(8+4*C110)/6))*0.33*(1+0.01*$C$24)*(1+C110)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(8+4*C110-4)/(8+4*C110))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*0.03*E127)
-L38	=(SUM(W25,W42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))/(1+0.2*C63*C19),W43,IF(C131=1,0,W51),W57,IF(C131=1,W74*T51/T74,W74))*(8+4*C110)+INT((8+4*C110+H15/2)/H15)*W23+W29*(24/(1+C130)+(IF((8+4*C110)*T25-1>0,MIN((8+4*C110)*T25-1,1),0))*(8+4*C110)/2+(IF((8+4*C110)*T25-2>0,MIN((8+4*C110)*T25-2,1),0))*(8+4*C110)/6))*0.33*(1+0.01*$C$24)*(1+C110)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(8+4*C110-4)/(8+4*C110))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*0.03*E127)
+K38	=(SUM(V25,V42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))*MAX(1,MIN(1+C106*{{procChance25}}*(C152-1),1+C106*{{gcdSeconds}}))/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*{{procChance25}}*(C152-1),(1+0.2*C63*C19)+C106*{{gcdSeconds}})),V43,IF(C131=1,0,V51),V57,IF(C131=1,V74*T51/T74,V74))*(8+{{drwEverlastingBondSeconds}}*C110)+INT((8+{{drwEverlastingBondSeconds}}*C110+H15/2)/H15)*V23+V29*({{bloodPlagueDamageWindowSeconds}}/(1+C130)+(IF((8+{{drwEverlastingBondSeconds}}*C110)*T25-1>0,MIN((8+{{drwEverlastingBondSeconds}}*C110)*T25-1,1),0))*(8+{{drwEverlastingBondSeconds}}*C110)/2+(IF((8+{{drwEverlastingBondSeconds}}*C110)*T25-2>0,MIN((8+{{drwEverlastingBondSeconds}}*C110)*T25-2,1),0))*(8+{{drwEverlastingBondSeconds}}*C110)/6))*{{drwMirrorFraction}}*(1+0.01*$C$24)*(1+C110)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(8+{{drwEverlastingBondSeconds}}*C110-{{drwEverlastingBondSeconds}})/(8+{{drwEverlastingBondSeconds}}*C110))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*{{baseDodgeParryChance}}*E127)
+L38	=(SUM(W25,W42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))/(1+0.2*C63*C19),W43,IF(C131=1,0,W51),W57,IF(C131=1,W74*T51/T74,W74))*(8+{{drwEverlastingBondSeconds}}*C110)+INT((8+{{drwEverlastingBondSeconds}}*C110+H15/2)/H15)*W23+W29*({{bloodPlagueDamageWindowSeconds}}/(1+C130)+(IF((8+{{drwEverlastingBondSeconds}}*C110)*T25-1>0,MIN((8+{{drwEverlastingBondSeconds}}*C110)*T25-1,1),0))*(8+{{drwEverlastingBondSeconds}}*C110)/2+(IF((8+{{drwEverlastingBondSeconds}}*C110)*T25-2>0,MIN((8+{{drwEverlastingBondSeconds}}*C110)*T25-2,1),0))*(8+{{drwEverlastingBondSeconds}}*C110)/6))*{{drwMirrorFraction}}*(1+0.01*$C$24)*(1+C110)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(8+{{drwEverlastingBondSeconds}}*C110-{{drwEverlastingBondSeconds}})/(8+{{drwEverlastingBondSeconds}}*C110))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*{{baseDodgeParryChance}}*E127)
 P38	=D105*C105
-Q38	=1.5/$J$9
+Q38	={{gcdSeconds}}/$J$9
 R38	120.0
 S38	=120-30*C105+$C$151
 T38	=1/S38*C98*C149
@@ -482,26 +482,26 @@ B39	Death Strike
 C39	=Inputs!C41
 G39	Dancing Rune Weapon (DoM)
 I39	1.0
-K39	=(SUM(V25,V42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))*MAX(1,MIN(1+C106*0.75*(C152-1),1+C106*1.5))/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*0.75*(C152-1),(1+0.2*C63*C19)+C106*1.5)),V43,IF(C131=1,V51/(T51-T74)*(1-T38*(8+C110*4))*(T51-(0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42),V51),V57,IF(C131=1,V74/T74*((1-T38*(8+C110*4))*((0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42)+(T38*(8+C110*4))*T51),V74))*(6)+INT((6+H15/2)/H15)*V23+V29*(24/(1+C130)*(MIN(T25*6,1)+IF(T25*6>1,(T25*6-1)*3,0))))*0.33*(1+0.01*$C$24)*(1)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(2)/(6))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*0.03*E127)
-L39	=(SUM(W25,W42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))/(1+0.2*C63*C19),W43,IF(C131=1,W51/(T51-T74)*(1-T38*(8+C110*4))*(T51-(0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42),W51),W57,IF(C131=1,V74/T74*((1-T38*(8+C110*4))*((0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42)+(T38*(8+C110*4))*T51),W74))*(6)+INT((6+H15/2)/H15)*W23+W29*(24/(1+C130)*(MIN(T25*6,1)+IF(T25*6>1,(T25*6-1)*3,0))))*0.33*(1+0.01*$C$24)*(1)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(2)/(6))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*0.03*E127)
-S39	=IF(OR(D100=1,AND(C152<4,C131=1)),MAX((10-5*C131*E137+H15*3.5+C151),12),0)+IF(NOT(OR(D100=1,AND(C152<4,C131=1))),15-5*C131*E137-C82,0)
-T39	=IF(C127>3,1,0)*0.1*(T40+T43+T51+T57+T63)
+K39	=(SUM(V25,V42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))*MAX(1,MIN(1+C106*{{procChance25}}*(C152-1),1+C106*{{gcdSeconds}}))/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*{{procChance25}}*(C152-1),(1+0.2*C63*C19)+C106*{{gcdSeconds}})),V43,IF(C131=1,V51/(T51-T74)*(1-T38*(8+C110*{{drwEverlastingBondSeconds}}))*(T51-(0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42),V51),V57,IF(C131=1,V74/T74*((1-T38*(8+C110*{{drwEverlastingBondSeconds}}))*((0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42)+(T38*(8+C110*{{drwEverlastingBondSeconds}}))*T51),V74))*(6)+INT((6+H15/2)/H15)*V23+V29*({{bloodPlagueDamageWindowSeconds}}/(1+C130)*(MIN(T25*6,1)+IF(T25*6>1,(T25*6-1)*3,0))))*{{drwMirrorFraction}}*(1+0.01*$C$24)*(1)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(2)/(6))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*{{baseDodgeParryChance}}*E127)
+L39	=(SUM(W25,W42*(1+0.08*C120*D120)/(1+0.08*C120)/(1+0.6*C19*(1+0.2*C63))/(1+0.2*C63*C19),W43,IF(C131=1,W51/(T51-T74)*(1-T38*(8+C110*{{drwEverlastingBondSeconds}}))*(T51-(0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42),W51),W57,IF(C131=1,V74/T74*((1-T38*(8+C110*{{drwEverlastingBondSeconds}}))*((0.35+0.05*14/S40*E136+E140*0.35*0.15)*T42)+(T38*(8+C110*{{drwEverlastingBondSeconds}}))*T51),W74))*(6)+INT((6+H15/2)/H15)*W23+W29*({{bloodPlagueDamageWindowSeconds}}/(1+C130)*(MIN(T25*6,1)+IF(T25*6>1,(T25*6-1)*3,0))))*{{drwMirrorFraction}}*(1+0.01*$C$24)*(1)*I38*(1+$C$131*0.05)*(1+C131*T51*8*0.2*(2)/(6))/(1+0.08*C120*D120)*(1+IF(C127>2,2,IF(C127=2,1,0))*{{baseDodgeParryChance}}*E127)
+S39	=IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),MAX((10-5*C131*E137+H15*3.5+C151),{{reapersMarkWindowSeconds}}),0)+IF(NOT(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1))),15-5*C131*E137-C82,0)
+T39	=IF(C127>3,1,0)*{{ibfBloodyFortitudeBonus}}*(T40+T43+T51+T57+T63)
 V39	=T39*K39
 W39	=T39*L39
 B40	Raise Dead
 C40	=Inputs!C42
 G40	Death and Decay
-H40	=0.083*(11+2*C107)*1.3*1.25
-I40	=1.48*1.15
-J40	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H40*$J$10*$L$11*I40*(1+0.01*E25)
+H40	=0.083*(11+2*C107)*{{vbHealingAmpBase}}*1.25
+I40	=1.48*{{bloodSpecDamageMultiplier}}
+J40	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H40*$J$10*$L$11*I40*(1+0.01*E25)
 K40	=J40*$J$8*$C$152*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*(1+0.08*C120*D120)\n
 L40	=K40/$C$152
-M40	=K40*$L$12+($J$6*(1+$E$116)*(1+$D$157)+4925*15/120*C24+$C$14*6)*0.375*(D97+2*C104)*$J$10*$J$8*$L$11*C94*(1-IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1))
-N40	=-1*IF(OR(D100=1,AND(C152<4,C131=1)),0,1)*IF(D100=2,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),1-(1-(0.75)^((4+(H15/2))/H15)),1)
-O40	=10*IF(OR(D100=1,AND(C152<4,C131=1)),C94,1)*IF(D100=2,IF(C94>0,1,1-(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)),1)*IF(NOT(OR(OR(D100=1,AND(C152<4,C131=1)),D100=2)),IF(C94>0,1,1-(1-(0.75)^((4+(H15/2))/H15))),1)
-Q40	=1.5/$J$9
+M40	=K40*$L$12+($J$6*(1+$E$116)*(1+$D$157)+{{raiseDeadAp}}*15/120*C24+$C$14*6)*0.375*(D97+2*C104)*$J$10*$J$8*$L$11*C94*(1-IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1))
+N40	=-1*IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),0,1)*IF(D100=2,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15)),1)
+O40	=10*IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),C94,1)*IF(D100=2,IF(C94>0,1,1-(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)),1)*IF(NOT(OR(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),D100=2)),IF(C94>0,1,1-(1-({{procChance25}})^(({{drwEverlastingBondSeconds}}+(H15/2))/H15))),1)
+Q40	={{gcdSeconds}}/$J$9
 R40	15.0
-S40	=IF(OR(D100=1,AND(C152<4,C131=1)),MAX((10-5*C131*E137+H15*3.5+C151),12),0)+IF(NOT(OR(D100=1,AND(C152<4,C131=1))),15-5*C131*E137-C82,0)
+S40	=IF(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1)),MAX((10-5*C131*E137+H15*3.5+C151),{{reapersMarkWindowSeconds}}),0)+IF(NOT(OR(D100=1,AND(C152<{{drwEverlastingBondSeconds}},C131=1))),15-5*C131*E137-C82,0)
 T40	=1/S40
 U40	=T40*Q40
 V40	=T40*K40
@@ -514,7 +514,7 @@ A41	Row 2
 B41	Runic Attenuation
 C41	=Inputs!C43
 G41	Death Pact
-M41	=$L$7*(0.2+0.1*C62)*$J$10
+M41	=$L$7*(0.2+{{ibfBloodyFortitudeBonus}}*C62)*$J$10
 R41	120.0
 S41	=R41-30*C62+$C$151
 T41	=1/S41*C56
@@ -525,12 +525,12 @@ C42	=Inputs!C44
 G42	Death Strike
 H42	=1.5312*1.2*1.12
 I42	=2.3
-J42	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H42*$J$10*$L$11*I42*(1+0.12*C130)
-K42	=J42*$J$8*0.7*(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX(4,C152-1))))/T42*C152,5))*(1+0.6*C19*(1+0.2*C63))*$J$14*(1+0.08*C120)*(1+0.05*K134)*MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*0.75*(C152-1),(1+0.2*C63*C19)+C106*1.5))
-L42	=K42*(1+0.2*C63*C19)/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*0.75*(C152-1),(1+0.2*C63*C19)+C106*1.5))
-M42	=K42*$L$12+MAX(5*0.2*T10*(1+0.05*C111),7/100*L7)*(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX(4,C152-1))))/T42*C152,5))*$J$10*$J$15*(1+0.15*C42)
-O42	=(-45)+5*C91+IF(C42>0,5,0)+10*8*T26
-Q42	=1.5/$J$9
+J42	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H42*$J$10*$L$11*I42*(1+{{enfeebleSlowFraction}}*C130)
+K42	=J42*$J$8*0.7*(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX({{drwEverlastingBondSeconds}},C152-1))))/T42*C152,5))*(1+0.6*C19*(1+0.2*C63))*$J$14*(1+0.08*C120)*(1+0.05*K134)*MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*{{procChance25}}*(C152-1),(1+0.2*C63*C19)+C106*{{gcdSeconds}}))
+L42	=K42*(1+0.2*C63*C19)/MAX((1+0.2*C63*C19),MIN((1+0.2*C63*C19)+C106*{{procChance25}}*(C152-1),(1+0.2*C63*C19)+C106*{{gcdSeconds}}))
+M42	=K42*$L$12+MAX(5*0.2*T10*(1+0.05*C111),{{sanlaynStackCount}}/100*L7)*(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX({{drwEverlastingBondSeconds}},C152-1))))/T42*C152,5))*$J$10*$J$15*(1+0.15*C42)
+O42	=(-{{dsRpCost}})+5*C91+IF(C42>0,5,0)+10*8*T26
+Q42	={{gcdSeconds}}/$J$9
 T42	=-(SUM(AA19:AA41,AA43:AA76))/O42
 U42	=T42*Q42
 V42	=T42*K42
@@ -543,16 +543,16 @@ C43	=Inputs!C45
 G43	Death's Caress
 H43	=0.4374
 I43	1.15
-J43	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H43*$J$10*$L$11*I43*(1+0.01*E25)
+J43	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H43*$J$10*$L$11*I43*(1+0.01*E25)
 K43	=J43*$J$8*$J$14*(1+$C$131*0.05)*(1+0.08*C120*D120)
 L43	=K43
 M43	=K43*$L$12
 N43	-1.0
 O43	10.0
 P43	2.0
-Q43	=1.5/$J$9
+Q43	={{gcdSeconds}}/$J$9
 R43	6.0
-S43	=IF(4*Q43>=R43,4*Q43,(IF(5*Q43>=R43,5*Q43,(IF(6*Q43>=R43,6*Q43,(IF(7*Q43>=R43,7*Q43,(8*Q43))))))))
+S43	=IF({{drwEverlastingBondSeconds}}*Q43>=R43,{{drwEverlastingBondSeconds}}*Q43,(IF(5*Q43>=R43,5*Q43,(IF(6*Q43>=R43,6*Q43,(IF({{sanlaynStackCount}}*Q43>=R43,{{sanlaynStackCount}}*Q43,(8*Q43))))))))
 T43	=MIN(1/S43,(L15-SUM(AB19:AB42)-SUM(AB44:AB56)-SUM(AB61:AB76))/2)*D87
 U43	=T43*Q43
 V43	=T43*K43
@@ -573,7 +573,7 @@ K44	=J44*$J$8*$J$14*(1+0.08*C120*D120)
 L44	=K44
 M44	=K44*(1+$L$12)
 R44	=60/3
-S44	=R44/1.13/$J$9
+S44	=R44/{{rppmBadLuckProtection}}/$J$9
 T44	=1/S44*IF($E$28=1,1,0)
 V44	=T44*K44
 W44	=T44*L44
@@ -587,7 +587,7 @@ J45	=($J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H45*$J$10*$L$11
 K45	=J45*$J$8*$J$14*(1+0.08*C120*D120)
 L45	=K45
 M45	=K45*$L$12
-V45	=IF(IF($E$28=2,1,0),1.13*(exp(6*12*J9/60)-1)*(1-(1-exp(-6*12*J9/60))^3)*K45/6,0)
+V45	=IF(IF($E$28=2,1,0),{{rppmBadLuckProtection}}*(exp(6*{{reapersMarkWindowSeconds}}*J9/60)-1)*(1-(1-exp(-6*{{reapersMarkWindowSeconds}}*J9/60))^3)*K45/6,0)
 W45	=V45
 X45	=V45*$L$12
 Y45	=X45*(1-$C$144)
@@ -596,7 +596,7 @@ C46	=Inputs!C48
 G46	Exterminate (First)
 H46	=7.1545*1.2*1.2
 I46	1.15
-J46	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H46*$J$10*$L$11*I46*(1+0.01*$E$25)
+J46	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H46*$J$10*$L$11*I46*(1+0.01*$E$25)
 K46	=J46*$J$8*$J$14*(1+C130*0.15*$B$19*(1+0.2*$C$63))*$H$135*(1+0.08*C120*D120)\n
 L46	=K46
 M46	=K46*$L$12
@@ -610,7 +610,7 @@ C47	=Inputs!C49
 G47	Exterminate (Second)
 H47	=3.91*1.2
 I47	1.15
-J47	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H47*$J$10*$L$11*I47*(1+0.01*$E$25)
+J47	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H47*$J$10*$L$11*I47*(1+0.01*$E$25)
 K47	=J47*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14*(1+C130*0.15*$B$19*(1+0.2*$C$63))*$H$135*(1+0.08*C120*D120)\n
 L47	=K47/$C$152
 M47	=K47*$L$12
@@ -632,7 +632,7 @@ B49	Unholy Momentum
 C49	=Inputs!C51
 G49	Gorefiend's Grasp
 P49	=MIN(C90*C152,6)
-Q49	=1.5/$J$9
+Q49	={{gcdSeconds}}/$J$9
 R49	90.0
 S49	=R49+$C$151
 T49	=1/S49*C103*D103
@@ -644,7 +644,7 @@ G50	Healing Vial
 H50	3.78
 J50	=($J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H50*$J$10*$L$11
 M50	=J50*$J$8*$J$15
-Q50	=1.5/$J$9
+Q50	={{gcdSeconds}}/$J$9
 R50	90.0
 S50	=R50+$C$151
 T50	=1/S50*IF($E$29=2,1,0)
@@ -656,17 +656,17 @@ C51	=Inputs!C53
 G51	Heart Strike
 H51	=1.31112*1.2*1.25
 I51	1.15
-J51	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H51*$J$10*$L$11*I51*(1+0.15*C93)
+J51	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H51*$J$10*$L$11*I51*(1+0.15*C93)
 K51	=J51*$J$8*0.7*IF($C$152<=5,IF($C$152<3,$C$152,2+IF($C$43>0,$C$152-2,0)*((14-5*C131*E137)/S40)),2+IF($C$43>0,3,0)*((14-5*C131*E137)/S40))*$J$14*(1+0.08*C120*D120)
 L51	=K51/IF($C$152<=5,IF($C$152<3,$C$152,2+IF($C$43>0,$C$152-2,0)*((14-5*C131*E137)/S40)),2+IF($C$43>0,3,0)*((14-5*C131*E137)/S40))
-M51	=K51*$L$12+IF($C$152<=5,IF($C$152<3,$C$152,2+IF($C$43>0,$C$152-2,0)*((14-5*C131*E137)/S40)),2+IF($C$43>0,3,0)*((14-5*C131*E137)/S40))*$L$7*0.0025*$C$95
+M51	=K51*$L$12+IF($C$152<=5,IF($C$152<3,$C$152,2+IF($C$43>0,$C$152-2,0)*((14-5*C131*E137)/S40)),2+IF($C$43>0,3,0)*((14-5*C131*E137)/S40))*$L$7*{{maxHpHealFractionM51}}*$C$95
 N51	-1.0
-O51	=(15+2*C96*IF($C$152<=5,IF($C$152<3,$C$152,2+IF(C43>0,$C$152-2,0)*IF(D100=2,(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15))),((14-5*C131*E137)/S40))+2*(1-IF(D100=2,(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15))),((14-5*C131*E137)/S40)))),2+IF(C43>0,3,0)*IF(D100=2,(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15))),((14-5*C131*E137)/S40))+2*(1-IF(D100=2,(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15))),((14-5*C131*E137)/S40)))))
-Q51	=1.5/$J$9
+O51	=(15+2*C96*IF($C$152<=5,IF($C$152<3,$C$152,2+IF(C43>0,$C$152-2,0)*IF(D100=2,(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15))),((14-5*C131*E137)/S40))+2*(1-IF(D100=2,(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15))),((14-5*C131*E137)/S40)))),2+IF(C43>0,3,0)*IF(D100=2,(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15))),((14-5*C131*E137)/S40))+2*(1-IF(D100=2,(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15))),((14-5*C131*E137)/S40)))))
+Q51	={{gcdSeconds}}/$J$9
 T51	=MIN(($L$9+SUM(Z19:Z50)+SUM(Z52:Z76))/(-N51),MAX((1-SUM(U18:U41,U43:U50,U52:U76)+SUM(AA19:AA41,AA43:AA50,AA52:AA76)/O42*Q42)/Q51*(-O42/(O51-O42)),0))
 U51	=T51*Q51
-V51	=(T51-T74+3*(1-C131*T38*(8+C110*4))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+1.5*(1-C131*(T38*(8+C110*4))/(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63))))))*F127)*K51
-W51	=(T51-T74+3*(1-C131*T38*(8+C110*4))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+1.5*(1-C131*(T38*(8+C110*4))/(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63))))))*F127)*L51
+V51	=(T51-T74+3*(1-C131*T38*(8+C110*{{drwEverlastingBondSeconds}}))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+{{gcdSeconds}}*(1-C131*(T38*(8+C110*{{drwEverlastingBondSeconds}}))/(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63))))))*F127)*K51
+W51	=(T51-T74+3*(1-C131*T38*(8+C110*{{drwEverlastingBondSeconds}}))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+{{gcdSeconds}}*(1-C131*(T38*(8+C110*{{drwEverlastingBondSeconds}}))/(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63))))))*F127)*L51
 X51	=(T51-T74)*M51
 Y51	=X51*(1-$C$144)
 Z51	=T51*N51
@@ -700,7 +700,7 @@ T54	=1/S54*C149
 B55	Veteran of the Third War
 C55	=Inputs!C57
 G55	Lifeblood
-M55	=M42*0.2/(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX(4,C152-1))))/T42*C152,5))
+M55	=M42*0.2/(1+C99*0.08*MIN((T25+C108*T51*(1-(1-0.15)*(1-0.15*MAX({{drwEverlastingBondSeconds}},C152-1))))/T42*C152,5))
 T55	=T42*C109
 X55	=T55*M55
 Y55	=X55*(1-$C$144)
@@ -712,7 +712,7 @@ J56	=($J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H56*$J$10*$L$11
 K56	=J56*$J$8*$C$152/SQRT(MAX(1,$C$152/8))*$J$14*(1+0.08*C120*D120)\n
 L56	=K56/$C$152
 M56	=K56*$L$12
-Q56	=1.5/$J$9
+Q56	={{gcdSeconds}}/$J$9
 R56	150.0
 S56	=R56+$C$151
 T56	=1/S56*E31
@@ -724,16 +724,16 @@ Y56	=X56*(1-$C$144)
 B57	Brittle
 C57	=Inputs!C59
 G57	Marrowrend
-H57	=1.471*1.5
+H57	=1.471*{{gcdSeconds}}
 I57	1.15
-J57	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H57*$J$10*$L$11*I57
+J57	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H57*$J$10*$L$11*I57
 K57	=J57*$J$8*0.7*$J$14*(1+0.08*C120*D120)\n
 L57	=K57
 M57	=K57*$L$12
 N57	-2.0
-O57	=20
+O57	={{hpPerStamina}}
 P57	3.0
-Q57	=1.5/$J$9
+Q57	={{gcdSeconds}}/$J$9
 T57	=MAX((L15-SUM(AB19:AB56)-SUM(AB58:AB76))/3,T47)
 U57	=T57*Q57
 V57	=T57*K57
@@ -769,7 +769,7 @@ C60	=Inputs!C62
 G60	Permafrost
 M60	=K23*0.5*(1+0.15*C46)*(1+C130)
 T60	=T23*C54
-X60	=T60*M60+C130*T47*(K46+K47)*0.1*(1+0.15*C46)*C54
+X60	=T60*M60+C130*T47*(K46+K47)*{{ibfBloodyFortitudeBonus}}*(1+0.15*C46)*C54
 Y60	=X60
 B61	Anti-Magic Zone
 C61	=Inputs!C63
@@ -777,8 +777,8 @@ D61	=Inputs!D63
 G61	Raise Dead
 H61	=0.5875*2/6*1.075
 I61	1.0
-J61	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H61*$J$10*$L$11*I61*(1+0.01*C24)
-K61	=J61*$J$8*0.7*(INT($J$9*60/2+1)+(60*$J$9*10+25)/40*1.35)*$J$14*(1+$C$131*0.05)
+J61	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H61*$J$10*$L$11*I61*(1+0.01*C24)
+K61	=J61*$J$8*0.7*(INT($J$9*60/2+1)+(60*$J$9*10+{{amsRpGen}})/{{reapersMarkStackCap}}*1.35)*$J$14*(1+$C$131*0.05)
 L61	=K61
 R61	120.0
 S61	=120-30*C130*C138
@@ -790,7 +790,7 @@ C62	=Inputs!C64
 G62	Razorice
 H62	0.01127
 I62	1.15
-J62	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H62*$J$10*$L$11*I62*(1+0.01*E25)
+J62	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H62*$J$10*$L$11*I62*(1+0.01*E25)
 K62	=J62*$J$8*$J$14*(1+0.2*C63)*(1+0.08*C120*D120)*(1+0.15*$B$19*(1+0.2*$C$63))
 L62	=K62
 M62	=K62*$L$12
@@ -804,14 +804,14 @@ C63	=Inputs!C65
 G63	Reaper's Mark
 H63	=3.07125*1.2*1.2
 I63	1.15
-J63	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H63*$J$10*$L$11*I63*(1+0.01*E25)*1.05
+J63	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H63*$J$10*$L$11*I63*(1+0.01*E25)*{{bloodPresenceStamBonus}}
 K63	=J63*$J$8*$J$14*(1+0.15*$B$19*(1+0.2*$C$63))*(1+0.08*C120*D120)
 L63	=K63
 M63	=K63*$L$12
 N63	-2.0
-O63	=20
+O63	={{hpPerStamina}}
 P63	=3
-Q63	=1.5/$J$9
+Q63	={{gcdSeconds}}/$J$9
 R63	45.0
 S63	=2*R63/(2+C137)+$C$151
 T63	=1/S63*C130
@@ -829,7 +829,7 @@ C64	=Inputs!C66
 G64	Reaper's Mark (Debuff)
 H64	=0.3779*1.2
 I64	1.15
-J64	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H64*$J$10*$L$11*I64*(1+0.01*E25)*1.05
+J64	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H64*$J$10*$L$11*I64*(1+0.01*E25)*{{bloodPresenceStamBonus}}
 K64	=J64*$J$8*$J$14*(1+0.15*$B$19*(1+0.2*$C$63))*$H$134*(1+0.15)*(1+0.05*(1+H8))*(1+0.08*C120*D120)
 L64	=K64
 M64	=K64*$L$12
@@ -846,7 +846,7 @@ J65	=(360+343*0.429/0.5*(1+0.05*C21)+$J$6*(1+$E$116)*(1+$D$157)+$C$14*6)*H65*$J$
 K65	=J65*$J$8*$J$14*(1+0.08*C120*D120)
 L65	=K65
 M65	=K65*$L$12
-Q65	=1.5/$J$9
+Q65	={{gcdSeconds}}/$J$9
 R65	90.0
 S65	=R65+$C$151
 T65	=1/S65*C29
@@ -858,7 +858,7 @@ Y65	=X65*(1-$C$144)
 B66	Asphyxiate
 C66	=Inputs!C68
 G66	Rune of Sanguination
-M66	=$L$7*0.48*(1+0.2*C63)
+M66	=$L$7*{{maxHpHealFractionM66}}*(1+0.2*C63)
 R66	360.0
 S66	360.0
 T66	=1/S66*C19
@@ -868,16 +868,16 @@ B67	Assimilation
 C67	=Inputs!C69
 G67	Runic Attenuation
 O67	3.0
-R67	=60/10.8
-S67	=1/(10.8*J9*1.13/60)
+R67	=60/{{runicAttenuationPpm}}
+S67	=1/({{runicAttenuationPpm}}*J9*{{rppmBadLuckProtection}}/60)
 T67	=1/S67*C41
 AA67	=T67*O67
 B68	Anti-Magic Barrier
 C68	=Inputs!C70
 G68	Sanguinary Burst
 H68	2.76
-J68	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H68*$J$10*$L$11*(1+0.01*$E$25)
-K68	=J68*$J$8*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*$C$152/SQRT(MAX(1,$C$152/8))*(1+0.02*-AA42*8*((O42-5*IF(C42>0,1,0))/O42))*(1+0.08*C120*D120)
+J68	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H68*$J$10*$L$11*(1+0.01*$E$25)
+K68	=J68*$J$8*$J$14*(1+$C$131*0.05*MIN(1,5/$C$152))*$C$152/SQRT(MAX(1,$C$152/8))*(1+{{maxHpHealFractionM74}}*-AA42*8*((O42-5*IF(C42>0,1,0))/O42))*(1+0.08*C120*D120)
 L68	=K68/$C$152
 M68	=K68*(0.18+$L$12)
 T68	=T28*C123
@@ -889,7 +889,7 @@ B69	Grip of the Dead
 C69	=Inputs!C71
 G69	Soul Rupture
 I69	1.15
-K69	=K64*1/10*($C$152-1)*$I$69*1.05*IF(D100=2,(1+0.06*C119*(1-T40*(1-(0.75)^((5+(H15/2))/H15))/(1+3*(1-(0.75)^((5+(H15/2))/H15))*C82)/(1-(0.75)^((5+(H15/2))/H15)))),(1+0.06*(14-5*C131*E137)*C119*(1/S40)))
+K69	=K64*1/10*($C$152-1)*$I$69*{{bloodPresenceStamBonus}}*IF(D100=2,(1+0.06*C119*(1-T40*(1-({{procChance25}})^((5+(H15/2))/H15))/(1+3*(1-({{procChance25}})^((5+(H15/2))/H15))*C82)/(1-({{procChance25}})^((5+(H15/2))/H15)))),(1+0.06*(14-5*C131*E137)*C119*(1/S40)))
 L69	=K69/$C$152
 M69	=K69*$L$12
 T69	=T64
@@ -930,9 +930,9 @@ A73	Row 8
 B73	Osmosis
 C73	=Inputs!C75
 G73	Unholy Strength
-M73	=$L$7*0.04*(1+0.2*C63)
+M73	=$L$7*{{maxHpHealFractionM73}}*(1+0.2*C63)
 R73	=60/3
-S73	=R73/1.13/$J$9
+S73	=R73/{{rppmBadLuckProtection}}/$J$9
 T73	=1/S73*B21
 X73	=T73*M73
 Y73	=X73*(1-$C$144)
@@ -941,13 +941,13 @@ C74	=Inputs!C76
 G74	Vampiric Strike
 H74	=0.907*1.25
 I74	1.15
-J74	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H74*$J$10*$L$11*I74*(1+0.15*C93)*(1+0.01*$E$25)*(1+0.1*C43)
+J74	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H74*$J$10*$L$11*I74*(1+0.15*C93)*(1+0.01*$E$25)*(1+{{ibfBloodyFortitudeBonus}}*C43)
 K74	=J74*$J$8*IF($C$152<=5,IF($C$152<3,$C$152,IF($C$43>0,$C$152,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40),IF($C$43>0,5,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40)*$J$14*(1+$C$131*0.2)*(1+0.08*C120*D120)
 L74	=K74/IF($C$152<=5,IF($C$152<3,$C$152,IF($C$43>0,$C$152,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40),IF($C$43>0,5,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40)
-M74	=K74*$L$12+IF($C$152<=5,IF($C$152<3,$C$152,IF($C$43>0,$C$152,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40),IF($C$43>0,5,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40)*$L$7*0.0025*$C$95+$L$7*0.02*$J$10
-T74	=C131*((T38*(8+C110*4))*T51+(1-T38*(8+C110*4))*((0.35+0.05*14/S40*E136)*T42+(E140*0.35*0.15)*T42))
-V74	=(T74+(C131*T38*(8+C110*4))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+1.5*C131*F127*((T38*(8+C110*4))/(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))*K74
-W74	=(T74+(C131*T38*(8+C110*4))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+1.5*C131*F127*((T38*(8+C110*4))/(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))*L74
+M74	=K74*$L$12+IF($C$152<=5,IF($C$152<3,$C$152,IF($C$43>0,$C$152,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40),IF($C$43>0,5,2)*(14-5*C131*E137)/$S$40+2*($S$40-(14-5*C131*E137))/$S$40)*$L$7*{{maxHpHealFractionM51}}*$C$95+$L$7*{{maxHpHealFractionM74}}*$J$10
+T74	=C131*((T38*(8+C110*{{drwEverlastingBondSeconds}}))*T51+(1-T38*(8+C110*{{drwEverlastingBondSeconds}}))*((0.35+0.05*14/S40*E136)*T42+(E140*0.35*0.15)*T42))
+V74	=(T74+(C131*T38*(8+C110*{{drwEverlastingBondSeconds}}))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+{{gcdSeconds}}*C131*F127*((T38*(8+C110*{{drwEverlastingBondSeconds}}))/(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))*K74
+W74	=(T74+(C131*T38*(8+C110*{{drwEverlastingBondSeconds}}))*C116/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)+{{gcdSeconds}}*C131*F127*((T38*(8+C110*{{drwEverlastingBondSeconds}}))/(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))*L74
 X74	=T74*M74
 Y74	=X74*(1-$C$144)
 B75	Runic Protection
@@ -955,7 +955,7 @@ C75	=Inputs!C77
 G75	Wave of Souls
 H75	=1.766*1.2
 I75	1.15
-J75	=($J$6*(1+$E$116)*(1+$D$157)+169*15/120*$C$24+$C$14*6)*H75*$J$10*$L$11*I75*(1+0.01*$E$25)
+J75	=($J$6*(1+$E$116)*(1+$D$157)+{{orcRacialAp}}*15/120*$C$24+$C$14*6)*H75*$J$10*$L$11*I75*(1+0.01*$E$25)
 K75	=J75*($J$8+2)/2*(1+$C$152)*$J$14*(1+0.15*$B$19*(1+0.2*$C$63))*(H8*0.05/2+1)*(1+0.08*C120*D120)
 L75	=K75*2/(1+$C$152)
 M75	=K75*$L$12
@@ -986,70 +986,70 @@ B78	Subduing Grasp
 C78	=Inputs!C80
 B79	Will of the Necropolis
 C79	=Inputs!C81
-V79	=8047*20*1.13/60*J8*J10*0.7
+V79	=8047*{{hpPerStamina}}*{{rppmBadLuckProtection}}/60*J8*J10*0.7
 W79	=498629/150*J8*J10*(0.85+0.15*C152)
-Y79	=-(1.13*(1-exp(-1*12/60)))*49872/12*J10*L10
+Y79	=-({{rppmBadLuckProtection}}*(1-exp(-1*{{reapersMarkWindowSeconds}}/60)))*49872/{{reapersMarkWindowSeconds}}*J10*L10
 A80	Row 10
 B80	Null Magic
 C80	=Inputs!C82
-V80	=(239640*0.7+129036)*1.13*0.92/60*J8*J10
+V80	=(239640*0.7+129036)*{{rppmBadLuckProtection}}*0.92/60*J8*J10
 B81	Unyielding Will
 C81	=Inputs!C83
-V81	=221688*0.85*1.13/60*J8*J10*J9*(0.85+0.15*C152)
-W81	=(1.13*(1-exp(-2*10/60)))*8804*5/10*(0.85+0.15*C152)*J8*J10
+V81	=221688*0.85*{{rppmBadLuckProtection}}/60*J8*J10*J9*(0.85+0.15*C152)
+W81	=({{rppmBadLuckProtection}}*(1-exp(-2*10/60)))*8804*5/10*(0.85+0.15*C152)*J8*J10
 B82	Death's Echo
 C82	=Inputs!C84
-V82	=150750*1.25*1.13/60*J8*J10*J9*(0.85+0.15*C152)
+V82	=150750*1.25*{{rppmBadLuckProtection}}/60*J8*J10*J9*(0.85+0.15*C152)
 B83	Vestigial Shell
 C83	=Inputs!C85
-V83	=124747/6*(1.13*(1-exp(-2*J9*6/60)))*J8*J10
-V84	=135322*4/150*J8*J10*(0.85+0.15*C152)
+V83	=124747/6*({{rppmBadLuckProtection}}*(1-exp(-2*J9*6/60)))*J8*J10
+V84	=135322*{{drwEverlastingBondSeconds}}/150*J8*J10*(0.85+0.15*C152)
 B85	Blood Talents
 C85	Rank
 D85	Variable
-V85	=15233*1.5*1.13/60*J8*J10*5*5/3
+V85	=15233*{{gcdSeconds}}*{{rppmBadLuckProtection}}/60*J8*J10*5*5/3
 A86	Row 1
 B86	Heart Strike
 C86	=Inputs!C88
-U86	=(20*0.793)*14698*J8*J10*0.7/60*1.375
-V86	=(20+2/3*(C152*4-2-2/3))*14698*J8*J10*0.7/60*1.375
+U86	=({{hpPerStamina}}*0.793)*14698*J8*J10*0.7/60*1.375
+V86	=({{hpPerStamina}}+2/3*(C152*{{drwEverlastingBondSeconds}}-2-2/3))*14698*J8*J10*0.7/60*1.375
 A87	Row 2
 B87	Marrowrend
 C87	=Inputs!C89
 D87	=Inputs!D89
-V87	=156528*1.13/60*J8*J9*J10*1.5*(0.85+0.15*C152)
+V87	=156528*{{rppmBadLuckProtection}}/60*J8*J9*J10*{{gcdSeconds}}*(0.85+0.15*C152)
 B88	Blood Boil
 C88	=Inputs!C90
 V88	=91711*J8*J10/90*(0.85+0.15*C152)*5*0.79+2395/3*J10*J8*C152*0.8
 W88	=80382*J8*J10/90*(0.85+0.15*C152)*5*0.79+2013/3*J10*J8*C152*0.8
-X88	=(660181*J10*1.15*1.5-93582*5*J10*L10*0.79)/90*1.5-2395*J10*L10/3*0.8
-Y88	=(578625*J10*1.15*1.5-82021*5*J10*L10*0.79)/90*1.5-2013*J10*L10/3*0.8
+X88	=(660181*J10*{{bloodSpecDamageMultiplier}}*{{gcdSeconds}}-93582*5*J10*L10*0.79)/90*{{gcdSeconds}}-2395*J10*L10/3*0.8
+Y88	=(578625*J10*{{bloodSpecDamageMultiplier}}*{{gcdSeconds}}-82021*5*J10*L10*0.79)/90*{{gcdSeconds}}-2013*J10*L10/3*0.8
 A89	Row 3
 B89	Vampiric Blood
 C89	=Inputs!C91
 U89	=205064/1.2^15
-V89	=(304680/(1.2)^15)*3*1.13*1.2^15/60*J8*J9*J10*(127566/205064)*IF(C152>1,1,1)*0.9
+V89	=(304680/(1.2)^15)*3*{{rppmBadLuckProtection}}*1.2^15/60*J8*J9*J10*(127566/205064)*IF(C152>1,1,1)*0.9
 X89	=-V89/2*L10
 B90	Bone Collector
 C90	=Inputs!C92
 U90	=9935*1.2^14
-V90	=7848*1.5*5*1.13/60*J8*J9*J10
-X90	=-1053*1.5*5*1.13/60*J9*J10*L10
+V90	=7848*{{gcdSeconds}}*5*{{rppmBadLuckProtection}}/60*J8*J9*J10
+X90	=-1053*{{gcdSeconds}}*5*{{rppmBadLuckProtection}}/60*J9*J10*L10
 A91	Row 4
 B91	Ossuary
 C91	=Inputs!C93
 V91	=V25/C152
-X91	=258568*2*1.13/60*1.15*J9*J10
+X91	=258568*2*{{rppmBadLuckProtection}}/60*{{bloodSpecDamageMultiplier}}*J9*J10
 B92	Improved Vampiric Blood
 C92	=Inputs!C94
-V92	=69524/60*1.13*2*J9*J8*J10+44080*J9*J8*J10*2/60*0.7*1.13
+V92	=69524/60*{{rppmBadLuckProtection}}*2*J9*J8*J10+44080*J9*J8*J10*2/60*0.7*{{rppmBadLuckProtection}}
 B93	Improved Heart Strike
 C93	=Inputs!C95
-X93	=1.13*1.21/60*(140745+93831*2)*1.15*J10
+X93	={{rppmBadLuckProtection}}*1.21/60*(140745+93831*2)*{{bloodSpecDamageMultiplier}}*J10
 B94	Relish in Blood
 C94	=Inputs!C96
 V94	=64988*J8*J10/90*(0.85+0.15*C152)*1.31*5+2182/3*J10*J8*C152
-X94	=(409961*J10*1.15-58027*5*(1-L5)*L10)/90*1.5-2396*J10*L10/3
+X94	=(409961*J10*{{bloodSpecDamageMultiplier}}-58027*5*(1-L5)*L10)/90*{{gcdSeconds}}-2396*J10*L10/3
 A95	Row 5
 B95	Leeching Strike
 C95	=Inputs!C97
@@ -1105,8 +1105,8 @@ B115	Iron Heart
 C115	=Inputs!C117
 B116	Bloodied Blade
 C116	=Inputs!C118
-E116	=((8/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))*0.02)+(4/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))*0.01)*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6*0.1)/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)*C116
-F116	=((MAX((622/19130+0.03+((J6*(1+E116)-622)/19130+L8)/(((J6*(1+E116)-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0))-(MAX((622/19130+0.03+((J6-622)/19130+L8)/(((J6-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0)))/(1-(MAX((622/19130+0.03+((J6-622)/19130+L8)/(((J6-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0)))
+E116	=((8/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))*{{maxHpHealFractionM74}})+({{drwEverlastingBondSeconds}}/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))*0.01)*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6*{{ibfBloodyFortitudeBonus}})/(9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))+9/(1/(0.5+(2/((L14+0.3*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43+T51+T57+T63)))))))-1+IF(C152=1,0.5,0))/C152))/2*((0.8/3^(C152-1))/(1-(0.8/3^(C152-1))))+6)*C116
+F116	=((MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6*(1+E116)-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6*(1+E116)-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0))-(MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0)))/(1-(MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0)))
 B117	Coagulopathy
 C117	=Inputs!C119
 D117	=Inputs!D119
@@ -1135,8 +1135,8 @@ C126	=Inputs!C128
 A127	Apex
 B127	Dance of Midnight
 C127	=Inputs!C129
-E127	=T38*(8+C110*4)*(1+C110)+IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)
-F127	=IF(C127=4,(1-(1-(1-(1-(T38*(8+C110*4)))*(1-IF(C127>3,1,0)*(1-0.875^(8*(T40+T43-T46+MIN(($L$9+SUM(Z19:Z36,Z38:Z50)+SUM(Z52:Z76))/(-N51),MAX((1-SUM(U18:U24,U26:U41,U43:U50,U52:U76)+SUM(AA19:AA24,AA26:AA41,AA43:AA50,AA52:AA76)/O42*Q42)/Q51*(-O42/(O51-O42)),0))+2*T57+2*T63)))))))/(3+(2/(L13+0.3)-1+IF(C152=1,0.5,0))/C152),IF(C127>0,1,0)*(1-(1-(T38*(8+C110*4))))/(3+(2/(L13+0.3)-1+IF(C152=1,0.5,0))/C152))
+E127	=T38*(8+C110*{{drwEverlastingBondSeconds}})*(1+C110)+IF(C127>3,1,0)*8*0.125*(T40+T43+T51+T57+T63)
+F127	=IF(C127={{drwEverlastingBondSeconds}},(1-(1-(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}})))*(1-IF(C127>3,1,0)*(1-{{procChance12_5}}^(8*(T40+T43-T46+MIN(($L$9+SUM(Z19:Z36,Z38:Z50)+SUM(Z52:Z76))/(-N51),MAX((1-SUM(U18:U24,U26:U41,U43:U50,U52:U76)+SUM(AA19:AA24,AA26:AA41,AA43:AA50,AA52:AA76)/O42*Q42)/Q51*(-O42/(O51-O42)),0))+2*T57+2*T63)))))))/(3+(2/(L13+0.3)-1+IF(C152=1,0.5,0))/C152),IF(C127>0,1,0)*(1-(1-(T38*(8+C110*{{drwEverlastingBondSeconds}}))))/(3+(2/(L13+0.3)-1+IF(C152=1,0.5,0))/C152))
 B129	Hero Class
 B130	Deathbringer
 C130	=Inputs!C132
@@ -1151,9 +1151,9 @@ J133	San'layn Calculations
 B134	Death's Bargain
 D134	Newly Turned
 G134	Reaper's Mark Stacks
-H134	=MIN(40,1+12*(2*(1+H8)*T25+T26+1/3*(2)*(1/(1-0.15*C107))+T35*2+T40*(11+2*C107)+T42*(2*C136)*(1+C136*H8)+T43+T38*2*(2*(1+H8))+T38*2*(2*(1+H8))+T62*(2*C136)*(1+C136*H8)+2*(2/12+(1+H8)/12)))
+H134	=MIN({{reapersMarkStackCap}},1+{{reapersMarkWindowSeconds}}*(2*(1+H8)*T25+T26+1/3*(2)*(1/(1-0.15*C107))+T35*2+T40*(11+2*C107)+T42*(2*C136)*(1+C136*H8)+T43+T38*2*(2*(1+H8))+T38*2*(2*(1+H8))+T62*(2*C136)*(1+C136*H8)+2*(2/{{reapersMarkWindowSeconds}}+(1+H8)/{{reapersMarkWindowSeconds}})))
 J134	Effective Stack Count
-K134	=C131*7*(1+2*T38*(8+C110*4))*D131
+K134	=C131*{{sanlaynStackCount}}*(1+2*T38*(8+C110*{{drwEverlastingBondSeconds}}))*D131
 B135	Rune Carved Plates
 C135	=Inputs!C137
 D135	Vampiric Speed
@@ -1205,8 +1205,8 @@ B156	Tier Set Bonus
 C156	Active Bonuses
 B157	(2) Set:
 C157	=Inputs!C159
-D157	=C157*(0.025+0.1*T42)
-E157	=((MAX((622/19130+0.03+((J6*(1+D157)-622)/19130+L8)/(((J6*(1+D157)-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0))-(MAX((622/19130+0.03+((J6-622)/19130+L8)/(((J6-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0)))/(1-(MAX((622/19130+0.03+((J6-622)/19130+L8)/(((J6-622)/19130+L8)*1+1/0.94))-0.015*(C153-80),0)+MAX(H14-0.015*(C153-80),0)+MAX(0.03-0.015*(C153-80),0)))
+D157	=C157*({{bloodshotDamageReduction}}+{{ibfBloodyFortitudeBonus}}*T42)
+E157	=((MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6*(1+D157)-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6*(1+D157)-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0))-(MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0)))/(1-(MAX(({{parryFromStrengthBase}}/{{parryFromStrengthDivisor}}+{{baseDodgeParryChance}}+((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)/(((J6-{{parryFromStrengthBase}})/{{parryFromStrengthDivisor}}+L8)*1+1/{{parryDrCoefficient}}))-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX(H14-{{avoidanceSuppressionPerLevel}}*(C153-80),0)+MAX({{baseDodgeParryChance}}-{{avoidanceSuppressionPerLevel}}*(C153-80),0)))
 B158	(4) Set:
 C158	=Inputs!C160
 B160	Color Legend

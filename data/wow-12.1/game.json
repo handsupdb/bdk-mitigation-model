@@ -1,0 +1,304 @@
+{
+  "constants": [
+    {
+      "name": "amsRpGen",
+      "value": 25.0,
+      "meaning": "AMS 25 RP gen (O19)",
+      "occurrences": 24
+    },
+    {
+      "name": "armorPerStrength",
+      "value": 1.8,
+      "meaning": "Armor per point strength, Reinforced Bones/Bone Shield armor (J5)",
+      "occurrences": 12
+    },
+    {
+      "name": "avoidanceRatingPerPercent",
+      "value": 3680.0,
+      "meaning": "Rating to % conversion: avoidance (H13)",
+      "occurrences": 36
+    },
+    {
+      "name": "avoidanceSuppressionPerLevel",
+      "value": 0.015,
+      "meaning": "Avoidance suppression per boss level above player (L14, F116, E157; L14 uses C153-90, F116/E157 use C153-80)",
+      "occurrences": 36
+    },
+    {
+      "name": "baseBloodShieldMastery",
+      "value": 0.16,
+      "meaning": "Base Blood Shield mastery 16% (H11)",
+      "occurrences": 12
+    },
+    {
+      "name": "baseDodgeParryChance",
+      "value": 0.03,
+      "meaning": "Base dodge & parry 3% (H14, L13)",
+      "occurrences": 156
+    },
+    {
+      "name": "bloodPlagueDamageWindowSeconds",
+      "value": 24.0,
+      "meaning": "Blood Plague damage window, K29/24 (V29)",
+      "occurrences": 132
+    },
+    {
+      "name": "bloodPresenceStamBonus",
+      "value": 1.05,
+      "meaning": "Blood Presence 5% stam, divided out (H7)",
+      "occurrences": 49
+    },
+    {
+      "name": "bloodPresenceStamMultiplier",
+      "value": 1.4,
+      "meaning": "Blood Presence 40% stam, divided out (H7)",
+      "occurrences": 49
+    },
+    {
+      "name": "bloodSpecDamageMultiplier",
+      "value": 1.15,
+      "meaning": "Blood spec +15% damage (I-col)",
+      "occurrences": 74
+    },
+    {
+      "name": "bloodshotDamageReduction",
+      "value": 0.025,
+      "meaning": "Bloodshot 2.5% (O6/O8)",
+      "occurrences": 60
+    },
+    {
+      "name": "boneShieldRechargeSeconds",
+      "value": 2.5,
+      "meaning": "Bone Shield 2.5s recharge (L15)",
+      "occurrences": 12
+    },
+    {
+      "name": "critRatingPerPercent",
+      "value": 4600.0,
+      "meaning": "Rating to % conversion: crit (H8)",
+      "occurrences": 12
+    },
+    {
+      "name": "domBoneShellCubicC0",
+      "value": 0.151,
+      "meaning": "DoM Bone-Shell crit-multiplier cubic c0 (L15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "domBoneShellCubicC1",
+      "value": 0.367,
+      "meaning": "DoM Bone-Shell crit-multiplier cubic c1 (L15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "domBoneShellCubicC2",
+      "value": 0.0791,
+      "meaning": "DoM Bone-Shell crit-multiplier cubic c2 (L15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "domBoneShellCubicC3",
+      "value": 0.0086,
+      "meaning": "DoM Bone-Shell crit-multiplier cubic c3 (L15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "drwEverlastingBondSeconds",
+      "value": 4.0,
+      "meaning": "DRW +4s Everlasting Bond (K38)",
+      "occurrences": 428
+    },
+    {
+      "name": "drwMirrorFraction",
+      "value": 0.33,
+      "meaning": "DRW mirrors 33% of damage (K38)",
+      "occurrences": 48
+    },
+    {
+      "name": "dsRpCost",
+      "value": 45.0,
+      "meaning": "Death Strike RP cost 45 (O42)",
+      "occurrences": 12
+    },
+    {
+      "name": "enfeebleSlowFraction",
+      "value": 0.12,
+      "meaning": "Enfeeble 12% (J14/J15)",
+      "occurrences": 60
+    },
+    {
+      "name": "gcdSeconds",
+      "value": 1.5,
+      "meaning": "GCD seconds (Q-col)",
+      "occurrences": 442
+    },
+    {
+      "name": "hasteRatingPerPercent",
+      "value": 4400.0,
+      "meaning": "Rating to % conversion: haste (H9)",
+      "occurrences": 12
+    },
+    {
+      "name": "hpPerStamina",
+      "value": 20.0,
+      "meaning": "HP per stamina (J7)",
+      "occurrences": 90
+    },
+    {
+      "name": "ibfBloodyFortitudeBonus",
+      "value": 0.1,
+      "meaning": "IBF +10% Bloody Fortitude (Q6)",
+      "occurrences": 192
+    },
+    {
+      "name": "leechRatingPerPercent",
+      "value": 6900.0,
+      "meaning": "Rating to % conversion: leech (H12)",
+      "occurrences": 12
+    },
+    {
+      "name": "masteryRatingPerPercent",
+      "value": 2300.0,
+      "meaning": "Rating to % conversion: mastery (H11)",
+      "occurrences": 36
+    },
+    {
+      "name": "maxHpHealFractionM51",
+      "value": 0.0025,
+      "meaning": "Racial/talent heal fraction of maxHP (M51)",
+      "occurrences": 24
+    },
+    {
+      "name": "maxHpHealFractionM66",
+      "value": 0.48,
+      "meaning": "Racial/talent heal fraction of maxHP (M66)",
+      "occurrences": 12
+    },
+    {
+      "name": "maxHpHealFractionM73",
+      "value": 0.04,
+      "meaning": "Racial/talent heal fraction of maxHP (M73)",
+      "occurrences": 72
+    },
+    {
+      "name": "maxHpHealFractionM74",
+      "value": 0.02,
+      "meaning": "Racial/talent heal fraction of maxHP (M74)",
+      "occurrences": 188
+    },
+    {
+      "name": "orcRacialAp",
+      "value": 169.0,
+      "meaning": "Orc racial AP, written 169*15/120 (J-col)",
+      "occurrences": 288
+    },
+    {
+      "name": "parryDrCoefficient",
+      "value": 0.94,
+      "meaning": "Parry DR curve coefficient, written 1/0.94 (L13, F116, E157)",
+      "occurrences": 36
+    },
+    {
+      "name": "parryFromCritRatingPerPercent",
+      "value": 5200.0,
+      "meaning": "Rating to % conversion: parry-from-crit (L8)",
+      "occurrences": 12
+    },
+    {
+      "name": "parryFromStrengthBase",
+      "value": 622.0,
+      "meaning": "Parry-from-strength base (L6, L13, F116, E157)",
+      "occurrences": 48
+    },
+    {
+      "name": "parryFromStrengthDivisor",
+      "value": 19130.0,
+      "meaning": "Parry-from-strength divisor (L6, L13, F116, E157)",
+      "occurrences": 48
+    },
+    {
+      "name": "procChance12_5",
+      "value": 0.875,
+      "meaning": "Uptime model proc chance 12.5% (uptime = 1-(1-p)^events)",
+      "occurrences": 84
+    },
+    {
+      "name": "procChance25",
+      "value": 0.75,
+      "meaning": "Uptime model proc chance 25% (uptime = 1-(1-p)^events)",
+      "occurrences": 204
+    },
+    {
+      "name": "raiseDeadAp",
+      "value": 4925.0,
+      "meaning": "Raise Dead AP, written 4925*15/120 (M40)",
+      "occurrences": 12
+    },
+    {
+      "name": "reapersMarkStackCap",
+      "value": 40.0,
+      "meaning": "Reaper's Mark 40 stack cap (H134)",
+      "occurrences": 24
+    },
+    {
+      "name": "reapersMarkWindowSeconds",
+      "value": 12.0,
+      "meaning": "Reaper's Mark 12s window (H134)",
+      "occurrences": 118
+    },
+    {
+      "name": "rppmBadLuckProtection",
+      "value": 1.13,
+      "meaning": "RPPM bad-luck-protection multiplier (many cells; S32/S44/S73 comments)",
+      "occurrences": 342
+    },
+    {
+      "name": "runicAttenuationPpm",
+      "value": 10.8,
+      "meaning": "Runic Attenuation 10.8 PPM (R67)",
+      "occurrences": 24
+    },
+    {
+      "name": "sanlaynStackCount",
+      "value": 7.0,
+      "meaning": "San'layn 7 stacks (K134)",
+      "occurrences": 48
+    },
+    {
+      "name": "sheetArmorMultiplier",
+      "value": 1.45,
+      "meaning": "Sheet-armor multiplier, Blood Presence/plate (J5)",
+      "occurrences": 12
+    },
+    {
+      "name": "targetCountAttackSpeedBase",
+      "value": 195.5,
+      "meaning": "Target-count attack-speed curve base (H15; unexplained by comments, fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "targetCountAttackSpeedLinear",
+      "value": 21.9,
+      "meaning": "Target-count attack-speed curve linear coefficient (H15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "targetCountAttackSpeedQuadratic",
+      "value": 0.673,
+      "meaning": "Target-count attack-speed curve quadratic coefficient (H15; fragile)",
+      "occurrences": 12
+    },
+    {
+      "name": "vbHealingAmpBase",
+      "value": 1.3,
+      "meaning": "VB healing amp 30% base (X10)",
+      "occurrences": 71
+    },
+    {
+      "name": "versRatingPerPercent",
+      "value": 5400.0,
+      "meaning": "Rating to % conversion: versatility (H10)",
+      "occurrences": 12
+    }
+  ]
+}

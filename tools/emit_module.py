@@ -7,6 +7,16 @@ Usage: .venv/bin/python tools/emit_module.py <safe_sheet>
 Reads
   data/wow-12.1/formulas/<safe>.tsv   formula cells (cell_ref TAB content)
   extracted/<safe>__values.tsv        literals for the non-formula cells
+  data/wow-12.1/game.json            {{name}} -> value game-data constants
+
+Game-data templates: before parsing, every {{name}} in a formula is
+resolved to its constant's value from game.json (loaded once per run, only
+if some formula carries a template) as the Python repr of the float — the
+shortest string that round-trips — so the parsed number, and therefore the
+emitted TS (formula_ts canonicalizes numbers by float value: integral ->
+str(int(v)), else repr(v)), is identical to the pre-templatization literal.
+An unknown template name aborts loudly before anything is parsed or
+written.
 
 Writes
   src/engine/generated/<safe>.ts:
@@ -78,6 +88,7 @@ orN/andN), and 2-arg IF (ifL(c, () => a, () => 0) — lazy IF, both branches
 () => thunks, ifL and memo to be defined in '../lazy'); anything beyond the
 whitelist still fails per-cell and aborts. Deterministic: same inputs -> byte-identical output.
 """
+import json
 import os
 import re
 import sys
@@ -90,6 +101,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FORMULAS_DIR = os.path.join(ROOT, "data", "wow-12.1", "formulas")
 VALUES_DIR = os.path.join(ROOT, "extracted")
 OUT_DIR = os.path.join(ROOT, "src", "engine", "generated")
+GAME_JSON_PATH = os.path.join(ROOT, "data", "wow-12.1", "game.json")
 
 STAT_SHEETS = formula_ast.STAT_SHEETS          # real name -> safe stem
 SAFE_TO_REAL = {stem: real for real, stem in STAT_SHEETS.items()}
@@ -105,6 +117,7 @@ COMPARE_HELPERS = ["EQ", "NE", "GT", "LT", "GE", "LE", "orN", "andN", "not"]
 EXACTMATH_HELPERS = ["excelExp"]                # from '../exactmath'
 
 QUOTED_RE = re.compile(r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'')
+TEMPLATE_RE = re.compile(r"\{\{([^{}]*)\}\}")   # {{name}} game-data template
 HELPER_RE = re.compile(
     r"(?<![\w.$])(" + "|".join(re.escape(h) for h in
                                CELL_HELPERS + LAZY_HELPERS
@@ -136,6 +149,39 @@ def load_tsv_cells(path):
         if len(parts) == 2:
             cells[parts[0].upper()] = parts[1]
     return cells
+
+
+# ------------------------------------------------- game-data templates
+_CONSTANTS = None
+
+
+def load_constants():
+    """{{name}} -> float value from game.json (loaded once per run)."""
+    global _CONSTANTS
+    if _CONSTANTS is None:
+        try:
+            with open(GAME_JSON_PATH, encoding="utf-8") as f:
+                data = json.load(f)
+            _CONSTANTS = {c["name"]: float(c["value"])
+                          for c in data["constants"]}
+        except (OSError, ValueError, KeyError, TypeError) as e:
+            print(f"error: cannot load {GAME_JSON_PATH}: {e}",
+                  file=sys.stderr)
+            sys.exit(1)
+    return _CONSTANTS
+
+
+def resolve_templates(formula, constants):
+    """Every {{name}} -> repr(float value): the shortest round-trip Python
+    repr, so the parsed number — and thus the emitted TS, which canonicalizes
+    numbers by float value — is identical to the pre-templatization literal.
+    Raises KeyError on an unknown template name."""
+    def sub(m):
+        name = m.group(1)
+        if name not in constants:
+            raise KeyError(name)
+        return repr(constants[name])
+    return TEMPLATE_RE.sub(sub, formula)
 
 
 # ---------------------------------------------------------------- ref helpers
@@ -316,6 +362,24 @@ def main(argv):
         return 1
 
     formulas = {c.upper(): f for c, f in formula_ast.load_formulas(fpath).items()}
+    # resolve {{name}} game-data templates BEFORE parsing (game.json loaded
+    # once, only if some formula carries a template; unknown names abort)
+    constants = None
+    templates_resolved = 0
+    for cell in sorted(formulas):
+        if "{{" not in formulas[cell]:
+            continue
+        if constants is None:
+            constants = load_constants()
+        try:
+            resolved = resolve_templates(formulas[cell], constants)
+        except KeyError as e:
+            print(f"error: {cell}: unknown game-data template {e} — no such "
+                  f"constant in {os.path.relpath(GAME_JSON_PATH, ROOT)}",
+                  file=sys.stderr)
+            return 1
+        templates_resolved += len(TEMPLATE_RE.findall(formulas[cell]))
+        formulas[cell] = resolved
     fcells = load_tsv_cells(fpath)
     values = load_tsv_cells(vpath)
     literals = {c: v for c, v in values.items() if c not in formulas}
@@ -463,6 +527,10 @@ def main(argv):
         return ", ".join(hs) if hs else "(none)"
 
     print(f"wrote {os.path.relpath(out_path, ROOT)}: {len(lines)} lines")
+    if templates_resolved:
+        print(f"game-data templates resolved: {templates_resolved} "
+              f"({len(constants)} constants from "
+              f"{os.path.relpath(GAME_JSON_PATH, ROOT)})")
     print(f"consts: {len(order)} = {len(f_order)} formulas {refs(f_order)} + "
           f"{len(literals)} literals + {len(n_order)} null {refs(n_order)}")
     broken = (f" [{', '.join(f'{c}->{d}' for c, d in sorted(removed_edges))}]"
