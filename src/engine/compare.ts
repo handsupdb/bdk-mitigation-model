@@ -4,15 +4,18 @@ import type { CellValue } from './cells';
  * Comparison and logic helpers for generated formula code.
  *
  * Mirrors the spreadsheet conventions used elsewhere in the engine:
- * - Only numbers are truthy, and 0 is falsy (see `truthy`).
+ * - Booleans and non-zero numbers are truthy, and 0 is falsy (see
+ *   `truthy`); comparison results arrive as JS booleans.
  * - When both operands are strings they compare as strings; otherwise the
  *   comparison is numeric, with null (and, in the mixed case, strings)
  *   coercing to 0 — the same coercion `n()` applies in cells.ts.
  */
 
-/** True only for non-zero numbers. Strings and null are falsy. */
-function truthy(x: CellValue): boolean {
-  return typeof x === 'number' && x !== 0;
+/** True for boolean `true` and non-zero numbers. Strings and null are falsy. */
+function truthy(x: CellValue | boolean): boolean {
+  return (
+    (typeof x === 'boolean' && x) || (typeof x === 'number' && x !== 0)
+  );
 }
 
 /** Numeric coercion for comparisons: numbers pass through; strings and null -> 0. */
@@ -63,17 +66,17 @@ export function LE(a: CellValue, b: CellValue): boolean {
   return compare(a, b) <= 0;
 }
 
-/** True when any argument is truthy (a non-zero number). */
-export function orN(...args: CellValue[]): boolean {
+/** True when any argument is truthy (boolean `true` or a non-zero number). */
+export function orN(...args: (CellValue | boolean)[]): boolean {
   return args.some((x) => truthy(x));
 }
 
-/** True when every argument is truthy (a non-zero number). */
-export function andN(...args: CellValue[]): boolean {
+/** True when every argument is truthy (boolean `true` or a non-zero number). */
+export function andN(...args: (CellValue | boolean)[]): boolean {
   return args.every((x) => truthy(x));
 }
 
-/** Logical negation under engine truthiness (only non-zero numbers are true). */
-export function not(x: CellValue): boolean {
+/** Logical negation under engine truthiness (booleans and non-zero numbers are true). */
+export function not(x: CellValue | boolean): boolean {
   return !truthy(x);
 }

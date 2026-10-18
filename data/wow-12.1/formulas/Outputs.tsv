@@ -1,0 +1,267 @@
+B2	Data Outputs
+B4	Baseline Stat Weights
+F4	Performance Indicators
+B6	Mitigation Stat Weights
+C6	Raw
+D6	Normalized
+F6	Performance Measures
+G6	Baseline
+H6	Comparison
+I6	Differential
+B7	Armor
+C7	=IF(OR(N('+Armor'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Armor'!T10-'+Armor'!U10-'+Armor'!V10-'+Armor'!W10)*(1-'+Armor'!$T$76*(10+2*'+Armor'!C92))+('+Armor'!T10-'+Armor'!U10-'+Armor'!V10-'+Armor'!W10*(1.3+0.05*'+Armor'!C92))*'+Armor'!$T$76*(10+2*'+Armor'!C92))/'+Armor'!O10*Baseline!T10/'+Armor'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Armor'!$N$15-Baseline!$N$15)/10)
+D7	=C7/MAX($C$7:$C$16)
+F7	Mitigation Factor
+G7	=Baseline!N15
+H7	=Comparison!N15
+I7	="("&ROUND(((1-((Comparison!T10-Comparison!U10-Comparison!V10-Comparison!W10)*(1-Comparison!$T$76*(10+2*Comparison!C92))+(Comparison!T10-Comparison!U10-Comparison!V10-Comparison!W10*(1.3+0.05*Comparison!C92))*(Comparison!$T$76*(10+2*Comparison!C92)))/Comparison!O10*Baseline!T10/Comparison!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*(Baseline!$T$76*(10+2*Baseline!C92)))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*(Baseline!$T$76*(10+2*Baseline!C92)))/Baseline!O10)%,2)&"%)"
+B8	Strength
+C8	=IF(OR(N('+Strength'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Strength'!T10-'+Strength'!U10-'+Strength'!V10-'+Strength'!W10)*(1-'+Strength'!$T$76*(10+2*'+Strength'!C92))+('+Strength'!T10-'+Strength'!U10-'+Strength'!V10-'+Strength'!W10*(1.3+0.05*'+Strength'!C92))*'+Strength'!$T$76*(10+2*'+Strength'!C92))/'+Strength'!O10*Baseline!T10/'+Strength'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Strength'!$N$15-Baseline!$N$15)/10)
+D8	=C8/MAX($C$7:$C$16)
+F8	Overall DPS
+G8	=Baseline!O15
+H8	=Comparison!O15
+I8	=(H8-G8)/G8
+B9	Stamina
+C9	=IF(OR(N('+Stamina'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Stamina'!T10-'+Stamina'!U10-'+Stamina'!V10-'+Stamina'!W10)*(1-'+Stamina'!$T$76*(10+2*'+Stamina'!C92))+('+Stamina'!T10-'+Stamina'!U10-'+Stamina'!V10-'+Stamina'!W10*(1.3+0.05*'+Stamina'!C92))*'+Stamina'!$T$76*(10+2*'+Stamina'!C92))/'+Stamina'!O10*Baseline!T10/'+Stamina'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Stamina'!$N$15-Baseline!$N$15)/10)
+D9	=C9/MAX($C$7:$C$16)
+F9	Priority DPS
+G9	=Baseline!P15
+H9	=Comparison!P15
+I9	=(H9-G9)/G9
+B10	Critical Strike
+C10	=IF(OR(N('+Critical Strike'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Critical Strike'!T10-'+Critical Strike'!U10-'+Critical Strike'!V10-'+Critical Strike'!W10)*(1-'+Critical Strike'!$T$76*(10+2*'+Critical Strike'!C92))+('+Critical Strike'!T10-'+Critical Strike'!U10-'+Critical Strike'!V10-'+Critical Strike'!W10*(1.3+0.05*'+Critical Strike'!C92))*'+Critical Strike'!$T$76*(10+2*'+Critical Strike'!C92))/'+Critical Strike'!O10*Baseline!T10/'+Critical Strike'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Critical Strike'!$N$15-Baseline!$N$15)/10)
+D10	=C10/MAX($C$7:$C$16)
+F10	Reliable Effective Health
+G10	=Baseline!Q15
+H10	=Comparison!Q15
+I10	=(H10-G10)/G10
+B11	Haste 
+C11	=IF(OR(N('+Haste'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Haste'!T10-'+Haste'!U10-'+Haste'!V10-'+Haste'!W10)*(1-'+Haste'!$T$76*(10+2*'+Haste'!C92))+('+Haste'!T10-'+Haste'!U10-'+Haste'!V10-'+Haste'!W10*(1.3+0.05*'+Haste'!C92))*'+Haste'!$T$76*(10+2*'+Haste'!C92))/'+Haste'!O10*Baseline!T10/'+Haste'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Haste'!$N$15-Baseline!$N$15)/10)
+D11	=C11/MAX($C$7:$C$16)
+F11	Reliable and Controllable Effective Health
+G11	=Baseline!R15
+H11	=Comparison!R15
+I11	=(H11-G11)/G11
+B12	Versatility
+C12	=IF(OR(N('+Versatility'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Versatility'!T10-'+Versatility'!U10-'+Versatility'!V10-'+Versatility'!W10)*(1-'+Versatility'!$T$76*(10+2*'+Versatility'!C92))+('+Versatility'!T10-'+Versatility'!U10-'+Versatility'!V10-'+Versatility'!W10*(1.3+0.05*'+Versatility'!C92))*'+Versatility'!$T$76*(10+2*'+Versatility'!C92))/'+Versatility'!O10*Baseline!T10/'+Versatility'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Versatility'!$N$15-Baseline!$N$15)/10)
+D12	=C12/MAX($C$7:$C$16)
+F12	Unreliable Effective Health
+G12	=Baseline!S15
+H12	=Comparison!S15
+I12	=(H12-G12)/G12
+B13	Mastery
+C13	=IF(OR(N('+Mastery'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Mastery'!T10-'+Mastery'!U10-'+Mastery'!V10-'+Mastery'!W10)*(1-'+Mastery'!$T$76*(10+2*'+Mastery'!C92))+('+Mastery'!T10-'+Mastery'!U10-'+Mastery'!V10-'+Mastery'!W10*(1.3+0.05*'+Mastery'!C92))*'+Mastery'!$T$76*(10+2*'+Mastery'!C92))/'+Mastery'!O10*Baseline!T10/'+Mastery'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Mastery'!$N$15-Baseline!$N$15)/10)
+D13	=C13/MAX($C$7:$C$16)
+B14	Leech
+C14	=IF(OR(N('+Leech'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Leech'!T10-'+Leech'!U10-'+Leech'!V10-'+Leech'!W10)*(1-'+Leech'!$T$76*(10+2*'+Leech'!C92))+('+Leech'!T10-'+Leech'!U10-'+Leech'!V10-'+Leech'!W10*(1.3+0.05*'+Leech'!C92))*'+Leech'!$T$76*(10+2*'+Leech'!C92))/'+Leech'!O10*Baseline!T10/'+Leech'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Leech'!$N$15-Baseline!$N$15)/10)
+D14	=C14/MAX($C$7:$C$16)
+B15	Avoidance
+C15	=IF(OR(N('+Avoidance'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Avoidance'!T10-'+Avoidance'!U10-'+Avoidance'!V10-'+Avoidance'!W10)*(1-'+Avoidance'!$T$76*(10+2*'+Avoidance'!C92))+('+Avoidance'!T10-'+Avoidance'!U10-'+Avoidance'!V10-'+Avoidance'!W10*(1.3+0.05*'+Avoidance'!C92))*'+Avoidance'!$T$76*(10+2*'+Avoidance'!C92))/'+Avoidance'!O10*Baseline!T10/'+Avoidance'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Avoidance'!$N$15-Baseline!$N$15)/10)
+D15	=C15/MAX($C$7:$C$16)
+B16	Weapon DPS
+C16	=IF(OR(N('+Weapon DPS'!$N$15)=0,N(Baseline!$N$15)=0),((1-(('+Weapon DPS'!T10-'+Weapon DPS'!U10-'+Weapon DPS'!V10-'+Weapon DPS'!W10)*(1-'+Weapon DPS'!$T$76*(10+2*'+Weapon DPS'!C92))+('+Weapon DPS'!T10-'+Weapon DPS'!U10-'+Weapon DPS'!V10-'+Weapon DPS'!W10*(1.3+0.05*'+Weapon DPS'!C92))*'+Weapon DPS'!$T$76*(10+2*'+Weapon DPS'!C92))/'+Weapon DPS'!O10*Baseline!T10/'+Weapon DPS'!T10)-(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10))/(1-((Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10)*(1-Baseline!$T$76*(10+2*Baseline!C92))+(Baseline!T10-Baseline!U10-Baseline!V10-Baseline!W10*(1.3+0.05*Baseline!C92))*Baseline!$T$76*(10+2*Baseline!C92))/Baseline!O10)/10,('+Weapon DPS'!$N$15-Baseline!$N$15)/10)
+D16	=C16/MAX($C$7:$C$16)
+B17	Pawn String
+C17	="( Pawn: v1: ""BDK Mitigation"": Leech="&D14&", CritRating="&D10&", Dps="&D16&", Strength="&D8&", HasteRating="&D11&", MasteryRating="&D13&", Stamina="&D9&", Armor="&D7&", Versatility="&D12&" )"
+B19	Overall DPS Stat Weights
+C19	Raw
+D19	Normalized
+B20	Armor
+C20	=('+Armor'!$O$15-Baseline!$O$15)/10
+D20	=C20/MAX($C$20:$C$29)
+B21	Strength
+C21	=('+Strength'!$O$15-Baseline!$O$15)/10
+D21	=C21/MAX($C$20:$C$29)
+B22	Stamina
+C22	=('+Stamina'!$O$15-Baseline!$O$15)/10
+D22	=C22/MAX($C$20:$C$29)
+B23	Critical Strike
+C23	=('+Critical Strike'!$O$15-Baseline!$O$15)/10
+D23	=C23/MAX($C$20:$C$29)
+B24	Haste 
+C24	=('+Haste'!$O$15-Baseline!$O$15)/10
+D24	=C24/MAX($C$20:$C$29)
+B25	Versatility
+C25	=('+Versatility'!$O$15-Baseline!$O$15)/10
+D25	=C25/MAX($C$20:$C$29)
+B26	Mastery
+C26	=('+Mastery'!$O$15-Baseline!$O$15)/10
+D26	=C26/MAX($C$20:$C$29)
+B27	Leech
+C27	=('+Leech'!$O$15-Baseline!$O$15)/10
+D27	=C27/MAX($C$20:$C$29)
+B28	Avoidance
+C28	=('+Avoidance'!$O$15-Baseline!$O$15)/10
+D28	=C28/MAX($C$20:$C$29)
+B29	Weapon DPS
+C29	='+Weapon DPS'!$O$15-Baseline!$O$15
+D29	=C29/MAX($C$20:$C$29)
+B30	Pawn String
+C30	="( Pawn: v1: ""BDK Overall DPS"": Leech="&D27&", CritRating="&D23&", Dps="&D29&", Strength="&D21&", HasteRating="&D24&", MasteryRating="&D26&", Stamina="&D22&", Armor="&D20&", Versatility="&D25&" )"
+B32	Priority DPS Stat Weights
+C32	Raw
+D32	Normalized
+B33	Armor
+C33	=('+Armor'!$P$15-Baseline!$P$15)/10
+D33	=C33/MAX($C$33:$C$42)
+B34	Strength
+C34	=('+Strength'!$P$15-Baseline!$P$15)/10
+D34	=C34/MAX($C$33:$C$42)
+B35	Stamina
+C35	=('+Stamina'!$P$15-Baseline!$P$15)/10
+D35	=C35/MAX($C$33:$C$42)
+B36	Critical Strike
+C36	=('+Critical Strike'!$P$15-Baseline!$P$15)/10
+D36	=C36/MAX($C$33:$C$42)
+B37	Haste 
+C37	=('+Haste'!$P$15-Baseline!$P$15)/10
+D37	=C37/MAX($C$33:$C$42)
+B38	Versatility
+C38	=('+Versatility'!$P$15-Baseline!$P$15)/10
+D38	=C38/MAX($C$33:$C$42)
+B39	Mastery
+C39	=('+Mastery'!$P$15-Baseline!$P$15)/10
+D39	=C39/MAX($C$33:$C$42)
+B40	Leech
+C40	=('+Leech'!$P$15-Baseline!$P$15)/10
+D40	=C40/MAX($C$33:$C$42)
+B41	Avoidance
+C41	=('+Avoidance'!$P$15-Baseline!$P$15)/10
+D41	=C41/MAX($C$33:$C$42)
+B42	Weapon DPS
+C42	='+Weapon DPS'!$P$15-Baseline!$P$15
+D42	=C42/MAX($C$33:$C$42)
+B43	Pawn String
+C43	="( Pawn: v1: ""BDK Priority DPS"": Leech="&D40&", CritRating="&D36&", Dps="&D42&", Strength="&D34&", HasteRating="&D37&", MasteryRating="&D39&", Stamina="&D35&", Armor="&D33&", Versatility="&D38&" )"
+B45	Reliable EHP Stat Weights
+C45	Raw
+D45	Normalized
+B46	Armor
+C46	=('+Armor'!$Q$15-Baseline!$Q$15)/10
+D46	=C46/MAX($C$46:$C$55)
+B47	Strength
+C47	=('+Strength'!$Q$15-Baseline!$Q$15)/10
+D47	=C47/MAX($C$46:$C$55)
+B48	Stamina
+C48	=('+Stamina'!$Q$15-Baseline!$Q$15)/10
+D48	=C48/MAX($C$46:$C$55)
+B49	Critical Strike
+C49	=('+Critical Strike'!$Q$15-Baseline!$Q$15)/10
+D49	=C49/MAX($C$46:$C$55)
+B50	Haste 
+C50	=('+Haste'!$Q$15-Baseline!$Q$15)/10
+D50	=C50/MAX($C$46:$C$55)
+B51	Versatility
+C51	=('+Versatility'!$Q$15-Baseline!$Q$15)/10
+D51	=C51/MAX($C$46:$C$55)
+B52	Mastery
+C52	=('+Mastery'!$Q$15-Baseline!$Q$15)/10
+D52	=C52/MAX($C$46:$C$55)
+B53	Leech
+C53	=('+Leech'!$Q$15-Baseline!$Q$15)/10
+D53	=C53/MAX($C$46:$C$55)
+B54	Avoidance
+C54	=('+Avoidance'!$Q$15-Baseline!$Q$15)/10
+D54	=C54/MAX($C$46:$C$55)
+B55	Weapon DPS
+C55	='+Weapon DPS'!$Q$15-Baseline!$Q$15
+D55	=C55/MAX($C$46:$C$55)
+B56	Pawn String
+C56	="( Pawn: v1: ""BDK EHP(r)"": Leech="&D53&", CritRating="&D49&", Dps="&D55&", Strength="&D47&", HasteRating="&D50&", MasteryRating="&D52&", Stamina="&D48&", Armor="&D46&", Versatility="&D51&" )"
+B58	Reliable and Controllalbe EHP Stat Weights
+C58	Raw
+D58	Normalized
+B59	Armor
+C59	=('+Armor'!$R$15-Baseline!$R$15)/10
+D59	=C59/MAX($C$59:$C$68)
+B60	Strength
+C60	=('+Strength'!$R$15-Baseline!$R$15)/10
+D60	=C60/MAX($C$59:$C$68)
+B61	Stamina
+C61	=('+Stamina'!$R$15-Baseline!$R$15)/10
+D61	=C61/MAX($C$59:$C$68)
+B62	Critical Strike
+C62	=('+Critical Strike'!$R$15-Baseline!$R$15)/10
+D62	=C62/MAX($C$59:$C$68)
+B63	Haste 
+C63	=('+Haste'!$R$15-Baseline!$R$15)/10
+D63	=C63/MAX($C$59:$C$68)
+B64	Versatility
+C64	=('+Versatility'!$R$15-Baseline!$R$15)/10
+D64	=C64/MAX($C$59:$C$68)
+B65	Mastery
+C65	=('+Mastery'!$R$15-Baseline!$R$15)/10
+D65	=C65/MAX($C$59:$C$68)
+B66	Leech
+C66	=('+Leech'!$R$15-Baseline!$R$15)/10
+D66	=C66/MAX($C$59:$C$68)
+B67	Avoidance
+C67	=('+Avoidance'!$R$15-Baseline!$R$15)/10
+D67	=C67/MAX($C$59:$C$68)
+B68	Weapon DPS
+C68	='+Weapon DPS'!$R$15-Baseline!$R$15
+D68	=C68/MAX($C$59:$C$68)
+B69	Pawn String
+C69	="( Pawn: v1: ""BDK EHP(rc)"": Leech="&D66&", CritRating="&D62&", Dps="&D68&", Strength="&D60&", HasteRating="&D63&", MasteryRating="&D65&", Stamina="&D61&", Armor="&D59&", Versatility="&D64&" )"
+B71	Unreliable EHP Stat Weights
+C71	Raw
+D71	Normalized
+B72	Armor
+C72	=('+Armor'!$S$15-Baseline!$S$15)/10
+D72	=C72/MAX($C$59:$C$68)
+B73	Strength
+C73	=('+Strength'!$S$15-Baseline!$S$15)/10
+D73	=C73/MAX($C$59:$C$68)
+B74	Stamina
+C74	=('+Stamina'!$S$15-Baseline!$S$15)/10
+D74	=C74/MAX($C$59:$C$68)
+B75	Critical Strike
+C75	=('+Critical Strike'!$S$15-Baseline!$S$15)/10
+D75	=C75/MAX($C$59:$C$68)
+B76	Haste 
+C76	=('+Haste'!$S$15-Baseline!$S$15)/10
+D76	=C76/MAX($C$59:$C$68)
+B77	Versatility
+C77	=('+Versatility'!$S$15-Baseline!$S$15)/10
+D77	=C77/MAX($C$59:$C$68)
+B78	Mastery
+C78	=('+Mastery'!$S$15-Baseline!$S$15)/10
+D78	=C78/MAX($C$59:$C$68)
+B79	Leech
+C79	=('+Leech'!$S$15-Baseline!$S$15)/10
+D79	=C79/MAX($C$59:$C$68)
+B80	Avoidance
+C80	=('+Avoidance'!$S$15-Baseline!$S$15)/10
+D80	=C80/MAX($C$59:$C$68)
+B81	Weapon DPS
+C81	='+Weapon DPS'!$S$15-Baseline!$S$15
+D81	=C81/MAX($C$59:$C$68)
+B82	Pawn String
+C82	="( Pawn: v1: ""BDK EHP(u)"": Leech="&D79&", CritRating="&D75&", Dps="&D81&", Strength="&D73&", HasteRating="&D76&", MasteryRating="&D78&", Stamina="&D74&", Armor="&D72&", Versatility="&D77&" )"
+B84	Color Legend
+B85	Information Only
+B86	Raw Calculation
+B87	Normalized Calculation
+B88	Information Only (Alternate)
+B89	String
+D162	1.0
+E162	1.0
+D163	2.0
+E163	1.0
+D164	3.0
+E164	1.0
+D165	4.0
+E165	0.0
+D166	5.0
+E166	1.0
+D167	6.0
+E167	1.0
+D168	7.0
+E168	2.0
+D169	8.0
+E169	1.0
+D170	9.0
+E170	0.0
+D171	10.0
+E171	1.0

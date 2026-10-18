@@ -1,0 +1,1783 @@
+===== SOURCE: bdk_advanced_guide.docx =====
+[meta] m:oMath occurrences in document.xml: 15
+[meta] w:drawing occurrences: 21
+[meta] a:blip (image refs): 21
+
+[Title] [12.1.5] Advanced Blood Death Knight Guide for M+
+By Kyrasis-Area 52 (Discord: Kyrasis)
+[Heading2] Disclaimer
+This guide was created for BDKs (Blood Death Knights) progressing in M+ (Mythic+) dungeons of all key levels; some recommendations presented herein were not made for use in raid or PvP scenarios, which can have different priorities and considerations. Furthermore, it assumes the user is capable of playing a BDK reasonably well and that they are able to obtain reasonably competitive gear (assumptions that, quite frankly, all guides make). Also, the use of all tier set bonuses is generally assumed.
+
+All recommendations reflect the current state of 12.1.5 as accurately as possible and if significant emergent changes occur the guide will be updated to reflect those changes as soon as possible.
+
+If you have any specific questions, comments, feedback, or concerns regarding this guide, please message me through Death’s Advance (The BDK community/theorycrafting discord server) or discord tag Kyrasis as your first line of support. I’m always happy to answer questions about BDKs and I’m generally available to perform log reviews!
+[Heading1] Introduction
+Welcome to the Advanced Blood Death Knight Guide for M+ in Patch 12.1.5! The purpose of this guide is to provide accurate, in-depth BDK information specifically geared towards players progressing in M+. All information provided herein is based on a combination of M+ log data analysis, simulationcraft analysis, BDK mitigation model analysis, in-game testing, and expert opinion. The recommendations can also provide an effective foundation in raid, though a number of optimization recommendations may be different if particularly low gear level, poor ability usage, or unusual encounter conditions were taken into consideration. It is a comprehensive guide that gives readers a chance to understand not only *what* decisions can improve their play, but *why* these decisions are made, so feel free to skip to whatever sections are relevant for you (a navigation tool is available on the left)!
+
+The guide is split into three sections: 
+
+Fundamentals - Resources, Class Design, Baseline Abilities, Attribute Details
+Character Optimization - Performance Measures, Character Customization Options, and Ability Priorities.
+Supporting Information - Addon and Macro Information
+[Heading2] About the Author
+I'm Kyrasis, I’ve been primarily doing a massive amount of the math-heavy theorycrafting for BDKs since Legion; I was also the #1 World Ranked M+ BDK for Season 4 of Dragonflight, Season 2 of Dragonflight, and Season 4 of Battle for Azeroth on raider.io. In addition to the comprehensive analysis, I personally maintain the BDK mitigation model that is primarily used to evaluate mitigation on BDK in various situations, I am the primary Blood SimC APL writer, I do a lot of the direct log analysis (with support from separate developers and data collectors in this area), I maintain this advanced guide, and I do occasional Youtube content for fun when I have time to spare. Again, I can be contacted through the discord tag Kyrasis or through Death’s Advance (The BDK community/theorycrafting discord server) if you have any feedback or questions!
+[Heading2] Thanking Contributors
+Specifically, I'd like to thank the following: 
+
+Thorlefulz for continuous theorycrafting support activities as well as providing some independent log statistical analysis tooling, scripting, and general guide review.
+Arma for his work on the BDK simcraft module, his independent testing/theorycrafting work, and review comments.
+Bicepspump for playing an important role in the development of a BDK Death Strike log analysis tool and providing the starting methodology for doing large-scale log statistical analysis.
+Mythie for helping to independently validate core portions of the BDK mitigation model and for work tracking game variables.
+Muffins for iterating on a number of log analysis scripts and review comments.
+Navira, Yoda, Terra, and Handsupdb for review comments and/or playtesting feedback.
+Druchaon, Cele, Angry, Naed, Nnoggie, Kidre, BelleDK, Brewseph, Dorki, Trell, George, SSBane, Ghost, Ellychan and Baconmumbles for historical contributions.
+Bees, Obadyahu, Cambam, Горсун, Riles, MrPottiez, Jeff, Zivvy, Spinda, HiddenoO, Fiver, Gomo, Tabu, Primalthirst, Lerler, Diamans, Zinnin, and LGhost for contributing valuable feedback that led to modifications or additions.
+All other users who provided support!
+[Heading1]  / 
+[Heading1] Fundamentals
+This section overviews some basic information upfront before moving onto specific recommendations in future sections. While there are some nuggets of lesser known information throughout this section, feel free to skip to the Character Optimization section whenever you desire, especially if you have some familiarity with BDK.
+[Heading2] Resource Overview
+
+
+Runes
+Maximum Runes: 6 Runes
+Base Rune Cooldown Time: 10 seconds
+Base Runic Power Generated Per Rune Used: 10 RP (Runic Power)
+
+Our primary ability resource that passively regenerates. All runes have individual cooldowns, but only 3 runes can progress their cooldown at a time. The base rune cooldown is reduced by haste. In general, 10 RP (Runic Power) is generated per each rune used, but there are exceptions.
+
+Runic Power
+Base Maximum: 125
+
+RP is our secondary ability resource that is primarily generated by spending runes. The main use of this resource is to spend it on [Death Strike] to generate health. RP is effectively a second health bar and needs to be mindfully managed for BDK success. Note, 1.25 RP is lost every second when out of combat and RP is lowered to 20 when an M+ dungeon starts.
+
+Bone Shield
+Maximum Stacks: 10 (12 with [Improved Bone Shield])
+
+[Bone Shield] is a stack-based mitigation buff where stacks are mainly generated with [Marrowrend] (or [Death’s Caress]) and lost when damaged by melee attacks (at max you can lose one charge every 2.5 seconds). A significant amount of passive damage reduction is lost when this buff falls off completely and [Ossuary] provides a [Death Strike] RP cost reduction when you have at least 5 stacks; other than that, the number of [Bone Shield] stacks do not provide any additional bonuses outside of talent interactions like [Foul Bulwark]. Generating new stacks of [Bone Shield] is done at the cost of RP generation, since [Marrowrend] (and [Death’s Caress]) do not generate RP as efficiently as [Heart Strike]. [Bone Shield] stacks do not reset when a M+ dungeon starts, so there is some value in generating stacks ahead of starting a key.
+[Heading2] Class Design Implications
+BDKs take significantly more up-front damage than other tanks, since we can mitigate significant amounts of this damage using reactive healing from [Death Strike]. As a consequence, BDKs are usually more vulnerable to dying from burst damage than other tanks, since a large portion of our mitigation happens after we take the damage.
+
+More so than any other tank, a BDK's health, alone, is not an indication of how vulnerable they are to dying, since our RP functions as a pseudo-second-health-bar. This generally means that healers have a more difficult time efficiently healing BDKs, since healers need to track an extra resource to heal BDKs effectively and there is potential for both players to overlap their healing abilities. This is especially complicated for healers in situations where the BDK does not have enough stored [Death Strike] healing to restore their health to sufficiently high levels despite not being low on RP, since the healer does not have a straightforward indication that the BDK may be in this state. 
+
+BDKs are the most vulnerable at the start of pulls, when their [Bone Shield] may be at low or no stacks, where their RP may be low or empty, and when their [Death Strike] will not be as impactful during the first few seconds of a pull (since healing is proportional to damage taken in the last 5 seconds). Attempt to refresh [Bone Shield] and to top off RP at the end of any pull, so you can have these resources available at the start of the next one, which can help with this vulnerability. For much the same reasons, BDKs have a lot of difficulty recovering after they have died and have been resurrected.
+[Heading2] Ability Information
+[Heading3] Offensive Abilities
+[Heart Strike] - This is our filler ability. It is our most rune-efficient generator of RP and it hits two targets by default and 5 targets while standing in [Death and Decay].
+Extra Details: 
+Secondary targets hit are selected within a 5 yard 180 degree cone in front of your character.
+Hitting 5 targets with [Heart Strike] only requires that you, personally, are standing in [Death and Decay] or that you are benefitting from the lingering 4 second buff effect.
+
+[Marrowrend] - This single target ability is primarily used to generate [Bone Shield] charges, but it's a less rune-efficient generator of RP and less rune-efficient at dealing damage than [Heart Strike].
+
+[Bone Shield] - This is a stackable mitigation buff provided primarily by [Marrowrend] or [Death’s Caress].
+Extra Details:
+You cannot lose charges more than once every 2.5 seconds from enemy melee attacks.
+Outside of talent interactions and [Ossuary], the number of bone shield charges do not change the benefit of this buff.
+
+[Blood Boil] - This ability is primarily used for strong uncapped AoE damage/threat generation, [Blood Plague] application, to utilize [Boiling Point] procs, and to build [Hemostasis] stacks (with the appropriate talent).
+Extra Details:
+The cooldown of this ability is lowered with haste.
+
+[Blood Plague] - A moderately powerful DoT effect with 100% leech. As of patch 10.1, the leech from this ability provides 25% more healing than the damage it deals, though this is not well-documented. It is primarily applied through [Blood Boil].
+Extra Details: 
+Unlike most DoTs in the game, this is not affected by haste.
+
+[Death and Decay] - A ground-based DoT effect that provides moderate damage and can allow [Heart Strike] to hit up to 4 additional targets instead of its usual 1 additional target (with [Cleaving Strikes]). With [Grip of the Dead], this ability is also a strong short-duration AoE snare.
+Extra Details: 
+Being able to hit 4 additional targets with [Heart Strike] requires that you, personally, are standing in the [Death and Decay] radius or affected by the lingering buff effect.
+All related buff effects from standing in [Death and Decay] linger for 4 seconds after you leave the effect (even if the ground effect naturally expires).
+Unlike most DoT's in the game, this is not affected by haste.
+Only one of your ground effects (the first one to apply) can affect an enemy with [Grip of the Dead] at any time.
+
+[Death Strike] - This is our primary RP spender, providing relatively high single target (and potential three target cleave) damage and a significant amount of healing based on recently taken damage. This also triggers [Blood Shield].
+Extra Details: 
+Many forms of environmental damage do not count as damage taken for the healing of this ability.
+Damage that is considered friendly fire also does not contribute to the healing of this ability.
+Damage that has already contributed to the healing of one [Death Strike] cannot contribute again to another.
+
+[Consumption] - An AoE frontal empowered ability cooldown that hits for very high damage relative to all other BDK abilities between a fixed damage initial hit and an empowered secondary hit that consumes 25%/50%/75% of remaining [Blood Plague] damage. It also has a minor damage reduction effect that increases in power at the cost of a lower duration based on empowered rank that could be used to provide a small buffer against short incoming damage windows with proper timing.
+Extra Details: 
+Targets are selected within a 8 yard 180 degree cone in front of the player character. In order to hit an enemy, the 8 yard cone must include the very center of the enemy hitbox (this is problematic in a number of situations, but especially in raid).
+The primary damage effect deals less damage when hitting more than 8 targets (A ‘SQRT(N/8)’ multiplier is applied).
+The [Blood Plague] “consume” effect does result in the equivalent amount of healing.
+Any [Blood Plague] instances from [Dancing Rune Weapon] are consumed on the secondary hit.
+Stage 1/2/3 requires 1.5s/2s/2.5s of channeling (affected by haste).
+Movement during channeling is reduced by 30%.
+
+[Raise Dead] - A single target dps cooldown. 
+Extra Details: 
+The ghoul attacks whatever you are attacking and it won’t stop attacking a target unless a new target is damaged by you or its existing target dies.
+Even though it is not directly controllable, the ghoul auto-casts [Claw] and [Gnaw] (a low duration single target stun that can drive up stun diminishing returns on enemies).
+Raise dead cannot be used while a unit is being controlled by [Control Undead].
+
+[Death’s Caress] - This is our ranged filler. It is a more rune-efficient builder of [Bone Shield] stacks relative to [Marrowrend] at the cost of being less cast-time-efficient. The cast-time inefficiency historically limited its use in the normal rotation, since it was generally not worth casting if anything else is competing for the same cast time. That being said, it can be beneficial to use over basic [Marrowrend] casts if two runes are not immediately available.
+
+[Death Coil] - A ranged RP spender that deals low damage or low situational healing for its cost. In extremely rare situations it could potentially save your life, but this ability is harmful to use outside of special situations.
+Extra Details: 
+You can heal yourself with this ability for the duration of [Lichborne], though there’s no reason to if you can use [Death Strike] instead.
+[Heading3] Defensive Abilities
+[Vampiric Blood] - This is our primary (indirect) damage reduction cooldown; providing a maximum health increase and increased healing received in place of actual damage reduction.
+Extra Details:
+When this buff activates, your current health increases by 30% of your maximum health.
+When this buff deactivates, your current health decreases by the original 30% maximum health that was gained to a minimum of 1 health.
+
+[Anti-Magic Shell] - This is a low-cooldown magic absorb shield.
+Extra Details: 
+For the duration of this buff, you will be immune to the application of many debuffs, but it will not remove these debuffs if you had them before activating the buff without [Unyielding Will].
+The base size of this shield is 30% of your maximum health (at the time of cast) adjusted for versatility and most absorb shield amplifiers (such as [Gloom Ward]).
+A baseline of 25 RP is generated as the shield absorbs magic damage. The actual RP generation potential is 0.8333 RP/HP% of shield, so anything that increases the size of your [Anti-Magic Shell] (relative to your health) will also increase the potential RP generation.
+
+[Dancing Rune Weapon] - This is a parry- and resource generation-based defensive cooldown with significant offensive benefits.
+Extra Details: 
+[Dancing Rune Weapon] units copy casts of [Blood Boil], [Death Strike], [Death’s Caress], [Heart Strike], and [Marrowrend] at 33% effectiveness when they are used by the player before being affected by any pet damage multipliers being applied to Blood at the time.
+The [Dancing Rune Weapon] auto-attacks at 33% effectiveness on a separate swing timer.
+All damage dealt by the [Dancing Rune Weapon] counts as threat for the BDK.
+Any resources gained by the [Dancing Rune Weapon], itself, do nothing.
+During the duration, [Marrowrend] generates 3 additional stacks of [Bone Shield] and [Death’s Caress] generates 2 additional stacks of [Bone Shield] for the player per weapon copy.
+[Everlasting Bond] causes [Dancing Rune Weapon] to spawn an additional weapon, doubling the additional damage and bonus generation.
+Unlike most other defensive cooldowns, [Dancing Rune Weapon] is on the global cooldown.
+The parry gained by this ability is additive to your existing parry and is not subjected to diminishing returns.
+The summoned weapons will always prioritize the target [Dancing Rune Weapon] was cast on until they die.
+When a [Dancing Rune Weapon] expires, [Blood Plague] debuffs attributed to that [Dancing Rune Weapon] snapshots their remaining damage and continue to deal damage until they naturally expire.
+
+[Icebound Fortitude] - This is our secondary (direct) damage reduction cooldown. It has a long cooldown, but has the added benefit of breaking stuns and providing stun immunity.
+Extra Details: 
+This can be used while stunned, as long as you are not *also* silenced (or incapacitated in other ways).
+
+[Lichborne] - An ability that breaks charm, fear, and sleep effects and provides immunity to them, makes you undead, and provides some leech for the duration.
+Extra Details: 
+This can be used while charmed, feared, or slept, as long as you are not *also* silenced (or incapacitated in other ways).
+
+[Anti-Magic Zone] - A ground-AoE magic damage reduction cooldown that affects our allies.
+Extra Details: 
+This ability is on the global cooldown.
+
+[Death Pact] - This ability provides burst healing at the cost of also applying a healing-absorb shield.
+Extra Details:
+This heal cannot crit and does not scale with versatility.
+[Heading3] Utility and Misc. Abilities
+[Dark Command] - Standard taunt ability.
+Extra Details: 
+You gain threat equal to the highest value on the target's threat table (which can be yourself) and any threat you generate for the duration of the taunt debuff is increased by 800% for 6 seconds (before raid-specific diminishing returns).
+While a target is affected by a taunt debuff, it *cannot* melee attack anything other than the character who taunted it, even in situations where the character is out of range and it would normally attack the target with the next highest threat that is in range.
+
+[Death Grip] - A secondary taunt ability that also pulls the target directly in front of you.
+Extra Details: 
+This ability shares the same taunt and threat rules as [Dark Command].
+This ability moves the target to a location directly in front of the player.
+The target will not be moved if they are immune to knockbacks, this includes root effects such as [Frost Nova] or [Entangling Roots].
+This ability can be used to stop most casted abilities with the knockback effect.
+If the target is already standing in the exact destination location of a [Death Grip] cast, they will not be moved and any actions that would normally be interrupted by the movement effect will not be interrupted.
+This ability cannot be used while your character is midair.
+The baseline global cooldown triggered by this ability is only 0.5 seconds (unaffected by haste), compared to the usual 1.5 seconds.
+
+[Gorefiend’s Grasp] - An AoE [Death Grip] without the taunt effect, but with a three second silence. All affected units are moved directly on top of the target.
+Extra Details: 
+Any unit, including yourself, can be the target of this ability.
+The silence effect will not affect any target if the primary target of [Gorefiend’s Grasp] is immune to silence.
+This ability is on the normal global cooldown.
+
+[Mind Freeze] - Our default interrupt ability, but with more range than most melee interrupts.
+
+[Chains of Ice] - A strong ranged single target snare that costs a rune.
+
+[Asphyxiate] - A ranged single target stun.
+Extra Details: 
+This ability can hit spell immune targets, but not physical immune targets.
+
+[Blinding Sleet] - A 90 degree AoE frontal disorient that breaks on damage and applies a snare after the disorient.
+
+[Death’s Advance] - A movement speed cooldown that limits how much you can be snared when this ability is both active and inactive. This also provides immunity to most knockback effects.
+Extra Details: 
+Movement speed abilities do not generally stack with each other.
+
+[Wraith Walk] - This channeled ability removes roots on cast, while providing bonus movement speed for a short duration.
+Extra Details: 
+Movement speed abilities do not generally stack with each other.
+
+[Raise Ally] - An instant cast combat resurrection ability.
+
+[Control Undead] - This can turn some undead targets into our pet for a short period of time, which provides bonus damage, situationally useful abilities, and crowd control.
+Extra Details: 
+M+ enemies lose their bonus health and damage from the key level when controlled. So, the potential damage gained from this ability is often minimal.
+When an enemy dies *while* being controlled, they only give dungeon count if the enemy was damaged by the group before [Control Undead] was used and if your target has not left combat since the target was damaged by the group (though DoT effects can maintain the tag if they persist until combat is re-entered). Generally, you just want to release the unit if they are about to die just to make sure it won’t mess with the route, since gaining count from controlled enemies is somewhat unreliable.
+Sometimes it can be valuable to use this to temporarily control an undead unit to make a hard pull easier and to release/kill it with an easier pack.
+Despite costing a rune, this ability generates no RP.
+[Heading3] Passive Abilities
+[Mastery: Blood Shield] - Your [Death Strike] generates [Blood Shield], which absorbs physical damage, based on your mastery and the damage you have taken recently.
+Extra Details: 
+If you [Death Strike] while [Blood Shield] is already active, the duration is reset and the absorb values are combined.
+[Blood Shield] size is based on total [Death Strike] healing, including overhealing.
+The maximum size of a [Blood Shield] is equal to 50% of the player’s maximum health at baseline, though the maximum health increasing effect from [Vampiric Blood] does not affect this limit for no good reason.
+
+[Crimson Scourge] - Your auto-attacks on targets with [Blood Plague] have a chance to refund a full charge of [Death and Decay]. 
+Extra Details: 
+This effect has a 25% proc chance and can only trigger when you do not have a [Death and Decay] effect currently active on the ground.
+Casting [Death and Decay] with this proc active not only removes the rune cost, but also removes the RP generation associated with the rune cost.
+[Heading2] Attribute Details
+Primary Stats:
+
+These stats are almost always present on items by default and, for any item slot where they are found, they are generally provided in proportion to the item's level. These stats can also be provided by unique effects.
+
+Strength - This stat directly determines how much AP (attack power) we have and it's one of the two main contributors to parry rating. With [Bone Shield] active, strength also contributes to armor.
+
+In general, our attack power is equal to strength (with some contribution from weapon DPS). Unique effects that provide AP, directly, are extremely rare. AP contributes to our ability damage using the following general formula:
+
+(AttackPower+6*WeaponDPS)*AbilityAPConstant*Vers%*MasteryAP%
+
+Armor and parry contributions are explained under their respective sections.
+
+Stamina - This stat directly determines how much base health we have with the following formula:
+
+Health=Stamina*20
+
+In some cases, our health is used to determine the damage and healing of some abilities.
+
+Armor - This stat reduces the amount of incoming physical damage taken according to the following formula:
+
+Physical Damage Reduction %=ArmorArmor+K 
+
+The “K Value” changes depending on what type of content you are engaged in and it is generally adjusted so that players maintain similar levels of physical damage reduction over the course of an expansion. The result is that physical vs. magic damage taken in M+ should be consistent across the whole expansion. The current “K value” for M+ is ‘4531.03’.
+
+Weapon DPS - As discussed under Strength, Weapon DPS is an input to all ability damage calculations even if abilities do not seem directly weapon-related.
+
+Secondary Stats:
+
+Two of the four secondary stats are present on most item slots by default, with a few exceptions. The ratio of the two present secondary stats is different from item to item, but the combined total is generally based on the item’s level. Secondary stats are also provided by several miscellaneous effects.
+
+Critical Strike - Every 46 critical strike rating provides an additional 1% critical strike chance and every 52 critical strike rating provides an additional 1% raw parry chance. The base critical strike chance is 5% and critical strikes double the damage and healing of abilities that can crit. Specifically for BDKs, healing from healing based on maximum life, as well as [Death Strike], cannot crit.
+
+Haste - Every 44 haste rating provides 1% haste, which affects rune regeneration rate, auto attack speed, global cooldown recovery rate, [Blood Boil] cooldown recovery rate, and some proc effects. While most DoT effects are affected by haste, [Blood Plague] and [Death and Decay] are not. Since a fixed amount of runes are used on [Bone Shield] management, 1% more haste gives more than 1% increased RP generation, since all extra runes can be used on [Heart Strike].
+
+Mastery - Through [Mastery: Blood Shield], every 23 mastery rating increases the effectiveness of [Blood Shield] by 1% and every 46 mastery rating provides 1% increased AP. The base effectiveness of [Blood Shield] is 16% and the base value for increased AP is 8%.
+
+Versatility - Every 54 versatility rating increases all damage and healing done by 1% and every 108 versatility rating reduces all damage taken by 1%.
+
+Diminishing Returns: All secondary stats have multiple rating thresholds that reduce the effectiveness of additional rating for that specific secondary stat. This reduction begins to take effect once any rating provides an additional 30% of any stat (with the exception of mastery, since different specializations use different percentage-to-rating conversions) and generally ramps up for every additional 10% unadjusted contribution after that. This diminishing returns only affects *rating* specifically, no matter where it comes from, but it does not affect stat multipliers or effects that add a fixed amount of % to the stat. Rating thresholds are as follows for each secondary stat:
+
+[TABLE]
+Secondary Stat Diminishing Returns Ratings
+Secondary Stat | Secondary Stat Penalty
+ | -10% | -20% | -30% | -40% | -50% | -100%
+Critical Strike | >1380 | >1840 | >2300 | >2760 | >3680 | >9200
+Haste | >1320 | >1760 | >2200 | >2640 | >3520 | >8800
+Mastery | >1380 | >1840 | >2300 | >2760 | >3680 | >9200
+Versatility | >1620 | >2160 | >2700 | >3240 | >4320 | >10800
+[/TABLE]
+
+Tertiary Stats:
+
+Tertiary stats have a small chance of appearing on most items when they drop (a 7.5% chance to get one of the following three stats). Other than being a rare bonus stat, they can also be provided by a few miscellaneous effects.
+
+Leech - Every 69 leech rating heals the player for 1% of all damage and healing done. This is only applied once to abilities that naturally have leech and it does not affect raw self-healing.
+
+Avoidance - Every 36.8 avoidance rating reduces the AoE damage a player takes by 1%.
+
+Speed - Every 11.5 speed rating increases movement speed by 1%.
+
+Diminishing Returns: All tertiary stats have multiple rating thresholds that reduce the effectiveness of additional rating for that specific tertiary stat, just like secondary stats. This reduction begins to take effect once any rating provides an additional 10% of any stat and ramps up at 15% and 20% unadjusted contribution after that. Rating thresholds are as follows for each secondary stat:
+
+[TABLE]
+Tertiary Stat Diminishing Returns Ratings
+Tertiary Stat | Tertiary Stat Penalty
+ | -20% | -40% | -60%
+Leech | >690 | >1035 | >1380
+Avoidance | >368 | >552 | >736
+Speed | >115 | >172.5 | >230
+[/TABLE]
+
+Miscellaneous Stats:
+
+These miscellaneous stats can only be acquired through specific sources.
+
+Parry - Parry is an attack avoidance stat. As is the case for all strength tanks, it is generally provided by strength and critical strike, though some other sources exist. Parry probability is determined by the following formulas:
+
+RawStrParry=Strength-Base StrengthP
+RawStrParry=Strength-Base Strength19130
+
+RawCritParry=CriticalStrikeD
+RawCritParry=CriticalStrike5200
+
+FinalParry=Base StrengthP+0.03+RawStrParry+RawCritParry(RawStrParry+RawCritParry)*v+h
+FinalParry=Base Strength19130+0.03+RawStrParry+RawCritParry(RawStrParry+RawCritParry) * (1) + 1/0.94
+
+The values for ‘P’, ‘D’, ‘v’, and ‘h’ are spec-specific and are used in multiple game mechanic formulae.
+
+(Final parry % is reduced by 1.5% for each level the target is above the player.)
+
+Dodge - Similar to Parry, Dodge is an attack avoidance stat. Dodge is rarely obtainable by BDK, since strength tanks do not gain Dodge contributions from primary stats or critical strike, so the dodge calculations for BDK are simplified as a result. However, every once in awhile we get access to an effect that provides dodge rating.
+
+RawDodge=DodgeRatingD
+RawDodge=DodgeRating5200
+
+FinalDodge=0.03+RawDodgeRawDodge*v+h
+FinalDodge=0.03+RawDodgeRawDodge*(1)+1/0.94
+
+(Final dodge % is reduced by 1.5% for each level the target is above the player)
+
+Miss - Miss is the final attack avoidance stat and it generally cannot be interacted with.
+
+Miss=0.03
+
+(Final miss % is reduced by 1.5% for each level the target is above the player)
+
+Attack Avoidance - The combination of all stats that prevent an avoidable attack from hitting. Total attack avoidance is determined as follows:
+
+AttackAvoidance=FinalParry+FinalDodge+ Miss
+ / 
+[Heading1] Character Optimization
+This section will go into how to optimally customize and play our character. 
+[Heading2] Tank Performance Measures
+While damage roles are almost exclusively focused on their damage output, tanks have several measures that can affect them. The main four are as follows:
+
+Threat Generation  - A tank cannot do their job if enemies are attacking other people. Without enough threat, you risk one of your group members dying to whatever you are not tanking. Threat generation is related to the amount of damage you deal, though taunt effects can be used to instantly gain the highest amount of threat on a target and to heavily amplify threat generation during the taunt duration.
+
+Effective Hit Points - EHP (Effective Hit Points) as used in this guide is your normal health corrected for any reliable, or controllable, forms of damage reduction. The primary concern with EHP is that it is high enough so that you or your healer have time to reactively heal incoming damage you are taking before you die. Particularly on more difficult content, more EHP will reduce the likelihood of dying to burst damage, while also allowing tanks to mitigate damage more efficiently (and allow healers to heal the tank more efficiently) due to the tank having a larger range of health where they are safe from imminent death.
+
+Mitigation - As it is used in this guide, mitigation refers to the amount of raw damage that a tank can reduce with proactive mitigation (such as armor) *and* reactive mitigation (such as healing from [Death Strike]). Simply put, more mitigation means that less healing is required by healers for the tank to survive any given situation.
+
+Damage - While tank damage output is lower than that of damage dealing roles, tank damage still has some impact in dungeons. Strict damage requirements in M+ dungeons aren't as commonly seen as they are in raid encounters, but more personal damage will result in faster dungeon times assuming nothing else changes.
+
+What should BDKs be looking to maximize when progressing into higher M+ Dungeons?
+
+A large part of BDK optimization in M+ comes down to finding the best blend of performance metrics. We are not necessarily maximizing any one trait. Instead, we are trying to find the setup that will maximize our chances of successfully timing a key, which each of the above metrics contribute to in some capacity, though how they weigh against each other can change given the situation. Furthermore, some tradeoffs can be more one-sided than others, where the *amount* of benefit being provided on one side can outweigh the *type* of benefit being provided on the other.
+
+Mythic+ places a much higher relative value on survivability metrics with respect to damage compared to raid content when we are concerned with succeeding at the content type, and this is true regardless of key level. For tradeoffs that look more borderline between damage and survivability-based benefits, it is generally suggested to default to the more defensive option if you are unsure of which one to utilize, since you will learn a lot more seeing the entire dungeon at a certain key level than depleting partway through. Furthermore, time pressure is often most efficiently solved by routing improvements rather than trying to brute force an inherently slower, but easier to execute, route that is not providing enough time margin. Overemphasizing personal damage output is a common mistake made by newer tank players in M+ and, given these circumstances, damage options are generally recommended only when the tradeoff is justifiable.
+
+Threat problems, when they arise, should be considered when they are a noticeable cause of group deaths and/or group damage throttling. In particular, threat is usually more of an issue on high target count pulls and near the start of those pulls. That being said, options that noticeably improve threat generation in these situations are extremely limited.
+
+While it comes with other tradeoffs, (Deathbringer) has significantly better on-pull threat generation in AoE than (San’layn). Beyond that, a partial solution to threat generation issues involves pooling abilities that provide significant upfront AoE (Area of Effect) damage for the start of any problematic pull, such as [Dancing Rune Weapon] or making sure to use [Death and Decay] while walking into a multiple target pull. Having sufficient [Blood Boil] charges on-hand for threat-significant situations can also be useful.
+
+How do all metrics contribute to success?
+
+Mitigation and EHP are the primary ways to increase our overall survivability, which reduces the chance of catastrophic wipes from tank deaths, increases our group’s pull potential (which can decrease the total number of pulls in an instance), and provides increased group damage from our healer and damage dealers, since we need less healing and are less likely to need to resort to kiting (so enemies are more grouped up and take more damage from AoE abilities as well as our healer being able to contribute more damage). 
+
+Damage provides a more straightforward benefit by directly reducing the time required to clear the dungeon.
+
+Meanwhile, threat generation reduces the risk of allies dying to a lack of threat, which has both direct and indirect time losses in addition to increasing the chance of further group deaths when they occur. Though, again, this is the hardest quality to significantly change.
+
+What's the best way to estimate these performance measures?
+
+Disclaimer: Again, tank optimization is often more complicated than simply maximizing a single performance measure, so take care not to lean too heavily on any single measure. For example, it has historically been the case that simulating damage to determine gear upgrades for BDKs leads to worse M+ outcomes than randomly selecting your highest ilvl piece of gear for a given slot. With that in mind, here is how you can measure the individual measures.
+
+Today, damage measurements are easier than ever with tools such as raidbots.com and simulationcraft. When performing damage evaluations for dungeons, it is suggested to look at the results of long duration (~8 minute) sims with fixed target counts and continuously melee attacking enemies (this requires a manual override) to determine what works best for single target and multiple target situations. The default action priority list in simulationcraft for BDK is specifically calibrated to maximize damage (particularly on single target fights) with little to no consideration for other factors, so, in many ways, it does not reflect rotational behavior the player actually wants to do in M+ content. Using the M+ APL is generally recommended when trying to do any M+ sims for whatever reason, though we are generally concerned with more than just damage in M+, obviously. Hectic add cleave or dungeon slice variants are not recommended *regardless* of action priority list quality since overall damage done in that scenario is not equivalent to “effective damage done” (which reflects time saved in a dungeon).
+
+--------------------------------------------------------------------------------------------------------
+
+Note: Damage Measurements in Dungeons
+
+There is a big difference between total damage done  and total *effective* damage done in a dungeon, since the *real* thing we care about with damage is how much damage done affects the *overall dungeon completion time*. So, keep the following in mind:
+
+First, damage meters are biased towards multi-target pulls. When making damage decisions, how much faster you clear a dungeon is determined by how much you can increase your group's damage relative to the damage they are already doing in any given circumstance. So, you need to provide a *much* greater increase in raw DPS (damage per second) in a 10-target encounter to reduce dungeon completion time by one second than you would need to do in a similar length 1-target encounter. Damage meters are not taking this into consideration.
+
+Second, large gaps in health pools among enemies can mean that damage on low-health targets is *meaningless*, or even counterproductive, to overall dungeon completion time if they are going to die to nothing but passive cleave damage. So, damage to these targets will not contribute to faster dungeon completion times, at all, even though the damage dealt to them shows up on a damage meter.
+
+All in all, this generally means that it’s easy to undervalue single target damage relative to AoE damage in M+ (though this is not meant to say that AoE damage has no value, far from it).
+
+--------------------------------------------------------------------------------------------------------
+
+Dungeon route sims have the potential to side-step a lot of the above issues, though, given the multiple metrics (beyond damage) we need to keep in mind as a tank and the lack of being able to have enemies attack you during this sim type (which is important for [Bone Shield] consumption at a minimum), it is hard to make use of this simulation mode for tanks (on top of its inherent complications with regards to being calibrated properly to give good damage-only outputs). Extra information on BDK M+ SimC considerations can be found here.
+
+Mitigation is more complicated. Since Legion, the best known tool for BDK’s to measure Mitigation is the BDK mitigation model I maintain. It can be difficult for new users to determine what inputs are best to use for this tool and the output is going to depend heavily on the inputs, but, if you are going to try to use it, it is recommended to model higher than average damage intakes that are representative of the most dangerous situations you encounter in M+ Dungeons (the ones that are most likely to potentially kill you). Using too low of an incoming damage input is a bigger problem than using unrealistically high numbers, since most significant forms of mitigation fully scale with incoming damage and you are unlikely to die during low damage intake periods.
+
+EHP can be measured by the above model or by simply applying passive damage reduction effects to your health total. It is generally the easiest metric to measure of the three.
+
+That being said, the most optimal setups rely on all three of these metrics in some proportion, and, because comprehensive evaluation is burdensome for individuals to replicate, I have taken the effort to develop recommendations and rules of thumb that can lead players to optimal outcomes without them having to personally go through the grunt work involved. Granted, more players getting involved in substantive BDK theorycrafting is always welcome!
+[Heading2] Race Considerations
+Death Knights have access to all races except Dracthyr, Earthen, and Haranir. All races provide a number of traditional benefits (mitigation, EHP, and damage) through passive and active abilities, but, particularly for M+, there are many situations where miscellaneous benefits and utility can overshadow the value of the traditional benefits being provided. We don’t have meaningful log analysis available on this subject, but recently races have trended towards the dwarves and night elves very heavily, races that also have relatively above-average throughput benefits on top of strong utility considerations. Due to the situational nature and potential power of the miscellaneous benefits, it is difficult to provide a universal race recommendation, but the following options should have elevated consideration (in alphabetical order):
+
+Dark Iron Dwarf - Along with their more generic counterparts, Dark Iron Dwarves have a self-dispel on-use ability that can be used to clear any removable debuff. This ability grants flat Strength (a benefit that, along with flat Attack Power and flat Stamina, tends to be more impactful in earlier expansion seasons and less impactful in later seasons due to Strength, Attack Power, and Stamina inflating at a high rate with gear ilvl), while the primary passive benefit is a flat 1% physical/fire damage reduction and they have a bonus +4% indoor movement speed perk. Strong utility mixed with strong traditional benefits.
+
+Dwarf - Very similar to Dark Iron Dwarves, except their damage reduction is on their active ability, while their damage perk is on passive and they have no movement speed. The damage reduction is less useful being on the active than what Dark Iron has in this area and you unfortunately miss out on the +4% movement speed, but their damage benefit scales better as the expansion goes on and usually outpaces Dark Iron’s past a certain point.
+
+Night Elf - The primary utility provided by Night Elves is their ability to go invisible and drop combat with enemies. If we ignore the potential for the player to accidentally use this ability at inappropriate times, which can lead to the death of their allies, it can allow the tank to pull otherwise unskippable enemies to the side as their group runs past, where the tank uses some means to then create a gap and drop combat with all enemies involved. So, this can enable certain types of dungeon routing. This type of utility does not have as many common use-cases as what is provided by Dwarf, and the tactics it enables tend to be specific to higher level content, but it can be very valuable under the right circumstances, particularly if the potion is not sufficient for a specific skip. Backing this is an alternating 1% Critical Strike or Haste benefit along with 2% Dodge and 2% movement speed, which arguably is one of the better passive benefit options.
+[Heading2] Hero Talents
+BDK has access to two hero talent trees that significantly affect gameplay and how we evaluate other character customization options. This section will first talk about individual hero talent trees, the choices presented within each tree, the larger gameplay/build implications of each tree, and then the relative strengths and weaknesses of both hero classes.
+[Heading3] Upfront Recommendation
+Hero Class Recommendation: 	<Either> or, if executed well, (San’layn)
+[Heading3] Deathbringer Core Talents
+[Reaper’s Mark] - A reasonably hard-hitting rune spending cooldown that deals relatively high upfront single target damage and applies a debuff that eventually explodes for very high single target damage depending on how much you can damage the target with shadow and frost damage in the following 12 second window.
+Extra Details:
+Stacks are generated from all individual damage instances of the appropriate damage type.
+The debuff will jump to nearby targets if the initial target dies.
+
+[Wave of Souls] - One line AoE effect is added to the initial cast of [Reaper’s Mark] that deals damage and applies a shadowfrost vulnerability to all affected enemies when its damage is a critical strike; the effect travels roughly 15 yards before returning, being able to hit targets twice. The returning wave has a 100% crit chance and the vulnerability debuff can stack twice.
+
+[Wither Away] - This talent causes [Blood Plague] to deal the same overall damage in half the duration, while also allowing the second scythe of [Exterminate] to apply [Blood Plague] to all targets.
+
+[Bind in Darkness] - [Reaper’s Mark] stacks now accumulate twice as fast from shadowfrost damage instances and four times as fast on shadowfrost critical strikes. [Blood Boil] now deals 10% increased damage and deals shadowfrost damage.
+
+[Frigid Resolve] - [Permafrost] now has increased effectiveness and [Exterminate] grants [Permafrost] equal to a portion of the damage dealt.
+
+[Soul Rupture] - [Reaper’s Mark] explosions now deal a portion of their damage in an AoE.
+Extra Details:
+This damage double dips from the specialization multiplier, effectively causing it to do more than 10% of the damage from [Reaper’s Mark] explosions.
+
+[Grim Reaper] - [Reaper’s Mark] explosions now deal more damage based on target missing health and the initial cast of [Reaper’s Mark] now generates [Bone Shield] charges.
+
+[Deathly Blows] - [Death Strike] damage is increased.
+
+[Swift and Painful] - [Wave of Souls] is more effective on the main [Reaper’s Mark] target and, if no enemies are hit by [Soul Rupture], you gain more strength for 8 seconds.
+
+[Echoing Fury] - All aspects of [Reaper’s Mark] deals more damage and casting [Dancing Rune Weapon] grants 1 stack of [Exterminate].
+
+[Exterminate] - After [Reaper’s Mark] explodes, your next two [Marrowrend] casts cost one rune (with the same RP generation) and summon two [Exterminate] scythes that deal single target and AoE damage.
+Extra Details:
+The second [Exterminate] scythe appears to hit all targets within 8 yards of the primary target.
+[Heading3] Deathbringer Choice Nodes
+Choice Node #1
+
+[Pact of the Deathbringer] - An auto-triggering version of [Death Pact] at 50% effectiveness that also provides cooldown reduction to both itself and [Death Pact] on [Reaper’s Mark] explosions.
+OR
+[Rune Carved Plates] - Spending and generating runes now provides stacking 1.5% magic and physical damage reduction buffs for 5 seconds up to a maximum of 7.5% damage reduction.
+
+Recommendation: [Rune Carved Plates]
+
+Basis: [Pact of the Deathbringer] provides a low-health trigger heal that provides a trivial amount of mitigation to BDK at the end of the day, while [Rune Carved Plates] provides up to an ~8% EHP increase against all damage types after some amount of ramp time. Granted, the player will generally only see a little over half this bonus, since the stacks are not completely sustainable at a 5 second duration even with an optimized rotation and the physical damage reduction, in particular, has less uptime than expected due to a bug. Even so, the competition here isn’t even close.
+
+Choice Node #2
+
+[Dark Talons] - This talent causes all RP spending abilities to “count” as shadowfrost damage for the purposes of [Bind in Darkness] and global magic damage modifiers, while [Icy Talons] is active for the purposes of [Bind in Darkness], while also giving [Heart Strike] and [Marrowrend] a 25% chance to increase current and maximum [Icy Talons] stacks by 3 for 6 seconds.
+OR
+[Reaper’s Onslaught] - This talent reduces the cooldown of [Reaper’s Mark] by 15 seconds, but also reduces the amount of empowered [Marrowrend] casts by one.
+
+Recommendation: [Dark Talons]
+
+Basis: Neither option is strictly better, but the tradeoff leans pretty decisively wards [Dark Talons] in M+ content. [Reaper’s Onslaught] does have more potential damage and EHP by a marginal amount in pure ST (mostly due to [Swift and Deadly]), but this swings the other way for all metrics in any other situation. Granted, [Reaper’s Onslaught] never hits 40 stacks of [Reaper’s Mark] reliably, while [Dark Talons] almost always does with a lot of margin to spare, so [Reaper’s Onslaught] has a lot more to lose from rotational mistakes or lack of rotational uptime. Granted, you are at a higher risk of overcapping [Exterminate] stacks with [Dark Talons] if you are not careful.
+
+Choice Node #3
+
+[Death’s Messenger] - This talent reduces the cooldown of [Raise Dead] and [Lichborne] by 30 seconds.
+OR
+[Expelling Shield] - This talent provides a weak cast speed slow on all targets who damage our [Anti-Magic Shell].
+
+Recommendation: [Death’s Messenger]
+
+Basis: [Death’s Messenger] provides some single target damage benefits through the provided cooldown reduction. Meanwhile, [Expelling Shield] provides near-zero value given the conditions required to get any marginal value out of it, at all.
+[Heading3] Deathbringer Implications
+(Deathbringer) changes to baseline BDK are mostly focused on the inclusion of the hard-hitting [Reaper’s Mark] and [Exterminate] gameplay loop as well as a heavy amplification to [Blood Plague] damage via [Wither Away], which are all large sources of damage that do not benefit from haste-scaling. EHP gains a moderate baseline increase due to [Rune Carved Plates], while mitigation is mostly increased from the combination of damage reduction effects and higher miscellaneous healing. [Reaper’s Mark] stack generation is (mostly) limited by the cap at the moment, so this does not affect the value of magic damage casts made for the duration of that debuff and does not change rotation at all. Other elements of the BDK kit largely remain unchanged.
+[Heading3] San’layn Core Talents
+[Vampiric Strike] - [Death Strike] and [Death Coil] gives your next [Heart Strike] a chance to turn into a [Vampiric Strike] (a proc that resets after your next [Heart Strike] cast), which is otherwise identical to [Heart Strike] except that it deals pure shadow damage, has a lower AP coefficient, it heals the player for a marginal percentagfe of their maximum health, and it provides [Essence of the Blood Queen] (a 5 max stack stacking haste buff with other potential effects).
+
+[Thrill of Blood] - [Essence of the Blood Queen] now grants mastery per stack.
+Extra Details:
+The extra mastery is not a “base” mastery bonus, but one that is adjusted to our spec. As such, this increases the [Mastery: Blood Shield] multiplier directly. 
+
+[Infliction of Sorrow] - All [Vampiric Strike] casts now extend [Blood Plague] duration and deal a portion of [Blood Plague] remaining damage to all targets hit.
+Extra Details:
+The damage is dealt before duration is manipulated.
+Duration extension ignores normal debuff duration limits.
+This effect is not duplicated by [Dancing Rune Weapon].
+
+[Frenzied Bloodthirst] - [Essence of the Blood Queen] now stacks 2 additional times and provides more [Death Strike] and [Death Coil] damage per stack.
+
+[The Blood is Life] - [Dancing Rune Weapon] now spawns a blood beast for 10 seconds, which auto attacks, casts an AoE ability called [Corrupted Blood], and bursts for damage and healing in an AoE based on how much damage it has dealt over its life.
+Extra Details:
+Both [Corrupted Blood] and the AoE explosion deal AoE damage that is soft-capped at 8 targets (doing only “SQRT(8/N)” of normal damage to each of the ‘x’ targets when fighting more than 8 targets).
+
+[Visceral Strength] - Consuming a [Crimson Scourge] proc now provides 5% strength for 12 seconds.
+
+[Incite Terror] - [Heart Strike] and [Vampiric Strike] apply a debuff that causes affected targets to take 1% more shadow damage (stacking up to 5 times); this benefit is 300% more effective for [Vampiric Strike] damage.
+
+[Transfusion] - [Vampiric Strike] increases the damage of your [Dancing Rune Weapon] units by 20% for 8 seconds.
+Extra Details:
+These stacks have stacking similar to [Ironfur], but [Vampiric Strike] applies the buff to active units only and not the player.
+
+[Gift of the San’layn] - When a manually casted [Dancing Rune Weapon] is active, the effectiveness of [Essence of the Blood Queen] benefits are increased by 200% and all [Heart Strike] casts are converted to [Vampiric Strike] casts.
+[Heading3] San’layn Choice Nodes
+Choice Node #1
+
+[Newly Turned] - [Raise Ally] now revives players at full health and grants you and the target player an absorb shield equal to 20% of your maximum health.
+OR
+[Vampiric Speed] - [Death’s Advance] and [Wraith Walk] now provide you 10% more movement speed than normal as well as increasing 4 nearby allies movement speed by 20% for 5 seconds.
+
+Recommendation: <Either>
+
+Basis: If you are a possible source of combat resurrections for your group, [Newly Turned] provides a very clear benefit during recovery efforts. In any other situation, [Vampiric Speed] provides a guaranteed, though miscellaneous, benefit. Log data indicated that [Newly Turned] generally performed better in TWW. Currently available Midnight data for San’layn in M+ pretty clearly indicates [Vampiric Speed] is the more effective choice in the majority of situations. Granted, there is enough situational context with [Newly Turned] that neither option is a fixed recommendation despite [Vampiric] appearing to be the stronger general choice.
+
+Choice Node #2
+
+[Blood-Soaked Ground] - [Death and Decay] now grants you 5% physical damage reduction and a 5% increased chance to proc a [Vampiric Strike] buff from [Death Strike] and [Death Coil] casts while you are under its effects.
+OR
+[Desecrate] - [Death and Decay] deals damage twice as fast and lasts half as long, but both the standard [Death and Decay] buff and [Sanguine Ground] buff also expire five seconds sooner.
+Extra Details:
+- [Grip of the Dead] still weakens at the same pace, but will vanish completely once the shorter [Death and Decay] effect expires.
+
+Recommendation: [Blood-Soaked Ground]
+
+Basis: The bulk of the benefits from [Blood-Soaked Ground] revolve around the mostly-reliable 5% physical damage reduction effect, with only minor benefits coming from the increased proc chance of [Vampiric Strike]. Meanwhile, [Desecrate] reduces your damage output, your general cast rate of [Death Strike], and reduces the effectiveness of [Grip of the Dead]. The choice is fairly straightforward.
+
+Choice Node #3
+
+[Vampiric Aura] - This talent provides 2% leech, which is applied to 4 allies within 12 yards at 100% increased effectiveness while [Lichborne] is active.
+OR
+[Bloody Fortitude] - [Icebound Fortitude] reduces damage by up to an additional 20% proportional to missing health. Personally getting the killing blow on an enemy also reduces the cooldown of [Icebound Fortitude] by 3 seconds.
+
+Recommendation: [Bloody Fortitude] 
+
+Basis: While the leech from [Vampiric Aura] provides little personal value for us, it *does* allow [Lichborne] to function as something of a group healing cooldown. Meanwhile, [Bloody Fortitude] increases the effectiveness of [Icebound Fortitude] by a variable amount depending on how damage intake is occurring. The effects are not directly comparable, but log data indicated that [Bloody Fortitude] is generally associated with better key outcomes in TWW. Currently available Midnight data for San’layn is more ambiguous but, in combination with representation, looks favorable to [Bloody Fortitude] still.
+
+Choice Node #4
+
+[Pact of the San’layn] - Blood beasts now store 15% of all shadow damage you do during their lifespan, inflicting that damage (after being further reduced by 85%) in an uncapped AoE when they expire.
+OR
+[Sanguine Scent] - When the target is below 35% health, your [Death Strike] and [Death Coil] have a 15% increased chance to trigger a [Vampiric Strike] buff.
+
+Recommendation: [Pact of the San’layn]
+
+Basis: The raw damage implications for both of these talents is quite small, with [Pact of the San’layn] gaining a very marginal damage gain with increased target count. However, what the traditional comparisons leave out is that [Sanguine Scent] can help improve your average [Essence of the Blood Queen] stacks when presented with less than ideal uptime situations. As such, it is difficult to judge one option as being superior to the other using predictive methods. At least so far, Midnight S2 log data seems in favor of [Pact of the San’layn].
+[Heading3] San’layn Implications
+(San’layn) changes to baseline BDK are mostly focused on amplifying the existing [Heart Strike] and [Death Strike] gameplay loop as well as empowering [Dancing Rune Weapon].  /  / Full [Essence of the Blood Queen] uptime is possible to maintain given minimal melee downtime, so this is not a consideration with regards to other build decisions (though trying to maintain uptime between pulls is something you may want to be conscious of).  /  / [Vampiric Strike] and [Infliction of Sorrow] make [Heart Strike] more damaging on average, while [Frenzied Bloodthirst] is amplifying [Death Strike] damage.  /  / [Dancing Rune Weapon] benefits from [Gift of the San’layn], a 100% [Vampiric Strike] proc rate, [The Blood is Life]/[Pact of the San’layn], and [Transfusion] further amplify damage more than normal.  /  / Mitigation throughput has small gains due to improvements to self-healing sources, while EHP only has limited direct benefits through [Blood-Soaked Ground] and increased [Vampiric Blood] cast frequency (indirectly from the haste).
+[Heading3] Overall
+Recommendation: 	<Either> or, if executed well, (San’layn)
+
+Altogether, (Deathbringer) provides generally better mitigation benefits in M+, while also providing better snap threat at the start of pulls, though (San’layn) contests this with a potential damage advantage that is especially emphasized when fighting multiple targets (both in even-cleave and priority damage situations). While this *general* tradeoff was the same each season, which hero class that ultimately performed better in M+ changed based on the exact tuning. /  / With the first third of Midnight S2 behind us, (Deathbringer) has a massive representation advantage, though *general* success rates between both hero talents are largely similar. However, this changes in higher key levels where (due to higher player performance or otherwise) (San’layn) starts to pull ahead on dungeon success rates. Regardless of other factors, (Deathbringer) players appear to still have an advantage in overall survivability relative to (San’layn), indicating that the advantage of (San’layn) is mostly damage-based (as per usual).
+[Heading2] Talents
+This section will first provide information on individual talents before talking about overall talent build considerations. The individual talent information is intended to provide a foundation on talent usefulness, so that talent build considerations can be better understood.
+[Heading3] Death Knight Talents
+(Note: All qualifiers on talent strength are relative to the amount of benefits provided per talent point when compared with other talents that are available in the Death Knight Talent Tree, only. Typical talent power levels are different between the Death Knight and Blood Talent Trees, but they are never directly competing against each other.)
+
+Row 1
+
+[Icebound Fortitude] - A respectable defensive cooldown and stun break.
+
+[Death Strike] - Baseline for Blood.
+
+[Raise Dead] - A respectable single target damage increase talent that is also a prerequisite for other talents of interest.
+
+Row 2
+
+[Runic Attenuation] - This passive RP generation results in a small increase to mitigation, priority damage, and (indirect) EHP benefits.
+
+[Improved Death Strike] - The healing increase and RP cost reduction on [Death Strike] results in a small increase to mitigation, priority damage, and (indirect) EHP benefits.
+
+[Cleaving Strikes] - One of our strongest overall AoE damage options in the talent tree that peaks on five target pulls. The bonus duration on all [Death and Decay] related buffs is tied to this talent, however, so it retains good value even against singular targets. This also increases [Vampiric Strike] damage by 10%, which is probably unintentional.
+
+Row 3
+
+[Mind Freeze] - The Death Knight interrupt ability, which is arguably required in most M+ content.
+
+[Blinding Sleet] - An AoE disorient that breaks on damage and also applies an AoE snare. Situationally it can be very useful, particularly if you can make good use of the AoE CC effect to interrupt enemy ability casts, though it will provide little to no value if the AoE CC has no good application.
+
+[Gloom Ward] - Even assuming that no external healing is received in the form of absorbs, the absorb amplification results in a moderate source of mitigation from [Blood Shield] and [Anti-Magic Shell], alone. This does not work on reactive absorb effects, like [Will of the Necropolis].
+
+[March of Darkness] - A useful movement speed increase on [Death’s Advance].
+
+[Wraith Walk] - This movement speed ability can’t be used at the same time as other abilities, so it is mainly just providing improved out-of-combat movement between pulls in dungeons unless you have an effective way to use the root removal portion of this ability.
+
+[Unholy Momentum] - The haste bonus results in a decent amount of increased damage along with relatively smaller mitigation and EHP benefits.
+
+[Control Undead] - A very situational crowd control ability.
+
+[Enfeeble] - Given the low average uptime on the debuff effect, the overall damage reduction effect is only decent for single targets and underwhelming outside of that.
+
+Row 4
+
+[Coldthirst] - The RP generation is a marginal-to-small increase in overall mitigation, priority damage, and indirect EHP in situations with kick targets, while also providing more cast disruption potential.
+
+[Proliferating Chill] - While likely strong in PvP, an empowered [Chains of Ice] is generally providing no value in PvE content outside of extremely specific kiting situations.
+
+[Permafrost] - A flat source of absorb healing that provides marginal mitigation in situations where damage intake is actually threatening. This is more than twice as powerful on (Deathbringer), making it a more competitive option for that hero class.
+
+[Veteran of the Third War] - A powerful source of passive EHP.
+
+[Death Pact] - While weak for overall mitigation throughput, this is an off-GCD heal that can support you during during targeted periods of weakness.
+
+[Brittle] - The debuff application provides a respectable damage increase at all target counts, one that is even better with [Wither Away] from (Deathbringer).
+
+[Blood Bond] - An extremely mild form of potential healing that ultimately provides a relatively insignificant amount of mitigation.
+
+Row 5
+
+[Icy Talons] - The attack speed buff is a middling priority damage increase while the buff is maintained.
+
+[Death Notes] - The reduced RP cost on [Raise Ally] allows it to be used with much less disruption to personal survivability than normal in situations where you are casting that ability.
+
+[Anti-Magic Zone] - A moderate group cooldown against magic damage, though it often has little to no personal value if we are ignoring its value for our teammates.
+
+[Death Defiance] - This increases the effectiveness of [Death Pact] fairly significantly from baseline.
+
+[Unholy Bond] - The bonus runeforge effectiveness provides a solid source of damage relative to the other damage-oriented talents.
+
+Row 6
+
+[Ice Prison] - While potentially useful in PvP, an empowered [Chains of Ice] is generally providing no value in PvE content; even when used in PvE, the downside would generally make this a net negative.
+
+[Asphyxiate] - A ranged single target stun can be very useful at negating a number of trash mechanics.
+
+[Death’s Reach] - Having a 40 yard range on your [Death Grip] provides some quality of life when setting up pulls, but it is otherwise not providing much, if any, value. This range can have noticeable value in a few applications, but being on a choice node with [Asphyxiate] greatly restricts its usage outside of raid. The cooldown-refunding effect only applies to enemies you, personally, landed the killing attack on, which greatly limits the usefulness of that portion of the talent.
+
+[Assimilation] - The 25% cooldown reduction on [Anti-Magic Zone] and 2 second duration increase is a much less valuable talent point than [Anti-Magic Zone] itself.
+
+[Anti-Magic Barrier] - A significant power increase to [Anti-Magic Shell] and a marginal overall increase to mitigation, damage, and EHP. Full benefits are dependent on the incoming damage profile.
+
+[Grip of the Dead] - A powerful front-loaded snare on [Death and Decay] can be very useful if you have a need to kite in any situation, but it can be unnecessary or counter-productive in other situations.
+
+Row 7
+
+[Suppression] - Unless you are doing content with major EHP checks from incoming AoE damage (which is usually rare for the tank role and especially in M+), the avoidance from this talent is exceptionally weak.
+
+[Blood Scent] - Leech of this magnitude is a weak source of mitigation. It becomes relatively stronger against multiple targets, but still a weak option overall.
+
+[Unholy Endurance] - This talent allows for more frequent [Lichborne] CC (crowd control) breaks, but otherwise provides near-zero mitigation via increased leech healing.
+
+Row 8
+
+[Osmosis] - This heal amplification provides a mostly insignificant increase to mitigation in situations when [Anti-Magic Shell] is not instantly consumed. It also does not amplify absorbs, at all.
+
+[Insidious Chill] - This greatly reduces incoming damage from a single target.
+
+[Runic Protection] - The reduced chance of being critically struck does nothing for tank specializations, but the armor benefit does provide a moderate amount of EHP when physical incoming damage is significant (which is pretty much all the time).
+
+[Blood Draw] - This uncontrollable trigger effect has a somewhat weak blend of benefits even if we were to assume that the effect occurred at particularly valuable times. While not overwhelming, there are worse talents. While not well documented, this talent heals you for 25% more than the damage it deals.
+
+Row 9
+
+[Rune Mastery] - The bonus strength is a somewhat weak source of damage relative to the other damage-oriented talents, but it is something.
+
+[Subduing Grasp] - Given the uptime and being mostly tied to abilities that provide no additional value (outside of utility), the overall EHP effect of this talent is mostly trivial unless you need a little extra margin to pass specific one-shot checks at very high key levels.
+
+[Will of the Necropolis] - This low-health damage reduction is a particularly strong source of EHP. The effective damage reduction on incoming damage is calculated based on your pre-hit health, only, so absorb shields can allow the damage reduction effect to apply earlier than 30% health against especially large damage instances.
+
+Row 10
+
+[Null Magic] - This talent provides a significant amount of generalized EHP, though its exact effectiveness will depend on the given situation and how much of incoming damage is magic. The reduced magic effect duration has the potential to be significant, but its value is also situational.
+
+[Unyielding Will] - A 20 second increase in [Anti-Magic Shell] is a heavy price to pay to give it the ability to instantly remove all magic effects. It is difficult, but not impossible, to come up with a situation where this talent is a net positive.
+
+[Death’s Echo] - While the other perks are nice too, the extra charge on [Death and Decay], combined with aggressive [Death and Decay] usage, means that this talent can increase our [Death and Decay] throughput. Not only are we less likely to be wasting cooldown recovery time before using [Death and Decay] with two charges, but [Crimson Scourge] procs will provide a full charge of [Death and Decay] whenever they occur. Given that all [Death and Decay] buffs currently linger for an additional 4 seconds, the raw damage throughput benefits of this talent are now a lot smaller than they used to be (though the damage gains from this talent can become quite large in situations where you can’t fully stay in your [Death and Decay]) and a lot of the consistent value is more utility-driven.
+
+[Vestigial Shell] - This talent gives [Anti-Magic Shell] added group defensive utility in the form of a relatively small absorb shield and the ability to halve the duration of magic-dispellable debuffs. The shells appear to prefer closer targets and are able to target non-player allied units at the moment.
+[Heading3] Death Knight Talent Build
+Baseline Death Knight Talent Build:
+
+Decision Points:
+Pick 5 of 10 Flex Talents ⚪
+Pick [Asphyxiate] or [Death’s Reach] ⬜
+
+
+
+General Pathing:
+
+Lower-tier talent selection is largely driven by taking all talents of above-average value while avoiding low-value talents, where the pathing is flexible enough to do this consistently without taking things purely for pathing reasons.
+
+Mid-tier talent pathing is potentially messier. It has a few unconditionally strong talents. [Blood Scent] is generally superior to [Suppression] both in raw performance and pathing value (you still don’t want both given their individual power). [Lichborne] is an incredibly weak talent on its own in Midnight.
+
+Late-tier talents do have a number of unconditionally strong options (relative to the power level of other talents in this tree), though we run out of strong options before we run out of talent points and the remaining late-tier options are not generally appetizing locations for said points, which opens up more talent points to use on miscellaneous utility options earlier in the tree.
+
+Some potential decisions related to the baseline Death Knight Talent tree are highlighted and discussed below.
+
+Decision Point 1: Choose 5 Flex Talents (3 can be a Late-Tier Talent)
+
+The baseline build allows for three additional mid- or low- tier talents to be taken before the late-tier talents are unlocked, in addition to three unused talent points that can potentially be used in any part of the tree (though there seems to be little reason to spend all three of those talents in the late-tier at this time). All desirable options for these points are situational. /  / Some of the more generally useful options include [Grip of the Dead], [Anti-Magic Zone], and [Assimilation]; though there are situations where these talents are not well-suited to a dungeon for a number of reasons. [Control Undead] can be very useful in certain dungeons, and should be taken when useful, but most of the time we will not be taking this. 
+
+Choices beyond this point are more up in the air based on what we know. [Unholy Endurance] should only be taken if you are also taking [Blood Draw]. [Death Pact] and [Death Defiance] provide a more mitigation and controllable alternative to [Blood Draw], though it is harder to use. [Enfeeble] then provides ST-centric damage reduction. All of these are designated flex talents for a reason, since they are neither weak enough to write off completely or strong enough to take in all circumstances.
+
+Decision Point 2: [Asphyxiate] vs. [Death’s Reach]
+
+While this decision historically has favored [Asphyxiate] in most dungeons, Midnight S2 appears like it is an exception to that at the moment.[Asphyxiate]X is especially useful for additional chain caster shutdown ability, while [Death’s Reach] value is a lot more situational to specific dungeon dynamics as to whether the extra range adds anything of value.
+[Heading3] Blood Talents
+(Note: All qualifiers on talent strength are relative to the amount of benefits provided per talent point when compared with other talents that are available in the Blood Talent Tree, only. Typical talent power levels are different between the Death Knight and Blood Talent Trees, but they are never directly competing against each other.)
+
+Row 1
+
+[Heart Strike] - Unavoidable core ability.
+
+Row 2
+
+[Marrowrend] - Unavoidable core ability.
+
+[Blood Boil] - Unavoidable core ability.
+
+Row 3
+
+[Vampiric Blood] - One of our most powerful defensive cooldowns and unavoidable.
+
+[Bone Collector] - A mostly quality of life talent, that also provides some (mostly mitigation-based) throughput on grip abilities via [Bone Shield] generation. This talent is unavoidable.
+
+Row 4
+
+[Ossuary] - The RP cost reduction on [Death Strike] has muted damage effects on (Deathbringer) (though a very above-average damage gain in all situations for (San’layn)) and provides defensive benefits in the form of increased RP pooling potential and higher [Death Strike] cast frequencies.
+
+[Improved Vampiric Blood] - The increased [Vampiric Blood] uptime, in particular, results in a decent source of controllable EHP in any content where high defensive uptime is desirable along with a decent mitigation benefit, assuming it is paired with other talents it has synergy with.
+
+[Improved Heart Strike] - The increased damage is relatively below-average power-wise for a damage talent at all target counts except small target cleave (where it is above-average) when used by (Deathbringer). The damage increase improves by a minor amount as (San’layn) due to [Vampiric Strike].
+
+[Relish in Blood] - Only (San’layn) emphasizes [Crimson Scourge] in the rotation (at lower target counts) but, even for (San’layn), the damage increase is only average in these situations and gets worse as soon as you change how you are casting [Death and Decay] (4+ targets). Some of the (San’layn) benefit is due to marginally better [Essence of the Blood Queen] uptimes, as well. Without either of these things going for it, the benefits are truly lackluster for (Deathbringer).
+
+Row 5
+
+[Leeching Strike] - The healing results in a very low amount of extra mitigation in dangerous situations with no other benefits.
+
+[Heartbreaker] - The increased RP generation provides a strong mix of mitigation, priority damage, and EHP benefits against multiple targets. However, the overall benefits are greatly reduced against single targets. This talent is exceptionally powerful on (San’layn) in particular due to how much additional damage it gains.
+
+[Foul Bulwark] - A large increase in mostly-reliable baseline EHP. Players generally obtain an average of around 9 stacks over the course of a dungeon.
+
+[Dancing Rune Weapon] - A fairly middling defensive cooldown, which also doubles as a strong offensive cooldown (particularly with additional talents).
+
+[Hemostasis] - The increased [Death Strike] damage and healing provides a decent amount of mitigation against multiple targets as well as strong potential damage in the same situations. Note that the healing increase does not extend to [Blood Shield] healing, only the raw healing portion of [Death Strike]. The overall benefits are a little lacking against single targets, in general, though (San’layn) sees improved performance with this talent all around.
+
+[Perseverance of the Ebon Blade] - Only (San’layn) emphasizes [Crimson Scourge] in the rotation, the damage reduction effect provides a middling amount of unreliable EHP in any case.
+
+[Bloodworms] - The worms provide low single target damage and a minor source of smart mitigation. Their damage scales poorly into multiple targets in addition to their low baseline potential for damage.
+
+Row 6
+
+[Gorefiend’s Grasp] - An AoE grip can be a very useful utility at times to improve enemy positioning or as an AoE micro-CC. The silence effect can add some extra value situationally when it comes to locking down multiple casters. It also provides some amount of resource generation via [Bone Collector]. However, there are also a range of situations where this ability provides little to no value.
+
+[Abomination Limb] - Unless you are in a situation where the superior range or “grips over time” nature provide unique value, [Gorefiend’s Grasp] is very close to being strictly better than this. Things may be different if this ability still did damage, but it does not.
+
+[Improved Bone Shield] - The large passive haste increase and extra maximum stacks results in a strong damage benefit along with relatively smaller (but still significant) mitigation and EHP benefits.
+
+[Insatiable Blade] - The bone shield generation and [Dancing Rune Weapon] cooldown reduction results in a decent damage benefit with relatively smaller mitigation and defensive uptime benefits.
+
+[Deadly Reach] - While this talent is completely useless in pure single target, the amount of damage this adds in multiple target situations is overwhelmingly high. As an added bonus it triples the stack rate of [Coagulopathy]. The cleave radius is also quite generous, seemingly around 10 yards and you don’t need to hit the exact center of enemy hitboxes.
+
+[Rapid Decomposition] - A decently strong damage increase at all target counts with secondary mitigation benefits at higher target counts due to the increased [Blood Plague] healing.
+
+Row 7
+
+[Boiling Point] - This talent provides a strong damage increase on single targets and a much larger benefit on multiple targets. The proc rate is approximately 15% on one target and scales up to ~67% when you are hitting 5 targets with [Heart Strike]. It is worth noting that any echoed [Blood Boil] that occurs via this talent can also trigger its own buff effect, cascading the effect.
+
+[Lifeblood] - This talent provides a respectable amount of consistent mitigation in all situations. On buff refresh, all remaining healing is combined into the new buff, so no raw healing is lost through this process. Many forms of healing increases affect [Death Strike], but not [Lifeblood], including [Hemostasis] and [Sanguine Ground].
+
+[Everlasting Bond] - This talent more than doubles the effectiveness of [Dancing Rune Weapon], especially when it comes to damage. Needless to say, this is a significant source of damage and a small increase in defensive uptime as well as providing marginal overall mitigation benefits.
+
+[Voracious] - The increased [Death Strike] healing and leech provide a respectable amount of mitigation against multiple targets, but becomes a much smaller increase when fighting single targets where the leech is less effective.
+
+[Blood Feast] - The healing throughput of this effect results in very minor amounts of mitigation, and, in real world situations, it is a very awkward form of healing to actually get value out of.
+
+Row 8
+
+[Plague Infusion] - This talent has a 1 second ICD, which greatly limited potential cooldown reduction, and, due to how [Blood Boil] is handled in the rotation as well as the current state of BDK resources, the additional [Blood Boil] charge generation is almost always wasted. As such, this talent effectively does next to nothing.
+
+[Bloody Reflection] - This talent has a 0.5 second ICD, which greatly limits the potential damage output of this ability. Exact damage output potential is very situational, but the damage output does not appear to be anything special in most generalized dungeon situations, overall. This talent only procs from direct damage instances (physical or magical); periodic damage instances do not count. Furthermore, a direct damage event that breaks the [Blood Shield] does not trigger the effect. All of this together means that it is hard for this ability to generate a meaningful amount of single target damage unless there is a significant amount of magical direct damage events or if the physical direct damage events are of a small enough magnitude to not break the [Blood Shield] in a majority of cases. The increase to the maximum [Blood Shield] cap is interesting, but, given log data from TWW Season 1 showing the cap to not being a significant problem in addition to the baseline [Death Strike] healing nerfs in Midnight Season 1, the expected value of this specific benefit is expected to be near-zero in most situations. So, this is just a below-average damage talent in its current form in M+ unless the player is particularly concerned with a specific single target situation within the dungeon where it would perform well.
+
+[Iron Heart] - With a moderate investment in Mastery, this talent provides a middling amount of consistent mitigation in all situations.
+
+[Bloodied Blade] - This talent stacks with a 0.5s ICD and new buff applications can’t stack while the premium strength buff is active. Triggered [Heart Strike] casts do not generate RP. That being said, this talent provides a very strong damage increase in multiple target situations, though it is very unreliable against single targets. As for bugs, procs that result in a [Vampiric Strike] cast do not benefit from the damage amplification (and have the same rune cost and RP generation as a normal cast) when under the effects of [Dancing Rune Weapon]. After auditing beta logs for BDK, this talent was found to account for 5-7% of overall damage depending on the key, an amount that is very biased towards multiple target situations, so it is not as effective at shortening dungeon time as a flat damage amplification of this amount would be.
+
+[Coagulopathy] - The increased damage potential of this talent at all target counts is quite significant and even the increased healing provides noticeable mitigation when fighting multiple targets once the buff effect is stacked up.
+
+Row 9
+
+[Blood Mist] - This talent adds a low amount of damage at all target counts (though it is a moderate increase for (San’layn) due to the increased value of RP), increases [Death Strike] frequency during [Dancing Rune Weapon] casts, and has smaller secondary benefits in raw mitigation and defensive uptime via [Red Thirst] synergy.
+
+[Sanguine Ground] - This increased damage and healing effect results in a reasonably strong damage benefit at all target counts with some mitigation benefit.
+
+[Bloodshot] - This solidly above-average increased damage effect will always affect [Death Strike] regardless of prior [Blood Shield] status. For all other abilities, exact [Blood Shield] uptime will vary, so, in general, this talent has a bias towards lower target counts or pulls with an obvious priority target. Meanwhile, the damage reduction effect on [Blood Shield] is unreliable, but of a moderate amount.
+
+[Consumption] - This talent provides an average amount of overall damage that does not hold up as well when trying to deal priority damage. The damage reduction effect provides minor EHP benefits, though including it in the rotation does have some negative impact to RP economy. At current tuning, always casting at stage 1 is preferable.
+
+[Red Thirst] - The [Vampiric Blood] cooldown reduction provides a very large increase in controllable EHP benefits while also providing a large increase in mitigation throughput.
+
+Row 10
+
+[Sanguinary Burst] - This talent adds a low-to-moderate amount of damage at all target counts except high target count even-cleave scenarios, where it is solidly above-average, though the healing provided is negligible from a mitigation perspective.
+
+[Purgatory] - This 4 minute cooldown cheat death effect is very strong for what it does. This effect cannot fail from overkill damage.
+
+[Carnage] - This talent’s first effect converts 150% of damage done into [Blood Shield] based on the player’s mastery conversion rate (though it double dips with versatility for some reason). That being said, the additional healing from this effect is not significant. The cooldown reduction proc effect is implemented in a way that is very unreliable (“on damage taken” procs rarely get full value) and does not significantly reduce the cooldown of [Consumption]. In a best case scenario, the benefits are less than half of what is provided by the preceding talent and it is not competitive with alternate blood tree talents.
+
+[Umbilicus Eternus] - This absorb effect provides very strong mitigation throughput on multiple targets, though it scales off of the number of targets and is a lot less impressive on single targets. The size of the absorb effect is to the point where it can be treated as a substitute 100% damage reduction defensive cooldown while it is active with significant absorb value remaining, allowing the player to pool RP and further defensive cooldowns while it is active.
+
+Apex Talent
+
+[Dance of Midnight] /  / Rank 1 - This rank adds a strong amount of damage against multiple targets that is somewhat weaker against low target counts (it has a 100% proc rate on parry during [Dancing Rune Weapon] with a 3 second ICD). /  / Rank 2 & 3 - These ranks are relatively weak marginal damage and EHP gains above rank one if the final rank is not also taken. /  / Rank 4 - The final rank adds a strong amount of damage in addition to respectable amounts of raw mitigation as well as some spillover benefits for controllable EHP. This effect has a 12.5% proc rate per rune spender, regardless of how many (if any) runes were used on said cast.
+[Heading3] Blood Talent Build
+Baseline Blood Talent Build:
+
+Sample Build (Deathbringer): Wowhead Link
+Build Import String (Deathbringer): CoPAAAAAAAAAAAAAAAAAAAAAAwMzyMzMmxMGMLzMz0MLzMjZmBAAAAwgZmZmZMzMjBAzMzMzAAAMmtBGwSwywEYYBwMGAAMzAwYA
+
+Sample Build (San’layn): Wowhead Link
+Build Import String (San’layn): CoPAAAAAAAAAAAAAAAAAAAAAAwMzyMzMmxMGMLzMz0MLzMjZmBAAAAwgZmZmZMzMjBAzMzMzAAAYgBmxiGLbgsMgNAzYAAAmZAjB
+
+
+
+General Pathing:
+
+Regardless of hero talent tree, the blood talent tree kind of builds itself in the first half. We want to obviously sweep through all three strong and desirable [Dancing Rune Weapon] talents in the center, [Improved Bone Shield], [Ossuary], [Heartbreaker], [Gorefiend’s Grasp], and [Foul Bulwark] are strong to the point that we wouldn’t consider skipping them on the left, and the [Hemostasis], [Deadly Reach], and [Rapid Decomposition] cluster is powerful enough to always take as well. [Improved Vampiric Blood] is also always utilized due to its strong standalone benefits. None of the skipped talents in the first half of the tree have a strong appeal to them given the alternatives available to them.
+
+At the end of the middle tier of talents, [Voracious] is needed for pathing, despite the heavy nerfs it received at the start of Midnight. Meanwhile, the [Umbilicus Eternus] and [Purgatory] talent branches are fully lined with strong talents, [Boiling Point] stands strong on its own for damage reasons (especially against multiple targets), and [Iron Heart], despite not being an overly strong talent on its own, is preferred pathing over [Bloody Reflection] (another weaker talent) since it allows access to [Bloodshot] in addition to [Sanguine Ground] and [Purgatory]. The competitiveness of the [Blood Mist] branch is penalized by being gated by the zero-impact talent [Plague Infusion] (in addition to the later talents not being strong enough on their own to pull talent points in M+), on top of the remaining two talents being on the weaker side. Even if playing [Consumption], [Carnage] is especially weak.
+
+Decision Point 1: Choose 2 Flex Talents
+
+Your only meaningful decision point here is the decision as to whether you want to increase [Heart Strike] damage further with [Improved Heart Strike], or go for the more defensively oriented combination of [Relish in Blood] and [Lifeblood]. For (San’layn), [Improved Heart Strike] appears to be performing better at the moment from log data, while (Deathbringer) seemingly still prefers [Relish in Blood] and [Lifeblood] as it did in S1 Midnight.
+[Heading2] Tier Set Bonuses
+With the changes made in Season 2, where items retain their statlines when catalyzed, there is no longer any reasonable long-term situation where you would ever have a choice between a tier set piece and a higher quality piece that does not enable the tier set bonus, so ilvl considerations are mostly irrelevant. That said, it is still important to understand the nuance of how they work.
+
+2-piece Bonus:
+
+[Death Strike] now generates a stack of [Blood Debt] with each use, which gives you 0.5% strength per stack up to 5%. On 10 stacks, your next [Marrowrend] consumes it to give you 10% strength for 10 seconds. The stacks have infinite duration and do not drop out of combat. The empowered [Marrowrend] is enabled by 10 stacks of [Blood Debt], itself, and not a secondary buff effect. You can immediately generate additional [Blood Debt] stacks even while the 10% strength buff effect is active.
+
+4-piece Bonus:
+
+Consuming [Blood Debt] now generates 3 additional [Bone Shield] stacks and deals 900% AP shadow damage to your main target and 600% AP shadow damage to all other nearby enemies. This is not duplicated by [Dancing Rune Weapon].
+
+Implications:
+
+The capstone effect is not strong enough to prioritize [Marrowrend] as soon as you reach 10 stacks of [Blood Debt], in a M+ environment you still [Marrowrend] fairly regularly regardless and, while waiting, you will at least be at a 10 stack of [Blood Debt] for passive benefits; the extra time spent making your [Marrowrend] more productive outweighs a marginal increase in average strength benefit. The tier set bonus is haste-scaling, so it does marginally increase the value of haste, though not to the extent of major stat prioritization changes. (Deathbringer) often floats [Exterminate] charges and can double up on modifiers for [Marrowrend] casts, while (San’layn) has a greater degree of rotational disruption to quickly act on these procs. Net benefits for both hero talents are roughly the same, all aspects considered.
+[Heading2] Omnium Folio
+The Omnium Folio is a temporary power system introduced in 12.0.7 that provides proc-based benefits with some amount of optionality. This section will provide guidance on rune selection in particular.
+
+Row 1 (Core Rune): [Rune of Unleashed Fire]
+
+[Rune of Void-Touched Orbs] - Generates an orb stack once every 10 seconds to a max of 5, dealing Cosmic damage to a single target on ability-use.
+
+[Rune of Unleashed Fire] - A 9 RPPM proc on ability use that deals Fire damage to a single target.
+
+Basis: Outside of very specific conditions, the higher steady proc rate will outperform a slow steady proc rate with out of combat proc accumulation potential. It has been noted that the healing proc from Core Runes can be triggered from the Rune of Sanguination healing effect.
+
+Row 2: <Any>
+
+[Rune of Self-Mending] - Core Rune procs also heal you when you are below 75% health when they trigger.
+
+[Rune of Void-Tainted Shell] - A 30s ICD shield that triggers when taking an instance of damage that is greater than 10% of your maximum health.
+
+[Rune of Lynxlike Reflexes] - A 30s ICD movement speed buff that is triggered on taking damage.
+
+Basis: No two options can be meaningfully compared against each other ahead of time; the speed bonus for obvious reasons, while the sub-75% healing proc will have variable performance based on the situation.
+
+Row 3: [Rune of Lingering]
+
+[Rune of Lingering] - Core Rune procs now apply an 8s Cosmic damage DoT for the same amount of total damage.
+
+Basis: No other choice
+
+Row 4: [Rune of the Versatile Warrior]
+
+[Rune of Critical Power] / [Rune of Burning Haste] / [Rune of Masterful Cunning] / [Rune of the Versatile Warrior] - Core Rune procs now apply an overlapping secondary stat buff of the secondary stat you choose.
+
+Basis: Normal secondary stat preference.
+
+Row 5: [Rune of Overload]
+
+[Rune of Overload] - Core Rune procs now deal 100% more initial damage.
+
+[Rune of Residual Energy] - [Rune of Lingering] now deals 100% more damage.
+
+[Rune of Echoes] - Core Rune procs now apply an 10s debuff to the target that accumulates and deals 50% of any proc-based damage that was taken over the duration.
+
+Basis: Given the current understanding of rune mechanics, this option is strictly better than the others.
+[Heading2] General Gearing
+Given that you've read about the tank performance measures, we are looking to build our character with an optimal combination of mitigation, EHP, and damage for the content we are doing. This section is going to be giving general recommendations for gearing.
+[Heading3] Upfront Recommendation
+Target Embellished Items
+Target Versatility 
+(San’layn) Target Haste over Remaining Secondary Stats
+Target Mastery over Remaining Secondary Stats within limits
+(Deathbringer) Roughly equalize Critical Strike and Haste
+Target items with Sockets
+Avoid excessive secondary stat Diminishing Returns
+
+(Full details on each rule of thumb are provided at the end of the General Gearing Section)
+
+Embellished Items:
+
+General Recommendation: [Arcanoweave Lining]
+
+Generalized Stat Priority:
+
+Overall (Deathbringer): Versatility > Mastery >= Critical Strike = Haste
+Overall (San’layn): Versatility > Haste > Mastery >= Critical Strike
+[Heading3] Embellished Items
+There are a number of crafted items that are “embellished”. These embellished items provide unique and strong bonus effects, while their main restrictions are that only two of these items can be equipped at any one time and that they are only available at 4 ilvl below max ilvl (only 3 ilvl for neck, weapon, and trinkets once those slots are upgradable). Note, these effects aren’t overly powerful in the grand scheme of things, but they are (often) strong enough to be worth using over non-embellished pieces despite the ilvl disadvantage.
+
+While crafted items are generally only 4 ilvl (or 3 ilvl) below the maximum obtainable ilvl, the cost of these item levels on the weapon slot, in particular, can be a relatively high cost to pay if a high ilvl alternative exists with a half-decent statline.
+
+Relevant Embellished Items:
+
+[Arcanoweave Lining] - This armor embellishment provides a random strength buff to you and a random ally, with 80% of the benefit being provided to you personally. As this can be applied to all armor slots, the most preferable slot to craft it on is the cloak slot (ignoring statline considerations); if two copies are used, wrist is the next-best location.
+
+[Signet of Azerothian Blessings] - This unique embellishment ring with a fixed mastery/versatility statline provides a random all stats buff effect.
+
+[Stabilizing Gemstone Bandolier] - This embellishment can be provided on any jewelry or armor slot and will double the effectiveness of all jewelry embellishments. Due to most jewelry embellishments having fixed statlines, this can generally provide a duplicated embellishment effect more effectively than the original jewelry embellishment as long as the slot, itself, is not less efficient than where the original is located.
+
+[Hunter’s Ritual Stone] - This weapon embellishment provides a random secondary stat proc.
+
+General Recommendation: [Arcanoweave Lining]
+
+[Arcanoweave Lining] is the best option still, as blizzard buffed this embellishment to give it ilvl scaling; the raw amount of primary stat provided continues to outclass all secondary stat options. Given current dynamics, it is better to craft on bracers before cloak given the overall item pool.
+
+Among the static secondary stat benefits, [Signet of Azerothian Blessings] combined with a [Stabilizing Gemstone Bandolier] would provide the best overall benefits, though these are not numerically competitive at this time.
+
+If you are in a situation where you are crafting a weapon early, [Hunter’s Ritual Stone] will be your best embellishment option on that item until you have a proper myth track weapon. While the embellishment effect is strong, once it is competing with a 3 or 4 ilvl higher weapon it is no longer a consideration.
+
+What about the other embellishments? Nothing else is worth mentioning.
+
+The recommended embellished effects (themselves) will generally be worth at least 4 ilvls in direct item comparisons.
+[Heading3] Unique Items
+Fairly often, blizzard decides to add a few non-trinket items that don’t follow the normal itemization rules. In general, these items have unique effects that may or may not come at the cost of stats a “normal” item in the same slot would be guaranteed to have. There are a few items of this type that are worth discussing.
+
+[Maze-roa, Warlord’s Fury] - This weapon has a 71% critical strike/29% mastery statline with a hybrid single target/uncapped AoE damage proc. The average statline combined with the bonus damage effect make it very, very close to being best-in-slot on equal item level with all other options, but the fact that this weapon can reach 9/6 myth track makes it better than all other alternatives if obtained at this ilvl advantage. While one of the better weapons to use on equal ilvl, the cantrip effect does not justify using this weapon over higher ilvl alternatives. While this is part of an item set with [Zul’Jin’s Guillotine Technique], the decision of whether or not to use this weapon is generally not determined by whether or not you are using the trinket (the same can’t be said of the trinket).
+
+[Aqirbane Reliquary] + [Chausses of Unbound Rancor] - These are a split stat and a 100% critical strike statline neck and legs, which both have the same cantrip effect that provides even more of their baseline stats at the cost of the other three through a random proc. While these are available at 9/6 myth track, the bonus stats provided by their free effects are significant enough to make them best-in-slot even on a normal 6/6 myth track. Granted, myth crafted items (and, in most cases, normal myth track items) in both slots are superior to hero track versions of these cantrip items.
+
+[Geti’ikku, Cut of Death] - This weapon sacrifices its entire statline for a relatively weak single target damage proc, making it the worst weapon in the entire dungeon pool. It remains better than hero track weapons, but it is worse than crafted weapons.
+
+[Corroded Hulk’s Skullcap] + [Band of the Swarmcaller] - These items have bonus direct damage cantrip effects, which are strong enough to make them BiS without ideal statlines, but not strong enough to use over higher ilvl options.
+
+[Lu’selama, Light’s Justice] - This weapon sacrifices its entire statline for a random proc that gives all of those stats back, and more, in the form of a random haste proc, while also providing some degree of direct damage. This weapon is projected to outperform [Maze-roa, Warlord’s Fury] in M+ content on the same ilvl, but it is not to the power level of beating out other items at an ilvl disadvantage.
+[Heading3] Attribute Considerations
+The type and amount of stats on items affect several aspects of our character power (such as mitigation, EHP, and damage) as well as having some influence over our itemization decisions.
+[Heading4] Mitigation
+Your current character setup and what kind of encounter you are in will determine the exact value of different attributes. That being said, you'll generally find the following secondary stat priorities to be true in Mythic+ dungeon content when ONLY considering mitigation:
+
+Mitigation Only: Mastery > Versatility > Critical Strike >= Haste
+
+(Note: Talent and item choices can influence the relative value of secondary stats for mitigation)
+
+Similar to dps, it's possible for lower item level pieces to be better for mitigation than higher item level pieces. In fact, this is generally more likely to occur with mitigation compared to damage, since primary stats are relatively poor sources of mitigation value and secondary stats have historically had wider gaps in mitigation contribution compared to something like personal damage contributions.
+
+More Details?
+
+Mitigation for BDKs comes in a few layers: avoiding attacks entirely (dodge and parry), proactively mitigating incoming damage as it hits you (armor, versatility, avoidance, and other damage reduction effects), and reactively mitigating damage that you have already taken (self-healing). Any damage that we can't mitigate through these methods will need to be healed by another player or it will eventually culminate in our death.
+
+Since Legion, the most effective method for BDK to increase overall mitigation has generally been through improving [Death Strike] effectiveness, in part due to its overall effectiveness and in part due to its scaling with stats and other bonuses. This made all other sources of mitigation relatively insignificant as a result, which has been significantly impactful with regards to secondary stat preferences in non-trivial content.
+
+To explain the scaling, here are some historical graphs using Shadowlands numbers comparing armor scaling to the scaling of a single [Death Strike] (adjusted to account for haste allowing for more [Death Strike] casts, which did directly increase potential [Death Strike] healing at the time) in a five target encounter with increasing levels of secondary stats. The reason why I have kept these Shadowlands graphs in here is because the exact numbers don’t matter; I am only trying to convey how the given benefits scale with additional stats. And, while [Death Strike] has effectively lost its haste-scaling, its healing still scales in this manner with versatility and mastery.
+
+On one hand, the physical damage reduction curve for armor has a decreasing slope; it is sloped in a way that each point of armor increases EHP by the same flat amount as the last point of armor relative to the player’s baseline EHP. On the other hand, the [Death Strike] healing curve from the combined effects of versatility, mastery, and (at the time) haste has an increasing slope for a characteristic that, like armor, ultimately negates all incoming damage by a certain %. In the current game, this means that, with regards to [Death Strike] healing, not only is each point of mastery and versatility more effective than the last, but that both of these stats further amplify the effectiveness of the other.
+
+
+
+ / That said, blizzard removed haste’s direct [Death Strike] scaling in TWW with the following change:
+
+“Death Strike can now only heal the Death Knight for a percentage of damage taken from a given damage event once.”
+
+The implications of the above are basically that any build option that increases the rate of [Death Strike] casts does not effectively result in an increased level of mitigation UNLESS incoming damage is of a high enough level where the player needs to, at some regular frequency, [Death Strike] more than once every 5 seconds to survive (since BDK, by default, is capable of using [Death Strike] at least once every 5 seconds, on average). As such, haste’s primary means of providing mitigation has effectively been removed (outside of specific situations) and its only unconditional mitigation contribution (increasing the cast rate of [Vampiric Blood] via [Red Thirst] and the uptime of [Dancing Rune Weapon] by increasing the proc rate of [Dance of Midnight]) is significantly weaker on its own than the mitigation contribution of mastery and versatility, while also sometimes being weaker than critical strike depending on the situation. This has put haste in an awkward situation where, unless it is providing a disproportionate advantage in other types of benefits (such as damage done), it has an innate disadvantage relative to the other stats in non-trivial content.
+
+So, ignoring haste, the influence of versatility and mastery on mitigation is expected to grow compared to primary stats and critical strike as we progress through the expansion for the following reasons:
+
+Increasing the "K Value" lowers the value of armor with every major content patch, which also, indirectly, lowers the mitigation value of strength (relative to secondary stat scaling).
+Parry from Critical Strike shares diminishing returns with Parry from Strength, except Strength values grow more aggressively than secondary stats as gear ilvl increases. Parry has a similar diminishing returns system to armor with regards to combined critical strike rating and Strength scaling.
+Stamina does not directly influence mitigation outside of a few minor sources of healing, which are not overly large and don't scale with incoming damage.
+[Death Strike] effective mitigation is a significant source of BDK healing and it heals proportional to damage taken (like armor and parry mitigation). However, its effectiveness is multiplied by two separate secondary stats (mastery and versatility) in a way that results in increasing returns for both of these secondary stats where most traditional forms of mitigation have some form of diminishing returns on their effectiveness.
+
+Taken together, the most impactful secondary stats on BDK mitigation are versatility and mastery, which are significantly more effective than mitigation provided by critical strike and haste (outside of the theoretical situation where the player is forced to [Death Strike] at a higher than normal frequency to deal with exceptionally high incoming damage for an extended period of time). As such, these differences are some of the main reasons lower ilvl gear can sometimes be better than higher ilvl gear (within certain bounds), while many of these differences will only get amplified as the expansion progresses.
+
+With more targets, a few things change that affect mitigation. First, our natural rate of bone shield consumption will be elevated from the higher number of targets attacking us. Second, you gain increased effectiveness on [Heartbreaker], [Hemostasis], leech effects, and [Umbilicus Eternus] when those talents are being utilized.
+
+As for the value of leech, leech doesn't affect [Death Strike] or [Blood Shield] healing, so it is not a significant source of mitigation when found as rating on gear. It does have *some* value, but it's very very rare that it will change any specific gearing decisions.
+
+As for avoidance, most of the damage we take in Mythic+ dungeons is not AoE, so avoidance does not provide a significant amount of mitigation and is more of an EHP benefit in specific situations.
+
+What if we are taking high amounts of magic damage?
+
+Critical strike's mitigation is directly proportional to the amount of avoidable attack damage being taken by the player, so it gets less valuable with more magic damage intake (or physical damage that can’t be parried). Mastery generally provides full mitigation as long as a high enough % of incoming damage is physical (enough to fully utilize your [Blood Shield]); once you drop below this threshold additional Mastery effectively provides no defensive value. If all damage being taken is magical, both critical strike and mastery provide an insignificant amount of mitigation through their main mitigation mechanic.
+
+What if [Blood Shield] starts to cap from a single [Death Strike]?
+
+Since TWW, [Blood Shield] can only go up to 50% of a player’s maximum health and this does not adjust for [Vampiric Blood]. While these changes were not intended to nerf mastery’s value in situations where Blood is actively tanking, this cap was something that was challenged in the later half of TWW in higher Mythic+ keys where damage intake got high enough. If incoming damage and mastery levels are high enough, and particularly if [Vampiric Blood] is active, you can theoretically hit a point where a single [Death Strike] will hit the 50% [Blood Shield] cap with no pre-existing [Blood Shield]. In these situations, mastery mitigation value would be penalized by how often this happens (with some regard to how dangerous the situations inherently are when this happen), where build options that increase effective health, [Death Strike] cast frequency, or the [Blood Shield] cap itself can either directly or indirectly make this circumstance less likely to happen given a specific level of mastery and incoming damage. This change can also reduce overshielding in situations where the player is not taking significant damage, though the value of overshielding from very low-to-no damage windows into future damage windows of concern has always been hard to directly evaluate.
+
+In any case, given the Midnight nerfs to [Death Strike] base healing and [Voracious] increased healing as well as after looking at data from Midnight S1 M+, this does not appear to be a significant phenomenon at this time, but that could potentially change in the later seasons.
+[Heading4] Effective Health
+EHP Only: Versatility >> Haste
+
+EHP is mostly affected by attributes that are tied to item level (strength, stamina, armor), with the big exception of versatility (and, in some cases, avoidance).
+
+The amount of versatility an item has can have a large impact on how much EHP it gives, often allowing items with versatility to provide the same amount of or more EHP than items of higher ilvl without versatility.
+Assuming two items both have versatility, ilvl will generally determine which item provides the most EHP.
+Most of the damage the tank currently takes in M+ dungeons is not AoE, so avoidance is not significantly useful for increasing EHP.
+Beyond versatility, haste is the only secondary stat that provides EHP (indirectly) through [Red Thirst].
+
+Extra Considerations:
+
+EHP in this guide is generally referring to reliable or controllable EHP, which is either always available when you are taking damage from an attack or when it is 100% controllable like a defensive cooldown. However, there are a few other sources of EHP that also have some value depending on the situation. For instance, proc-based EHP bonuses can still have significant value in M+ where trash pulls are often dangerous for their entire duration even if they aren’t controllable. Even extremely unreliable sources of EHP, such as sources based on attack avoidance (dodge and parry) and the ability for [Blood Shield] to raise our total HP % above 100% are providing at least some EHP value, since it lowers the chance that you will be lowered from a high amount of health to dead in a short amount of time. Furthermore, since our main form of mitigation is [Death Strike], which is on the global cooldown, higher amounts of haste can potentially allow us to [Death Strike] faster in response to damage (which gives enemy targets less time to kill us before we can react).
+
+Also, since we are generally pooling RP to have some casts of [Death Strike] in reserve, it's worth noting that mastery and versatility are the only attributes increasing the effectiveness of each point of pooled RP, which is effectively our reserve health pool.
+[Heading4] Damage
+Optimizing gear for damage nowadays is fairly easy, and, other than understanding the trade-offs involved, optimizing damage for tanks is not really any different than optimizing damage for dps specializations. In general, secondary stat priorities for damage, like everything, are going to change based on your character setup and circumstances. A general priority for ONLY damage can easily be generated with sims, but it may look something like this:
+
+         Damage Only (Deathbringer): Critical Strike >= Haste >= Mastery = Versatility
+                                 Damage Only (San’layn): Haste > Critical Strike >= Mastery = Versatility
+
+Secondary stats have historically been relatively close in value when it comes to increasing damage, except haste has had moments in time where this was not true since it scales different types of ability damage differently. The hierarchy of damage stat weights can very easily change depending on your current stat levels (and the amount of damage contribution coming from item-based effects, since not all stats scale those equally). That being said, our hero classes have significantly different amounts of haste-scaling when it comes to damage, where, for (San’layn), it is the dominant damage stat, while for (Deathbringer) it is a lot more tepid (a large portion of the haste value difference comes from multiple target situations as opposed to pure single targeT)
+
+Furthermore, it should be noted that primary stats account for a larger portion of an item's damage contribution. Because of this, it is generally more likely for higher ilvl items to result in more damage relative to the other two main metrics.
+[Heading4] Overall
+
+So, let us now consider all secondary stat effects at the same time:
+
+                                       Mitigation Only: Mastery > Versatility > Critical Strike >= Haste
+                                                     EHP Only: Versatility >> Haste
+         Damage Only (Deathbringer): Critical Strike >= Haste >= Mastery = Versatility
+                                 Damage Only (San’layn): Haste > Critical Strike >= Mastery = Versatility
+
+Again, the general recommendation for M+ dungeons is to try and maximize the success rate of timing the dungeon, which means weighting all aspects of a stat appropriately given how impactful each trait is with helping you pursue that goal. As such, the overall secondary stat priority ends up looking like this:
+
+Overall (Deathbringer): Versatility > Mastery >= Critical Strike = Haste
+Overall (San’layn): Versatility > Haste >= Mastery > Critical Strike
+[Heading3] Itemization Guidelines
+The following rules of thumb were developed when looking at generalized items with a 50/50 split on their secondary stat allocations with a BiS profile being used as a baseline for the comparisons; they are meant to provide general itemization rules that will be true a majority of the time, though it is not impossible to come up with specific circumstances that can justify larger or smaller item level differences than what is listed here particularly when comparing items that do not have 50/50 splits in their secondary stat allocation.
+
+Target Embellished Items
+The bonus effects provided by embellished items are strong enough to justify using lower item level gear within some limits. For the recommended embellished items, an item level drop of at least 4 item levels can be justified in most item slots.
+Target Versatility
+Versatility provides a strong combination of overall bonuses to the point where lower item level items with versatility have the potential to be better in M+ settings, everything else held equal. For jewelry, unless unique effects or a large counterbalancing force is involved, taking items with versatility is generally worth more than 3 item levels when substituted in place of mastery, 6 item levels when substituted in place of haste, or 9 item levels when substituted in place of critical strike for (Deathbringer) (critical strike is mostly out of alignment with haste on this check because the BiS profile is “forced” into taking too much haste due to cantrip effects). (San’layn) only differs with regards to haste, where a substitution to versatility is only worth 2 item levels. Unless you have around 1000 more vers rating than haste rating on (San’layn) (which is a very unlikely situation), versatility will always be worth more than any other secondary stat, point per point, for general M+ performance until the 10% diminishing returns range is hit. In any case, there is a lot of potential for crafted jewelry to be better than regular myth track jewelry if the statline improvement is significant, though going down a full upgrade track is almost always going to be a bad idea. For armor and ESPECIALLY weapons, purposefully dropping ilvl does not look worthwhile at this time unless you are significantly off the mark with your character statline; as long as you are in a reasonable ballpark of an M+ statline, the tradeoff will not be worth it even moving a significant amount of critical strike rating into versatility rating. Particularly with armor slots, this is a significant change from all previous expansions going back to Legion, where secondary stat optimization could justify a more significant level of ilvl loss.
+(San’layn) Target Haste over Remaining Secondary Stats
+Haste in place of other secondary stats on (San’layn) is usually a survivability loss over all other secondary stats, yes, but it provides enough of an edge with regards to damage to look preferable overall to everything but versatility. That being said, the gap is small enough that, after reaching enough of a rating gap of haste over mastery (around 600 rating more before the 10% diminishing returns mark), it will become roughly equal in overall value to it (granted, it is realistically hard to be put in a situation where you go past this point with a proper itemization strategy, though the BiS profile gets close). For jewelry and in a BiS setup it is generally worth around 7 item levels to substitute critical strike rating with haste, while the gains from substituting mastery into haste are relatively insignificant. Regardless, haste should have a solid preference over the other two stats when itemizing to reach a good balance.
+Target Mastery over Remaining Secondary Stats within Limits
+With the exception of versatility and (San’layn) haste, the raw mitigation power of mastery makes it the next-most desirable stat despite being somewhat weaker on damage. The performance gap is small enough that the net value of mastery can become equal to critical strike and (Deathbringer) haste if you have 500 more mastery rating than them. For jewelry and in a BiS setup, targeting mastery over haste is generally worth more than 3 item levels, while critical strike is generally worth more than 6 item levels (again, because cantrip items “force” us into a larger than desired amount of critical strike).
+(Deathbringer) Roughly Equalize Critical Strike and Haste ratings
+As (Deathbringer), the net value of critical strike and haste are projected to be equal when their ratings are equal, so you should shift your preferences accordingly based on your current statline. As you gain access to more items, cantrips will likely force you into a state where your critical strike rating is higher than your haste rating.
+Target items with Sockets
+While there was a time when sockets were strong enough to justify ilvl differences on gear, they are currently weak to the point where (along with other socket dynamics) the presence of a socket, alone, would not justify dropping item level, even if you somehow ended up in a situation where that was a tradeoff you were dealing with (an increasingly rare situation in the current state of the game). Still, they provide additional stats that we would prefer to have than not in any otherwise even matchup.
+Avoid excessive secondary stat Diminishing Returns
+As previously mentioned, your secondary stats start getting penalized if you have too much rating in any one of them. It is still quite hard to reach these ranges in Season 2 with a proper M+ itemization strategy, mostly since versatility requires more rating to start incurring diminishing returns. However, if you do hit the 10% diminishing returns point in versatility, it would not change general stat prioritization for (Deathbringer) (though it would almost entirely remove versatility’s competitive advantage over other stats). (San’layn), however, does prefer building other stats over going deeper into 10% diminishing returns versatility as an indirect effect to haste being a more valuable stat for (San’layn).
+[Heading2] Trinkets
+[Heading3] Upfront Recommendation
+General-Use:
+
+1. Unconditional: [Twisted Horror’s Tendril]
+2. If San’layn: [Voracious Heart of Ula’tek]
+3. With Set Bonus: [Zul’jin’s Guillotine Technique]
+4. Unconditional: [Keeper’s Seething Core]
+
+5. Unconditional: [Voracious Heart of Ula’tek]
+6. Unconditional: [Gebbo’s Bottomless Bag]
+7. Unconditional: [Coiled Fangstone] 
+8. Unconditional: [Tumor of the Swarm]
+
+(Note: Trinkets were generally assumed to be at their highest available ilvl for the purposes of these recommendations, though 9/6 myth track is specifically noted. Depending on the exact two trinkets involved, ilvl deviations or unorthodox secondary stat distributions may or may not change the ordering.)
+[Heading3] Trinket Details
+For M+, there are a small handful of trinkets we will be considering based on their overall performance in encounters against various amounts of targets as well as a small number of trinkets with potential situational value to deal with specific types of dungeon pain points. 
+
+[Twisted Horror’s Tendril] - This trinket has passive primary stats and a VERY over-budgeted critical strike proc effect.
+
+[Zul’jin’s Guillotine Technique] - This trinket has passive primary stat and a single target direct damage effect that does more damage the lower health the enemy target is. Under normal circumstances, this trinket isn’t anything special, but it is both available on 9/6 myth track if you can clear mythic raid and, when using [Maze-roa, Warlord’s Fury], it unlocks the ability to proc on two targets while also applying an additional debuff (a hybrid single target/uncapped AoE effect) to both targets. The damage benefit is significantly stronger against multiple targets when empowered by the set bonus.
+
+[Voracious Heart of Ula’tek] - This trinket has passive critical strike rating and a 90 second on-use primary strength proc that provides less primary stat on average than other options as a tradeoff for being able to provide that bonus during a burst window. The power of this trinket is not significantly affected by whether or not it is 9/6 or 8/6 myth track. On one hand, this allows us to get disproportionate damage benefits from the trinket since it can perfectly line up with [Dancing Rune Weapon]. On the other hand, it does not provide significant defensive benefit with this primary stat since it is now unreliable relative to a passive bonus and concentrated towards an already safe window. This benefits (San’layn) disproportionately more for obvious reasons.
+
+[Keeper’s Seething Core] - This trinket has passive primary stats and an over-budgeted overlapping haste proc effect that is empowered when you have more than one stack.
+
+[Gebbo’s Bottomless Bag] - This trinket has passive primary stats and seemingly rotates procs between six individual effects that, when taken together, produce a somewhat over-budgeted amount of secondary stats that are near-evenly split between all four secondary stats.
+
+[Coiled Fangstone] - This trinket has passive primary stats and an on-use split AoE direct damage effect that does respectable damage. The on-use effect is not on the GCD. The damage done is currently much less than advertised in single target, though in AoE (while still behaving unexpectedly) it still generally does its advertised damage amounts. Enemies are able to Z-axis the second and third attack of this on-use, so be cautious around enemies that are changing elevation.
+
+[Tumor of the Swarm] - This trinket has passive primary stats and a decent split AoE damage proc; the healing is mostly inconsequential.
+[Heading3] Overall
+General-Use:
+
+1. Unconditional: [Twisted Horror’s Tendril]
+2. If San’layn: [Voracious Heart of Ula’tek]
+3. With Set Bonus: [Zul’jin’s Guillotine Technique]
+4. Unconditional: [Keeper’s Seething Core]
+
+5. Unconditional: [Voracious Heart of Ula’tek]
+6. Unconditional: [Gebbo’s Bottomless Bag]
+7. Unconditional: [Coiled Fangstone] 
+8. Unconditional: [Tumor of the Swarm]
+
+(Note: Trinkets were generally assumed to be at their highest available ilvl for the purposes of these recommendations, though 9/6 myth track is specifically noted. Depending on the exact two trinkets involved, ilvl deviations or unorthodox secondary stat distributions may or may not change the ordering.)
+
+The new trinket [Twisted Horror’s Tendril] has a VERY over budget effect that skyrockets it to the top of the listing.
+
+The extra damage provided by [Voracious Heart of Ula’tek] as (San’layn) makes the offensive power of this trinket strong enough to offset its defensive weaknesses to mostly tie up the second trinket slot. Though, for (Deathbringer), it loses a few ranking placements.
+
+With access to 9/6 Myth track, you using [Maze-roa, Warlord’s Fury] is a given if it is available to you, so [Zul’jin’s Guillotine Technique] is empowered by default (with no additional tradeoff) as well as having a 4 ilvl advantage. Without access to 9/6 Myth track, there are some losses associated with swapping to the set, since [Maze-roa, Warlord’s Fury] is not a standalone best-in-slot item on 8/6, but, even with these losses accounted for, it is a best in slot trinket in both cases (or, at a minimum, in a near-three-way-tie with the other next-best options). Granted, the trinket is not very good without the set bonus active in M+ content.
+
+If you are (Deathbringer) and not using [Maze-roa, Warlord’s Fury], then [Keeper’s Seething Core] becomes the next best option.
+
+Beyond this point, the unconditional use of [Voracious Heart of Ula’tek] would be the next best option followed very closely by [Gebbo’s Bottomless Bag], then [Coiled Fangstone], and then [Tumor of the Swarm].
+[Heading2] Best in Slot Gear
+Given the information provided in the General Gearing and Trinket sections and applying it to the pool of available items, the best item sets can be projected for both hero talents in M+ content for BDK. Alternate items are listed if the BiS item is only BiS under certain conditions or the BiS item is not infinitely farmable or if the alternate item is of near-equal quality. It is currently the case where the alternate items listed for the BiS items that are only BiS on 9/6 myth track are both infinitely farmable and the second-best items for those slots. /  / Also, given that the catalyst now gives items the ability to enable the tier set bonus without changing any of the item’s base stats, it is assumed that players are catalyzing 4 major tier slots to enable the full tier set bonus. As such, the best in slot list emphasizes the base pieces used pre-catalyzation. /  / (Note that while your gearing will generally approach these items when optimizing for M+ as your gear set develops, certain intermediate itemization situations may make alternative configurations preferable in the short term. For example, crafting can be preferable in other slots while you lack significantly high quality myth track alternatives for said slots.)
+
+Deathbringer Best in Slot
+
+[TABLE]
+Slot | Item | Source | Alternate Item | Source
+Weapon | [Maze-roa, Warlord’s Fury] | The Coiled Altar | [Lu’selama, Light’s Justice] | Kith’ix
+Head | [Corroded Hulk’s Skullcap] | Kith’ix | [Helm of the Raptor King] | King’s Rest
+Neck | [Aqirbane Reliquary] | Ula’tek | [Graft of the Domanaar] | Voidscar Arena
+Shoulders | [Baleful Grave-Knight’s Gibblets] | Tier | [Pauldrons of the Great Unifier] | King’s Rest
+Cloak | [Silken Voodoo Drape] | The Coiled Altar | [Cloak of the Restless Tribes] | King’s Rest
+Chest | [Reckless Spirit Breastplate] | The Coiled Altar | [Pledgebearer’s Cuirass] | Labyrinth
+Wrist | [Spellbreaker’s Bracers] | Crafted | [Shard-Tipped Vambraces] | Temple of Sethraliss
+Gloves | [Despondent’s Gauntlets] | Voidscar Arena |  | 
+Belt | [Girdle of Toxic Regret] | The Coiled Altar | [Sand-Scoured Greatbelt] | Temple of Sethraliss
+Legs | [Chausses of Unbound Rancor] | Ula’tek | [Legplates of Charged Duality] | Temple of Sethraliss
+Boot | [Spellbreaker’s March] | Crafted | [Scaleguard’s Stalwart Greatboots] | Ruby Life Pools
+Ring | [Band of the Swarmcaller] | Kith’ix | [Pilfered Precious Band] | Den of Nalorakk
+Ring | [Jade Ophidan Band] | Temple of Sethraliss | [Lightwarden’s Bind] | The Blinding Vale
+Trinket | [Twisted Horror’s Tendril] | Kith’ix | [Keeper’s Seething Core] | Entombed Sentinels
+Trinket | [Zul’jin’s Guillotine Technique] | The Coiled Altar | [Voracious Heart of Ula’tek] | Ula’tek
+[/TABLE]
+
+[X] - Technically the second-best neck is a raid BoE with good stats, the labyrinth neck third, and a crafted neck is fourth
+[X] - This item is BiS ONLY IF obtained on 9/6 myth track
+[X] - Without access to the 9/6 cloak, you want to craft on cloak instead of boots
+
+San’layn Best in Slot
+
+[TABLE]
+Slot | Item | Source | Alternate Item | Source
+Weapon | [Maze-roa, Warlord’s Fury] | The Coiled Altar | [Lu’selama, Light’s Justice] | Kith’ix
+Head | [Corroded Hulk’s Skullcap] | Kith’ix | [Helm of the Raptor King] | King’s Rest
+Neck | [Aqirbane Reliquary] | Ula’tek | [Pendant of Malefic Fury] | Murder Row
+Shoulders | [Baleful Grave-Knight’s Gibblets] | Tier | [Pauldrons of the Great Unifier] | King’s Rest
+Cloak | [Silken Voodoo Drape] | The Coiled Altar | [Cloak of the Restless Tribes] | King’s Rest
+Chest | [Reckless Spirit Breastplate] | The Coiled Altar | [Pledgebearer’s Cuirass] | Labyrinth
+Wrist | [Spellbreaker’s Bracers] | Crafted | [Shard-Tipped Vambraces] | Temple of Sethraliss
+Gloves | [Despondent’s Gauntlets] | Voidscar Arena |  | 
+Belt | [Girdle of Toxic Regret] | The Coiled Altar | [Sand-Scoured Greatbelt] | Temple of Sethraliss
+Legs | [Chausses of Unbound Rancor] | Ula’tek | [Legplates of Charged Duality] | Temple of Sethraliss
+Boot | [Spellbreaker’s March] | Crafted | [Poison-Proof Stompers] | Altar of Fangs
+Ring | [Ritual Binder’s Ring] | King’s Rest | [Lightwarden’s Bind] | The Blinding Vale
+Ring | [Band of the Swarmcaller] | Kith’ix | [Jade Ophidan Band] | Temple of Sethraliss
+Trinket | [Twisted Horror’s Tendril] | Kith’ix | [Zul’jin’s Guillotine Technique] | The Coiled Altar
+Trinket | [Voracious Heart of Ula’tek] | Ula’tek | [Keeper’s Seething Core] | Entombed Sentinels
+[/TABLE]
+
+[X] - Technically the second-best neck is a raid BoE with good stats, the labyrinth neck third, and a crafted neck is fourth
+[X] - This item is BiS ONLY IF obtained on 9/6 myth track
+[X] - Without access to the 9/6 cloak, you want to craft on cloak instead of boots
+[Heading2] Enhancements
+All item modifiers and consumable usage is handled in this section.
+[Heading3] Runeforges
+Death Knights have access to unique enchants for their weapons called runeforges that are stronger than traditional weapon enchants. Notable BDK options are listed below:
+
+[Rune of the Fallen Crusader] - This runeforge provides a moderate amount of damage that is consistent at all target counts as well as minor mitigation and a small amount EHP benefits. This is the best damage option when fighting high enough target counts.
+
+[Rune of the Stoneskin Gargoyle] - This runeforge provides a moderate amount of EHP, a minor amount of mitigation, and a small amount of damage. This is the best EHP option.
+
+[Rune of Sanguination] - This runeforge provides a very high amount of priority target damage that also remains the highest total damage runeforge up to a surprisingly large target count. It has no other benefits of note.
+
+[Rune of Unending Thirst] - While on-kill effects aren’t particularly useful in M+, the one unique benefit provided by this runeforge is its movement speed bonus. Granted, this bonus does not stack with active movement speed effects like [Death’s Advance].
+
+Runeforge Swapping
+
+Weapon swaps can be made out of combat at no cost, so we can potentially weigh the merits of using certain runeforges pull by pull instead of dungeon by dungeon (if you have multiple comparable weapons to put different runeforges on, which isn’t always going to be the case). The same approach can be taken with strong weapons that have unique effects, when competitive weapons of that type appear and when they are swappable during an active dungeon (they usually are not). Properly executed, you can improve dungeon success with smart weapon swapping over what you would gain by using any runeforge alone, though it *is* kind of a pain to do and the weapon requirements limit the strategy to a good extent.
+
+Keep in mind, weapon swaps made while in combat will incur a 30 second [Off Balance] debuff, which temporarily disables runeforge bonuses. [Off Balance] will easily remove most of the potential benefits related to weapon swapping. Additionally, buff and debuff effects related to runeforges instantly vanish when the related runeforge is unequipped. So, be careful about swapping at the wrong times.
+
+General Recommendation
+
+(Multiple Weapons)
+Especially Hard Pull Flex Option: [Rune of the Stoneskin Gargoyle]
+5+ Target Pull Flex Option: [Rune of The Fallen Crusader]
+Out of Combat Movement Flex Option: [Rune of Unending Thirst] (On a +Speed weapon)
+Otherwise: [Rune of Sanguination]
+
+(Single Weapon)
+Unconditional: [Rune of Sanguination]
+
+[Rune of Sanguination] provides an overwhelming damage advantage over all other runeforge options at most realistic target counts. Even though it provides basically no survivability benefits, the damage gap is enough to make this look like the strongest overall option for single weapon setups.
+
+[Rune of the Fallen Crusader] continues to provide a consistent damage amplifier along with some secondary survivability benefits to the point where, if you are utilizing multiple weapons, it looks generally better on 5+ target pulls for overall effectiveness as long as there is no obvious priority target.
+
+[Rune of the Stoneskin Gargoyle] is a reasonably efficient way to gain more EHP if you need it, and a case can be made for its situational use in disproportionately dangerous parts of the dungeon. However, outside of these situations, the benefits of this runeforge are limited, and the tradeoff is such that we would never want to be stuck with it the entire dungeon. That being said, the ability to swap weapons mid-dungeon does mean that, with smart play, selective use of this runeforge can be justified.
+
+[Rune of Unending Thirst] is only used to shave a few seconds off of a key with a speed weapon when running between packs in a dungeon when out of combat, if the player finds this level of micro-management acceptable. The gains are minor, but they are free for the taking if you want to exert the effort.
+[Heading3] Enchants
+General Recommendations:
+
+Ring - [Silvermoon’s Tenacity]
+
+Versatility is currently the recommended stat for reasons previously explained, the critical strike effectiveness increase is not tuned strong enough to be of interest to us at this time.
+
+Chest - [Mark of the Worldsoul]
+
+The choice between these two chest enchants is mostly an EHP vs. Damage tradeoff in the form of a pure strength vs. a mixed strength and stamina option. Given the amount of stamina we are being offered relative to the strength that is being lost, the pure strength option looks to be the superior option in M+.  
+
+Head - [Empowered Blessing of Speed]
+Shoulders - [Akil’zon’s Swiftness]
+Boots - [Farstrider’s Hunt]
+
+You can choose between more speed (a miscellaneous benefit) or more mitigation with leech. While the benefits of these enchant options are not directly comparable, historical player preference and large-scale log analysis both indicate speed is associated with the best key outcomes.
+
+Legs - [Forest Hunter’s Armor Kit]
+
+The main tradeoff between “enchants” in this slot is armor vs. stamina . At current tuning, the stamina option is the favorable option in all situations.
+
+Belt - [Nitro Boosts] (Requires Engineering)
+
+There is only one normal belt enchant, so there is not much to consider with it; engineering tinkers can also be applied in addition to enchants.
+
+In M+ dungeons, [Nitro Boosts] provides a 70% movement speed buff with an 8 second duration on a 2 minute cooldown (it will put potions on cooldown for 1 minute) and it does not conflict with the regular belt enchants. It will never backfire in M+. This is an exceptionally useful benefit for an otherwise slow tank class in many situations, but especially when setting up pulls.
+[Heading3] Gems
+Recommendation: [Indecipherable Eversong Diamond] + [Flawless Masterful Lapis] or [Flawless Quick Lapis]
+
+The same reasoning as the ring enchants applies here, though, of the unique effect gems, the pure primary stat option is superior to a secondary stat gem. Our first- and second-best secondary stats are close enough in value that the hybrid secondary stat gems are better to use, which provide more additional stats at the cost of having to split them between two different secondary stats.
+[Heading3] Consumables
+General Recommendations:
+
+Flask - [Flask of Thalassian Resistance]
+
+As is generally the case, we are choosing the relatively more valuable secondary stat.
+
+Food - [Harandar Celebration]
+
+Feasts have been given an additional stamina benefit that makes them strictly better than normal food in Midnight. At least for Season 2, the primary stat benefit is still superior to the secondary stat benefit options.
+
+Weapon Supplement - [Thalassian Phoenix Oil]
+
+At the moment, the secondary stat enchanting oil provides the most benefits in all situations.
+
+Combat Potion - [Nitro Boost] + [Potion of Recklessness]/[Light’s Potential]
+
+While [Light’s Potential] provides more damage, [Potion of Recklessness] provides a mixed offensive/defensive benefits option that provides almost as much damage and significantly more defensive value (versatility as the highest stat is assumed). The net value of [Potion of Recklessness] is superior when a potion is used during any time where survivability is in question (and especially as a pre-pot when a lot of the remaining duration is spent doing pull setup), though, if you are using a potion during an easier than normal portion of the dungeon, [Light’s Potential] can still be justified.
+You would only consider using [Liquid Luster] as a dungeon pre-pot, where it is effectively only active at the higher stack counts. It is the best potion for this application, however.
+Beware of locking out your [Nitro Boosts] cooldown if you are using that tinker effect! This can often be more powerful than combat potions in dungeons.
+[Heading2] Ability Usage
+[Heading3] Core Ability Priority Overview
+Normal Priorities
+
+(Deathbringer)
+
+[1] [Death Strike] if you are below 70%* health.
+
+[2a] [Marrowrend] if ([Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield]) or (you are about to overcap on [Exterminate] with an upcoming [Dancing Rune Weapon] cast or [Exterminate] is about to expire).
+[2b] [Death’s Caress] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield]
+
+[3] [Blood Boil] if a target does not have [Blood Plague] or it is about to expire.
+[4] -
+[5] [Death Strike] when RP is above 105.
+[6] [Reaper’s Mark]
+
+[7a] [Marrowrend] if below 7 stacks of [Bone Shield] or ([Exterminate] is active and a [Reaper’s Mark] debuff is going to explode in the next 5 seconds).
+[7b] [Death’s Caress] if below 7 stacks of [Bone Shield]
+
+[8] [Death and Decay] if [Death and Decay] buffs are not active.
+[9] [Blood Boil] if [Boiling Point] is active and a [Boiling Point] echo is not incoming
+[10] [Heart Strike] unless runes are needed to cast [Reaper’s Mark] 
+[11] [Consumption] at level 1
+[12] [Blood Boil]
+[13] [Death’s Caress]
+
+(San’layn)
+
+[1] [Death Strike] if you are below 70%* health.
+
+[2a] [Marrowrend] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield].
+[2b] [Death’s Caress] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield].
+
+[3] [Blood Boil] if a target does not have [Blood Plague] or it is about to expire.
+[4] [Heart Strike] with [Gift of the San’layn] or [Vampiric Strike] active when the duration of [Essence of the Blood Queen] is about to expire.
+[5] [Death Strike] when RP is above 105.
+[6] -
+
+[7a] [Marrowrend] if below 7 stacks of [Bone Shield]
+[7b] [Death’s Caress] if below 7 stacks of [Bone Shield]
+
+[8] [Death and Decay] if [Death and Decay] buffs are not active with 4+ targets or (if [Crimson Scourge] is active and if [Visceral Strength] is not active).
+[9] [Blood Boil] if [Boiling Point] is active and a [Boiling Point] echo is not incoming
+[10] [Heart Strike]
+[11] [Consumption] at level 1
+[12] [Blood Boil]
+[13] [Death’s Caress]
+
+Non-Global Cooldown Abilities
+
+[1] Use [Raise Dead].
+[Heading3] Core Ability Priority Details
+[1] [Death Strike] if you are below 70%* health.
+
+Basis: [Death Strike] is our primary mitigation ability and using it effectively is the key to staying alive; this priority is meant to use [Death Strike] when it’s efficient for healing. Using [Death Strike] under the right circumstances is our top priority, since you will either die or require an excessive amount of healing from your healer if you only passively use [Death Strike].
+
+So, under what circumstances do we want to use [Death Strike]?
+
+[Death Strike] healing is proportional to the damage we’ve taken in the last 5 seconds, though any overhealing will be lost (with the exception of the resulting [Blood Shield]). For a simple and effective method, it is recommended to use a fixed health %, alone, as a trigger for when to use [Death Strike] specifically for healing, since situations where you drop below any given health % are almost always going to be when you have been taking significant amounts of damage in the last 5 seconds in combination with having enough missing health to ensure the healing is effective (assuming you have sufficient amplifiers on [Death Strike] healing effectiveness).
+
+What health % should be used as a setpoint?
+
+There are a few things we need to take into consideration: 
+
+If the threshold is too low, it becomes more likely that we'll overshoot the threshold and die before you can reactively use [Death Strike].
+If the threshold is too high, [Death Strike] might be wasted during low damage intake periods that still manage to push us below our overly-high threshold, when they could have been used more efficiently on higher damage intake periods. Our RP levels could also become chronically low, leaving us with little reserve to deal with dangerous situations when they occur.
+
+As such, we want to get as close to that theoretical sweet spot as possible to balance maximizing our overall [Death Strike] healing (as well as our RP reserve levels) and keeping our health pool high enough that we're unlikely to instantaneously die before we have the chance to use [Death Strike]. This gameplay decision also allows the player to leverage their mitigation output for more EHP and vice versa. 
+
+In reality, the ideal threshold may change from situation to situation, but, for the purposes of this guide, a trigger point of 70% health is recommended and has been found to be effective in all content up to and including cutting edge BDK M+ key levels. Feel free to adjust this value as you see fit.
+
+What about [Coagulopathy]?
+
+[Death Strike] also has another potential consideration that we don’t generally need to think about, [Coagulopathy]. Simply using [Death Strike] at higher RP levels (which is further down the list) is enough to maintain full uptime on [Coagulopathy] in any situation with consistent melee uptime. As such, it only becomes potentially relevant if you are trying to maintain it from pack to pack with significant travel time in between. 
+
+That being said, using [Death Strike] specifically to enable chaining a [Coagulopathy] buff from pack to pack will immediately place us in a low RP level situation, without getting much effective healing out of said [Death Strike], which can get us killed if done under the wrong circumstances. And, due to [Deadly Reach] providing a stack per target hit, it does not actually take that much time to restack [Coagulopathy]. That is why, if the player is going to [Death Strike] for this purpose, they want to, at the very least, make sure they will not be at risk of dying in the near future (per their own judgment), since the potential gains are relatively small given what the costs may be.
+
+(Deathbringer)
+[2a] [Marrowrend] if ([Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield]) or (you are about to overcap on [Exterminate] with an upcoming [Dancing Rune Weapon] cast or [Exterminate] is about to expire).
+[2b] [Death’s Caress] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield]
+
+(San’layn)
+[2a] [Marrowrend] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield].
+[2b] [Death’s Caress] if [Bone Shield] is about to expire or if you have less than 3 stacks of [Bone Shield].
+
+Basis: [Bone Shield] provides a significant amount of armor and a respectable amount of haste. Generally, this buff reduces physical damage intake by over 20%, which is a large increase to our mitigation and EHP. The primary function of these priorities is to make sure we maintain basic [Bone Shield] uptime. (Deathbringer) has the secondary priority of using [Exterminate] stacks before they would be lost to either overcapping (the buff has a max of 2 stacks) or buff expiration (the buff has a 30 second duration).
+
+[Marrowrend] vs. [Death’s Caress] Dynamics
+
+We have two [Bone Shield] generators, [Marrowrend] and [Death’s Caress]. [Marrowrend] is functionally our “standard” [Bone Shield] generation ability, while [Death’s Caress] is our ranged filler. Compared to [Marrowrend], [Death’s Caress] is a lot more rune-efficient in its generation of [Bone Shield] charges (2 stacks per 1 rune vs. 3 stacks per 2 runes), which can allow the player to dedicate more runes to [Heart Strike] for more overall RP generation and overall damage per rune for the same amount of [Bone Shield] generation. That being said, this benefit comes at the cost of requiring more cast time to process all of these resources when BDK mostly has no natural rotational downtime. So, at a high level, (1) if the player has enough underutilized cast time to fully accommodate these extra ability usages, leaning on [Death’s Caress] heavily can be a net benefit for both overall damage and overall RP generation to a marginal degree, (2) if the player needs to sacrifice some proportion of Blood Boil casts to utilize the extra Runes and RP, this historically has had variable effects on overall damage depending on the patch and player talent build, while having a net benefit on RP generation regardless, and (3) if the player is ever saturated on runes to the extent where more [Death’s Caress] usage is not fully efficient at allowing for more rune use, you could be losing [Marrowrend] casts utilizing some proportion of wasted runes that would otherwise be a net increase to both damage and RP generation over [Death’s Caress].
+
+Since the new design of [Death’s Caress] in Dragonflight, players have largely never been in a situation where there is enough rotational downtime to efficiently incorporate [Death’s Caress] casts into their rotation where they are filling natural rotational downtime. As such, increased [Death’s Caress] usage would come at the cost of some mixture of increased [Blood Boil] charge waste and some amount of increased rune waste. With the exception of (San’layn) in patch 11.2, which received exceptionally high value from increasing [Heart Strike] cast rates, rotational [Death’s Caress] looked like a net loss for an increase in rotational complexity (beyond that one exception, the increased RP generation was not worth the loss of damage given the numbers involved). In Midnight, this mostly remains true.
+ / In Midnight, (San’layn) has the more robust resource economy between the hero classes and doesn’t have anything to gain from prioritizing [Death’s Caress] over [Marrowrend], even theoretically. (Deathbringer) did see some marginal gains earlier on in Midnight for prioritizing [Death’s Caress] over [Marrowrend] when [Exterminate] is not active, but the damage gain is near-zero, the improvement in RP economy is marginal, rotational complexity would increase, and, in a real-world situation, forced downtime that is not accounted for in SimC or other models could very easily make those theoretical gains a loss in any realistic situation. That being said, it is worthwhile to use [Death’s Caress] in situations where the player desires [Bone Shield] generation and [Marrowrend] is not immediately castable, especially at this top priority that is trying to maintain baseline [Bone Shield] benefits.
+
+Other Considerations
+
+Ideally, if [Marrowrend] is going to be used specifically to refresh the duration of [Bone Shield], you want to try and prevent a situation where the 20 generated RP is wasted due to having too much RP (especially in priority damage situations). It is suggested to track when [Bone Shield] is about to expire (or with 2 or less stacks) so you have some time to efficiently sequence abilities without the immediate need of having to use [Marrowrend] on your next global and potentially overcap RP, since this is not strictly accounted for in the priority list.
+
+(Deathbringer) has added considerations with regards to efficiently utilizing [Exterminate] procs. While it is generally valuable to improve [Bone Shield] generation efficiency, within reason, by using them under conditions where they are most valuable, if we would otherwise lose [Exterminate] casts due to them expiring (or potentially being overridden by fresh [Exterminate] stacks generated from [Dancing Rune Weapon]), we would much rather make sure we use them in less ideal conditions than to lose them completely. As such, there is a general preference to use [Marrowrend] over [Death’s Caress] when [Exterminate] is active (at any duration) to try and use [Exterminate] under more efficient conditions, but, if it is about to time out, the usage of [Marrowrend] becomes relatively unconditional at this priority.
+
+What about [Death Grip]? /  / Yes, [Death Grip] generates one [Bone Shield] stack via [Bone Collector]. And, while it does not interact with our other resources or deal damage, it can be used on a fixed 0.5s GCD relative to a full GCD of the other abilities. Taken together, if you are about to lose [Bone Shield] for duration reasons, a rotational [Death Grip] can result in a marginal damage increase (proportional to how often this situation actually happens in the first place to a max of 1% if the enemy does not consume [Bone Shield] at all). In any case, duration expirations on [Bone Shield] are not common at all outside of raid bosses, where rotationally taunting a boss in raid has many other problems associated with it). Additionally, it is difficult to work this into the rotation with perfect spell-queuing given the very short GCD attached to it, so it is hard to reach idealized gains. All things considered, it generally isn’t talked about in a rotational context for these reasons.
+
+Why is this not ranked higher? Recovering from a low health % is going to do more for your immediate survivability than an armor buff.
+
+[3] [Blood Boil] if a target does not have [Blood Plague] or it is about to expire.
+
+Basis: The first basis for this priority is that [Blood Boil] is generally how we establish initial threat on multiple targets. For threat, If we waited 2-4 globals before using some AoE threat generation, then your targets might decide to kill a dps/healer in the meantime.
+
+[Blood Plague] provides enough direct and indirect ([Coagulopathy]) damage benefits that we are very interested in maintaining as high of an uptime as reasonably possible, which is particularly relevant for (Deathbringer), given its shorter duration and more powerful [Blood Plague] that requires more active maintenance to maintain good uptimes.
+
+The primary defensive benefit to using [Blood Boil] is actually to generate [Hemostasis] stacks, if that talent has been selected. That being said, [Blood Boil], even with supporting talents, has a low relative defensive contribution compared to [Heart Strike] (via providing resources for [Death Strike]) in any situation where RP is scarce.
+
+Why is this not ranked higher? We want to ensure that [Bone Shield] is active to reduce damage from incoming hits and to provide additional haste before worrying about establishing AoE threat and applying [Blood Plague].
+
+(San’layn)
+[4][Heart Strike] with [Gift of the San’layn] or [Vampiric Strike] up when the duration of [Essence of the Blood Queen] is about to expire.
+
+Basis: This priority is meant to increase the likelihood that our [Essence of the Blood Queen] buff will maintain full uptime.
+
+Without lucky [Vampiric Strike] procs outside of [Gift of the San’layn], [Essence of the Blood Queen] is at risk of fading. Purposefully using [Vampiric Strike] if you are in immediate danger of losing the buff can significantly improve the chances of maintaining [Essence of the Blood Queen]. The gains of doing this in relevant situations outweigh the costs of delaying other abilities for these casts.
+
+All that being said, the gains associated with this priority are relatively minor, on paper, with the current state of (San’layn) when in sustained melee combat. As such, the main consideration for this priority is when the player is traveling between packs or has been forced out of melee range for significant periods of time.
+
+Why is this not ranked higher? Most of the previous priorities won’t conflict with this one, but it is more important to manage immediate survivability, initial [Bone Shield] application, and initial threat if they ever do.
+
+[5] [Death Strike] when RP is above 105.
+
+Basis: While we want to maintain reserve RP (so we can use [Death Strike] in situations where it is needed), if our RP levels get too high, then we won't be getting full benefit out of our RP generating abilities. As such, this priority tries to gain the mitigation and damage benefits of otherwise lost [Death Strike] casts, while still maintaining a reasonably strong RP pool against potential threats.
+
+Is it ever worth purposefully overcapping RP?
+
+For discussion purposes, there have been historical instances where overcapping RP has allowed for more casts of [Blood Boil], which in some patches and with some builds, has increased overall AoE damage potential in situations where even-cleave damage is desired (at the cost of a large loss of mitigation potential and a more complicated rotation). The state of our overall resources in Midnight as well as the increased AoE damage potential of [Death Strike] due to the new talent tree have just about completely removed this as a consideration in most realistic situations.
+
+What RP threshold should we use to decide when we use [Death Strike] to avoid capping excessive amounts of RP?
+
+In general, the higher the RP threshold on this priority, the more RP we will have pooled to use when we start taking significant amounts of incoming damage. However, once this threshold gets above 94, we begin making a tradeoff between a larger average RP pool (which can increase our overall survivability) and some level of lost RP.
+
+This guide recommends using [Death Strike] whenever we are above 105 RP, where the only way RP is wasted in some capacity is when bonus RP generating effects occur with unfortunate timings. This small loss in RP efficiency is thought to be worth the tradeoff for the extra RP pooling it provides. But, feel free to adjust these numbers as you please.
+
+Why is this not ranked higher? If anything, the global spent on [Blood Boil] buys you some time to potentially take more damage and make this non-essential [Death Strike] more valuable, which can improve your RP efficiency. Even if it doesn't result in a stronger [Death Strike], they generate no RP, so they are not causing you to overcap RP. In any case, establishing threat takes priority over a non-essential [Death Strike] (at least when it comes to [Blood Boil]). As for (San’layn), if [Essence of the Blood Queen] is about to be lost we are willing to take a small hit to RP generation if it means we can sustain that buff.
+
+(Deathbringer)
+[6][Reaper’s Mark]
+
+Basis: [Reaper’s Mark] is primarily being used at this priority for its immediate damage benefits, in addition to the [Exterminate] procs it provides after its effect expires.
+
+The RP economy of this gameplay loop (with [Exterminate] procs included) is nothing special, though this story changes to some extent if the associated [Bone Shield] generation can be effectively utilized. Still, the other benefits are too great to delay casts of [Reaper’s Mark], itself, to try and be smart about how the [Bone Shield] generation is used.
+
+Why is this not ranked higher? Wasting RP for marginally more [Reaper’s Mark] casts is not an appealing tradeoff at this time.
+
+(Deathbringer)
+[7a] [Marrowrend] if below 7 stacks of [Bone Shield] or ([Exterminate] is active and a [Reaper’s Mark] debuff is going to explode in the next 5 seconds).
+[7b] [Death’s Caress] if below 7 stacks of [Bone Shield]
+
+(San’layn)
+[7a] [Marrowrend] if below 7 stacks of [Bone Shield]
+[7b] [Death’s Caress] if below 7 stacks of [Bone Shield]
+
+Basis: [Bone Shield] generators are being used at this priority to maintain 5+ [Bone Shield] stacks (and thus [Ossuary] uptime) for the 5 RP cost reduction on [Death Strike].
+
+With a high [Bone Shield] stack count, you will never be in any immediate need to generate [Bone Shield] to maintain [Ossuary]. However, it's important that [Bone Shield] stacks aren't wasted, since generating [Bone Shield] stacks often comes at the cost of greater damage and RP generation that would result from using runes on [Heart Strike]. [Bone Shield] waste is more likely to occur either directly or indirectly (by setting up a situation where a future [Dancing Rune Weapon], [Reaper’s Mark], or [Exterminate] casts lead to waste) when our stacks get too high. While high [Bone Shield] stacks also give you more flexibility to use your runes without losing [Ossuary] and maximizes the benefits of [Foul Bulwark], we want to balance these considerations.
+
+Similar to the first [Bone Shield] generation priority, we generally prefer to use [Marrowrend] over [Death’s Caress] if it is immediately available for use for all the same reasons.
+
+Other Considerations
+
+(Deathbringer) has added considerations with regards to efficiently utilizing [Exterminate] procs. In this case, we are looking to spend [Exterminate] procs before a [Reaper’s Mark] debuff imminently explodes (as (Deathbringer) is currently using [Dark Talons], anyway, pre-existing [Exterminate] stacks going into a [Reaper’s Mark] debuff explosion will immediately be wasted). While it is generally valuable to improve [Bone Shield] generation efficiency, within reason, by using [Exterminate] with a more natural [Marrowrend] cast, we would much rather waste some [Bone Shield] generation than waste a potential cast of [Exterminate].
+
+Why is this not ranked higher? We have some time to generate [Bone Shield] stacks before losing [Ossuary], so the risk of [Ossuary] loss should be minimal if we need to cast a few higher priority abilities first. While this priority does cause [Death Strike] to cost 5 more RP in some situations, RP efficiency isn't going to make up for the fact that we're overcapping on RP generated by this [Marrowrend] if we're above 105 RP in single target situations. Meanwhile, for (Deathbringer), [Reaper’s Mark] generates [Bone Shield] charges itself along with stronger additional benefits.
+
+(Deathbringer)
+[8] [Death and Decay] if [Death and Decay] buffs are not active.
+
+(San’layn)
+[8] [Death and Decay] if [Death and Decay] buffs are not active with 4+ targets or (if [Crimson Scourge] is active and if [Visceral Strength] is not active).
+
+Basis: This priority uses [Death and Decay] to maintain the buffs of interest, the [Death and Decay] buff itself is the focus for most situations, while [Visceral Strength] is the focus for (San’layn) on lower target counts.
+
+With [Crimson Scourge] active, [Death and Decay] costs nothing and generates no RP on cast, while several talents can also activate from [Crimson Scourge] use, such as [Visceral Strength] for (San’layn) and [Perseverance of the Ebon Blade]. This tradeoff has a mixed history; the saved rune can now be used on [Heart Strike] to generate even more RP (which is especially valuable when these extra casts are replacing rotational downtime), though using [Death and Decay] in this way results in less total [Death and Decay] casts and less uptime on associated buff effects like [Sanguine Ground] and [Cleaving Strikes]. The total direct damage of [Death and Decay] is somewhat on the weaker side relative to filler abilities under normal circumstances.
+
+(Deathbringer) is in what has been the normal situation since Dragonflight, where maintaining the normal  [Death and Decay] buffs outweighs all other cast considerations. Even in situations where rotational downtime is present, the outcome does not change your decision-making here.
+
+(San’layn) (due to the increased value of [Heart Strike] casts and the bonus strength effect from [Visceral Strength]) prefers to play around [Crimson Scourge] to various extents; mostly due to [Visceral Strength] benefits (which is why, even with [Crimson Scourge], you only send [Death and Decay] if you need to refresh [Visceral Strength]). That being said, the lost potential [Heart Strike] cleave at high enough target counts is enough of a potential damage loss, where, once we are fighting more than three targets, we do want to maintain the standard [Death and Decay] buffs as much as possible. While [Desecrate] has a higher potential for increased [Death and Decay] casts, there does not appear to be an effective way to leverage this at this time without lowering your overall output.
+
+All this being said, it is always worth sending [Death and Decay] as (San’layn) without [Crimson Scourge] if at ranged and nothing else can be productively used. Using [Death and Decay] under the less ideal conditions is still preferable to wasting that cast time completely.
+
+Why is this not ranked higher? [Bone Shield] maintenance and particularly impactful cooldowns take priority before runes are potentially spent on other abilities.
+
+[9] [Blood Boil] if [Boiling Point] is active and a [Boiling Point] echo is not incoming
+
+Basis: [Blood Boil] effectively does 250% normal damage when affected by [Boiling Point] and, while the buff is active, you would waste future [Boiling Point] procs from further [Heart Strike] casts. While you would normally prefer [Heart Strike] casts over [Blood Boil] casts, these procs change the math more than enough to flip that normal priority when [Boiling Point] is active. /  / Note, since [Boiling Point] echoes can trigger the initial [Boiling Point] proc, you do not want to use [Blood Boil] if a [Boiling Point] echo is going to utilize the buff on its own. Earlier in the expansion, it was the case where you would rather manually use these procs with [Blood Boil], even if an echo is queued up to consume the [Blood Boil] proc some time after your next cast, rather than casting a [Heart Strike] that is unable to productively generate a new [Boiling Point] proc, but tuning to the specialization since expansion launch has changed that. 
+
+Historically, there have been times where it was an efficient damage vs. survivability tradeoff to prioritize the first [Blood Boil] used during [Dancing Rune Weapon] over [Heart Strike], but this is not true at all with the current state of (San’layn) (It would much rather fit an extra [Heart Strike] or [Death Strike] in [Dancing Rune Weapon], if possible) and, while still technically true for (Deathbringer), the potential gains are extraordinary small to the point where it is not currently accounted for in the guide for the sake of consistency.
+
+Is it ever worth playing around [Hemostasis] stacks in addition to [Boiling Point]?
+
+Historically, particularly in BfA and early Shadowlands, sometimes [Blood Boil] has also been prioritized over [Heart Strike] at specific rune thresholds for more efficient [Hemostasis] stack generation at certain target counts, but current resource levels, as well as the presence of [Boiling Point], mean that it is currently not a gain to play around this.
+
+Why is this not ranked higher? [Death and Decay] buffs provide more immediate value, especially since [Boiling Point] procs are not wasted as long as you use them before additional [Heart Strike] casts.
+
+(Deathbringer)
+[10] [Heart Strike] unless runes are needed to cast [Reaper’s Mark]
+
+(San’layn)
+[10] [Heart Strike]
+
+Basis: With immediate [Bone Shield] needs addressed, [Heart Strike] is the most damage- and RP-efficient ability to use per rune, so it will be our main outlet for all remaining runes.
+
+The Dynamics of [Heart Strike] vs. [Blood Boil]
+
+Historically, it has been especially valuable to [Heart Strike] when rune levels are above 3, otherwise we are missing out on potential rune regeneration, since up to 3 runes can be on cooldown at a time. Depending on overall resource and rotational dynamics for a given patch, [Heart Strike] prioritization relative to [Blood Boil] has varied. During periods of significant natural rotational downtime (Legion through early Shadowlands), maximizing total resource utilization between both [Heart Strike] and [Blood Boil] has been the overarching goal (prioritizing putting both resources fully on cooldown before committing further), while periods with premium [Heart Strike] value or excess resource levels have opened the door to rotations that have emphasized further rune utilization to the point where [Blood Boil] take a back seat to improving rune usage.
+
+Currently we are still in a period of high resource levels, while also giving a lot of rotational consideration to powerful [Boiling Point] procs, so improving overall resource generation is not an overriding concern. As such, we prefer [Heart Strike] over [Blood Boil] down to zero rune under normal circumstances, unless this comes at the cost of delaying [Reaper’s Mark] for (Deathbringer). Higher [Blood Boil] priorities take care of situations where [Blood Boil] is getting more value ([Boiling Point] procs that otherwise would not be utilized).
+
+Why is this not ranked higher? All above priorities provide greater overall value, per cast or per rune, than [Heart Strike].
+
+[11] [Consumption] at level 1
+
+Basis: 
+
+With high value rune utilization taken care of, [Consumption] can be rotationally utilized to provide marginal damage and damage reduction benefits while minimizing losses in other areas. Empowering to higher than level 1 only increases the [Blood Plague] “consumption” effect at the cost of greater cast time; initial hit damage and the generalized damage reduction benefit are unchanged. At current tuning, there is no reason to use [Consumption] on higher than level 1 for core rotational reasons. That being said…
+
+If you are dealing with very specific tankbuster checks on a dungeon boss, [Consumption] can potentially have use for defensive cooldown purposes and could be used on level 3 for these purposes when dealing with situations that can instantly kill you without sufficient defensive layering.
+
+Why is this not ranked higher? Rune usage through [Heart Strike] is generally preferable to [Consumption] in all situations.
+
+[12] [Blood Boil]
+
+Basis: With all other cooldowns and resources addressed with the exception of the final rune that helps to facilitate the utilization of other abilities, leftover [Blood Boil] charges can be utilized for increased damage.
+
+When we have 2 charges of [Blood Boil], we are missing out on potential [Blood Boil] casts (and potential [Hemostasis] stack generation) by not using this ability. Though being too quick to use the final charge relative to runes could also potentially limit the utilization of [Boiling Point] procs.
+
+Why is this not ranked higher? Rune usage through [Heart Strike] as well as rotational [Consumption] usage is generally preferable to [Blood Boil] in all situations where [Blood Plague] is already active, except other specified conditions.
+
+[13] [Death’s Caress]
+
+Basis: At this priority, [Death’s Caress] is not competing for cast time with any other ability, which can make it worth casting unconditionally. This priority mainly comes into play when you are at range and have limited options for what you can cast.
+
+Why is this not ranked higher? When it is competing with other abilities for cast time, specific conditions are required for it to have adequate value.
+
+Non-Global Cooldown Abilities
+
+[1] Use [Raise Dead].
+
+Basis: [Raise Dead] is a minor 1 minute duration single target damage cooldown. Either use it on cooldown or attempt to strategically use it when single target damage is more valuable, but, like all damage cooldowns, sitting on the cooldown can quickly become a net loss in most situations.
+[Heading3] Defensive Cooldown Priorities
+While there is not a hard and fast priority list for defensive cooldowns, there are a few things we want to take into consideration:
+
+We generally don't want to stack defensive cooldowns unless we are trying to mitigate extremely large amounts of damage for very specific purposes or if we are trying to make up for some resource deficit, since most defensive cooldowns stack in a way that they mitigate less overall damage when used together. For example, if you use two 50% damage reduction cooldowns at the same time, the second cooldown is only effectively mitigating 25% of the original damage. Even for cooldowns that don't stack in this way (such as [Anti-Magic Shell]), it is usually more beneficial to spread them out to even out the incoming damage profile, since the main role of defensive cooldowns are to prevent deaths from burst damage.
+
+If we have no other considerations, we generally want to prioritize the defensive cooldowns that mitigate the most damage per second while they are active; this maximizes overall mitigation. The effectiveness of all defensive cooldowns (while active) are as follows:
+
+[Umbilicus Eternus] - 100% of damage taken
+[Anti-Magic Shell] - 100% of damage taken (if magic)
+[Vampiric Blood]* - ~50%+ of damage taken
+[Dancing Rune Weapon] - ~37%+ of damage taken (if it can be parried)
+[Icebound Fortitude] - 30%+ of damage taken
+[Anti-Magic Zone] - 15% of damage taken (if magic)
+[Consumption]** - 5-15% of damage taken
+
+* - [Vampiric Blood] is a bit unique, while it functions as a ~23%-28.5% damage reduction cooldown when we are *just* looking at the increase in healing coming from our healer, it actually does a lot more than that since it increases our own healing by 30%-40%, which is a large portion of our mitigation. The exact strength of this defensive depends on both our character setup and the incoming damage profile, but it is generally much more powerful after accounting for the increase in personal healing. Thus it is generally considered to be superior to use over [Icebound Fortitude], at a minimum.
+
+** - [Consumption] only really serves its purpose as a proper defensive cooldown if used on level 3 to counter predictable/potentially lethal one-shot effects.
+
+It can be worth prioritizing situational defensive cooldowns if you aren't always going to be able to make use of them. (This mostly just applies to [Anti-Magic Shell] and [Dancing Rune Weapon].)
+
+At current overall Blood tuning, it is ambiguous as to whether it is worth casting [Dancing Rune Weapon] right away or only after any remaining [Dancing Rune Weapon] copies from [Dance of Midnight] have expired. The increased proc rate of the rank 1 [Dance of Midnight] effect from the higher [Dancing Rune Weapon] defensive uptime is sometimes a marginal damage gain or loss depending on the exact build and situation, while [Death Strike] cast rate marginally decreases. It might just be simpler to send mostly on cooldown for complexity reasons given that there isn’t a clearly superior strategy.
+
+One alternative perspective to take with your defensive cooldowns is to use them to refill your RP pool when it’s getting low, since defensive cooldowns should reduce the frequency that you need to [Death Strike]. This reactive style can be useful in very difficult content and when defensive uptime is limited, but can potentially result in unnecessarily low defensive uptime if you aren’t being mindful of when you should proactively use your cooldowns.
+
+Because of how [Vampiric Blood] works (it affects our healing received and it increases our health pool by a flat 30%), it's our only defensive cooldown that can be used *reactively* to high damage taken at no penalty. As long as a situation won't instantly kill us, it can be useful to save this cooldown for moments where you aren't sure whether or not you're *actually* going to take a lot of damage (for example, a tank buster that can be parried and that won’t instantly kill you).
+
+Also because of how [Vampiric Blood] works, your current health % will go down by up to 23% when the buff expires (So, if you have 23% health or lower when the buff goes away, your health will be reduced to 1). It can be useful to be mindful of this.
+
+[Dancing Rune Weapon] increases our threat generation, making it more useful at the start of pulls. Since it provides powerful offensive benefits in addition to its defensive benefits, [Dancing Rune Weapon] should generally be used aggressively when it is getting full value unless you have a specific reason to hold onto it.
+
+Remember that summoned [Dancing Rune Weapon] units will always prioritize the target of the initial cast, so you preferably would like to use this ability on the enemy you want to focus the most damage on.
+
+[Icebound Fortitude] is a stun break and gives stun immunity, which can be an *extremely* useful trait when it can be utilized.
+
+[Anti-Magic Shell] can prevent the application of many debuffs, which can greatly increase its value.
+
+[Anti-Magic Zone] can be used as a personal defensive cooldown, though its obvious usage is as a group magic damage reduction cooldown.
+
+[Blood Shield] provides a physical-only shield effect that is applied on top of our health, sometimes the [Blood Shield] from a pre-emptive [Death Strike] can be used strategically for a single-hit defensive cooldown, particularly in response to predictable hard-hitting mechanics that can potentially kill you instantly. That being said, you should never be using [Death Strike] solely for the [Blood Shield] unless it is necessary for the situation, since a lot of the healing potential for [Death Strike] is wasted when you specifically use it in this way.
+
+For all intents and purposes, a sufficiently large [Umbilicus Eternus] shield should be treated as a strong defensive cooldown (basically a 100% damage reduction) in your defensive cooldown rotation.
+[Heading3] Pull Setup
+As pointed out in the “Class Design Implications” section at the start of this guide, BDKs are often particularly vulnerable at the start of pulls, especially when they are at lower resource levels; immediate AoE threat generation can also be an issue for related reasons. This is due to the following contributors:
+
+If you are below desired levels of RP, you may not have the immediate ability to [Death Strike] in response to getting damaged to low health levels. In some situations, the period of time up until your initial [Death Strike] of the pull can be the most dangerous period of time.
+If you are below desired levels of [Bone Shield], further [Bone Shield] generation comes at the cost of immediate RP generation or AoE threat generation that could otherwise be generated with other abilities.
+While initial [Blood Boil] and [Death and Decay] casts help to establish immediate AoE threat generation, they are competing with globals that are more effective at stabilizing your personal survivability.
+When combining multiple packs together, multiple uses of [Blood Boil], [Death and Decay], or [Death’s Caress] may be needed for establishing initial threat on all targets, which further crowds out personal survivability abilities when addressing immediate threat issues.
+While [Dancing Rune Weapon] certainly improves our survivability and AoE threat generation over its full duration, the cast of this ability, itself, can put us behind on our immediate AoE threat generation or resource generation since the initial cast has no immediate effect, itself.
+
+Breaking down our normal rotation, our immediate concerns when setting up pulls are the following:
+
+Stay healthy with healing abilities as needed
+Establish initial threat on all enemies
+Manage [Bone Shield] levels
+Maintain a sufficient RP pool
+
+Short-term issues arise due to the fact that we can usually only make progress towards a subset of these concerns with any single ability use, while many (or all) of these can be issues at the same time. That being said, there are a number of things we can do to make our lives easier:
+
+Use Abilities at Range on the Setup
+
+Cast time is our biggest constraint at the start of a pull, so one easy way to stay on top of things is to make sure you are making good use of your cast time while you are walking into a pull; even if you are still at range. If you reference the normal rotation, you will notice there are a number of abilities that are still productive to use even if you are not in melee range of an enemy yet:
+
+While technically a part of the defensive cooldown rotation, [Dancing Rune Weapon] requires cast time to use. Given its long duration, you will still get most of its value even when precast and, other than the initial cast which does nothing immediately, [Dancing Rune Weapon] will help to address most of our initial concerns at the start of a pull other than direct RP generation.
+While [Death and Decay] can also be used for light initial AoE threat on a ranged pack you have no intention on running to, precasting a [Death and Decay] at your final pull setup location can improve your immediate AoE threat generation as well as give you a small boost to your RP with cast time you otherwise may not be using.
+While not as potent as the previous abilities, a [Death’s Caress] cast can still establish initial threat on a single target at range, generate some [Bone Shield] charges, and help to stabilize our RP levels if we still have leftover ranged cast time to use.
+
+Instant-Cast Remedies
+
+Another way to make pull setup easier is by making use of specific off-GCD (or near off-GCD) abilities to provide immediate value.
+
+While it is not the most efficient way of using your defensive cooldowns, some amount of defensive stacking at the start of pulls can give you more time and a greater ability to catch up on resources or establish threat more efficiently.
+While not a long-term solution when used from range, [Dark Command] can pull out of combat enemies and force them to fixate us for 3 seconds without using cast time, which is sometimes enough time for us to hit it with a follow-up AoE threat generation ability to establish initial threat on that target and any other targets that come with it.
+While not completely instant, [Death Grip] also forces an enemy to fixate us for 3 seconds without using a full GCD, but with the added benefit of immediately putting the target in range of any potential follow-up ability. There are times where this is the most effective way to pull out-of-combat enemies or packs.
+One unconventional way to gain threat on all targets you are in combat with is to use a [Healing Potion] or a [Healthstone], which, for some reason, generate healing threat (which is multiplied by the tank threat generation modifier). This can also buy you time until you need to [Death Strike] if it is providing useful healing.
+Regardless of the situation, using healing consumables or [Death Pact] will increase the amount of time you have to work with on pull setup.
+
+Minimize Damage Taken and Movement on Pull Setup
+
+While somewhat obvious, the less damage you take while setting up a pull, the more time you will have until you need to [Death Strike]. As such, you should look to do the following things:
+
+Make use of Snares, Crowd Control, or Movement Speed buffs to prevent nearby enemies from using excess melee attacks on you during pull setup. This is generally why [Nitro Boosts] are recommended.
+One way of reducing incoming melee attacks on setup is to pull packs from range rather than  running through them with a [Blood Boil]. IF enemies must run through you before they can reach your allies, using [Dark Command] or [Death Grip] is sufficient for pulling these related enemies despite their lack of actual threat generation (just make sure you can establish initial threat on these enemies before they can reach your teammates). Alternatively, [Death and Decay] can be used for light ranged AoE initial aggro on groups of enemies, though a few ticks of [Death and Decay] damage can still be easy for others to pull off of (strategically using [Death and Decay] to snare enemies with [Grip of the Dead] to prevent incoming melee attacks on pull setup is also situationally valuable). [Death’s Caress] provides better initial threat generation at range than [Death and Decay], but it is limited to a single target. Also note that [Dancing Rune Weapon] units spawn on the target for the spell, which can allow you to echo [Blood Boil] casts for solid initial AoE threat on a ranged group of enemies at the cost of using [Dancing Rune Weapon] early.
+Plant in a more central location on multi-group pulls to minimize the amount of movement required; pulling the last pack (or the last few) to you instead of running to (or through) them. This allows you to transition to a more efficient melee rotation sooner in the pull.
+
+Prepare for the Next Pull Ahead of Time
+
+In order to prevent problems on the following pull, it can sometimes benefit us to alter our play patterns when the current pull is almost over:
+
+Try to refresh [Bone Shield] at the end of the current pull so it does not expire between pulls; this will improve our resource generation situation in the next pull.
+Try to end the current pull with a reasonable amount of RP, so we have the ability to [Death Strike] early into the following pull.
+Consider holding [Dancing Rune Weapon] if it is coming off of cooldown at the end of your current pull if it is more justifiable to use it on the following pull.
+It is possible to start a key with full [Bone Shield] stacks as long as you can refresh them before they expire (as well as 20 RP). This can more easily be accomplished with target dummy toys and using [Marrowrend] ~7 seconds before the key is inserted (and/or a self-cast [Dancing Rune Weapon] macro right before the key starts), so there is enough time to drop combat. M0 enemies can also be used, where combat drops instantly once they die.
+You can also start a key while affected by [Liquid Luster] as well as [Amani Extract] for up to 20 seconds of a stat buff and 10 seconds of a HoT effect after the key begins. Cooldowns for combat potions and healing potions reset once the key begins.
+[Heading3] Kiting Considerations
+When is kiting appropriate?
+
+Kiting should ideally only be done when needed for immediate survivability or if a specific pull has an excessively high potential to kill the tank when they are not kiting (rare pulls are designed with kiting in mind after major defensives have been spent), otherwise it is a large negative impact to your personal capability (since most of your personal mitigation and damage throughput relies on melee abilities) and can lower the effectiveness of your group’s damage through excess enemy movement.
+
+As such, kiting is mainly used as a last resort method to mitigate damage or to drop stacks of a stacking debuff. Knockbacks, snares, personal speed buffs, and other forms of CC are usually used to support kiting. Additionally, [Death Strike] healing is based on the damage we have taken in the last 5 seconds, so any attempt to *stop* kiting will mean we initially have a weaker [Death Strike] for the initial 5 seconds of re-engagement. If enemies have melee abilities that can only target the tank, these abilities will likely be off cooldown should you attempt to re-engage these enemies. Also, enemies with ranged methods of dealing damage may still be able to damage you while you may have no nearby [Death Strike] target and your normal RP generation may be impaired.
+
+What tools do we have to support kiting?
+
+BDKs have a few kiting tools available:
+
+[Death and Decay] with [Grip of the Dead] provides a powerful AoE snare on cast that quickly gets weaker. It has a short cooldown and can make it easy to get out of melee range of enemies. [Death and Decay] should be placed so that enemies need to move through the entire area when it's used for this purpose.
+[Chains of Ice] provides a powerful single target snare on cast that has no cooldown. Its main drawbacks are that Runes are limited and that it won’t work too well against large groups of enemies.
+[Gorefiend’s Grasp] can be used defensively by grouping mobs onto a target that is outside of melee range from you; grouping targets also makes group damage more efficient while kiting.
+[Death’s Advance] can help counter any snare effects we have and/or help to create a gap between us and what we are kiting. It's not a strong effect on its own, but it has its uses.
+[Nitro Boosts] can get us out of range quickly by giving us a strong movement speed buff.
+[Death Grip] can separate an enemy so we can still efficiently use our abilities while kiting the bulk of an enemy trash pack (as explained in the next topic).
+[Blinding Sleet] provides a short form of AoE crowd control and a reliable AoE snare to get distance between yourself and enemies.
+
+Kiting Patterns
+
+Kiting in a tight circle maximizes the time enemies remain in AoE effects, reduces ally movement requirements, and helps to keep them grouped, though this has the side effect of making it more difficult to keep only a few enemies within melee range. For the purposes of keeping only some enemies in melee range while the remaining enemies stay outside of melee range, a straight line can be better (though you will lose group damage potential).
+
+What if I'm outside melee range for an extended period of time?
+
+At range, our only offensive ability options are [Death and Decay], [Death’s Caress], and [Chains of Ice], (also [Death Coil], but [Death Coil] is almost always not worth using). Without a [Crimson Scourge] proc, all of these abilities cost 1 rune and generate 10 RP compared to the 15-25 RP that we could get from a [Heart Strike]. So, if you think you'll be out of melee range for any significant amount of time, it can be beneficial to use any of these ranged abilities (regardless of other conditions) to generate RP without negatively impacting your long-term rune regeneration.
+
+The Value of a Melee Target
+
+If you are in a situation where you are forced to kite, it is still often preferable to stay in melee range with at least one or more enemy units if at all possible, since our resource generation is heavily penalized without the use of melee attacks. As far as immediate incoming damage is concerned, you are still drastically lowering incoming damage by staying out of melee range of the majority of the enemies. [Death Grip] is particularly useful in moving an enemy slightly in front of a cluster of enemies so they can be targeted by melee abilities while you remain out of range of other enemies. [Blood Boil] is still capable of hitting enemies just outside of melee range if you wish to toe that line, but I would not reasonably expect people to consistently be able to do that successfully without eating enemy melees.
+[Heading3] Emergency Situations
+What if I'm at low health and I don't have enough RP for a [Death Strike]?
+
+We have a few options as follows:
+
+Kite
+Use one of the following consumables as a substitute [Death Strike]:
+[Healing Potion]
+[Healthstone]
+[Death Pact]
+Use remaining runes to [Heart Strike] for enough RP to [Death Strike]
+
+The best option is going to depend on the exact situation you are in. Using [Heart Strike] desperately for [Death Strike] should only be used as a last resort; it's going to quickly put you into an unrecoverable situation and there's a time delay before it can help save you. 
+
+What modifications can we make to improve our survivability in especially dangerous situations?
+
+If the high damage you are taking is consistent and predictable, you can wait until your health drops much lower than 70% (or whatever criteria you normally use) before using [Death Strike] as long as you are confident the next attack will not outright kill you, which can increase the overall efficiency of your [Death Strike].
+
+What if generating threat on a single target is the immediate priority?
+
+The following options should be considered:
+
+[Dark Command] or [Death Grip] can be used to instantly have the top threat on single targets and to increase threat generation to these targets by 800% over the 6 seconds after cast.
+If we have no immediate solution to the threat problem, crowd control to buy time and try to regain threat with raw damage output. Continue normal rotation on single targets you have lost threat on, but if you have lost threat on multiple targets it may be justifiable to prioritize [Blood Boil] casts higher than normal.
+[Heading1] Supporting Information
+The information in this section is mostly meant to provide BDK-specific information that is not directly related to character optimization; not all general information will be included.
+[Heading2] Macros
+(Note: Certain characters will not properly copy/paste from this document and into the in-game client, such as [ ‘ ]. As such, you might need to manually retype certain parts for proper functioning.) /  / Blood can make use of a few macros, in particular, to streamline certain actions.
+
+Hybrid Macro for [Control Undead]:
+
+#showtooltip Control Undead
+/target pet
+/script PetDismiss()
+/cast Control Undead
+
+[Control Undead] will be used when you don’t currently have a pet, and, when you do have a pet, the first press will target and dismiss it, while the following press will cast [Control Undead] again (and your now uncontrolled pet is already targeted from the previous macro use); making it useful to re-control a minion. Since [Control Undead] only lasts for 5 minutes, you’ll need to recast it if you plan on keeping something around for longer than that.
+
+Macro for [Raise Dead] Ghoul Dismiss:
+
+/script local b=CreateFrame("Button","GhoulDismiss"..1,UIParent,"SecureUnitButtonTemplate");b:SetAttribute("type", "destroytotem");b:SetAttribute("totem-slot", 1)
+/click GhoulDismiss1
+
+This macro will instantly dismiss the ghoul summoned by [Raise Dead].
+
+Cast at Cursor Macro for [Death and Decay]:
+
+#showtooltip Death and Decay
+/cast [@cursor] Death and Decay
+
+[Death and Decay] is used a lot in our rotation, so time is lost if you need to confirm the AoE when casting the ability. As such, this macro will immediately place [Death and Decay] at your cursor location. There is some learning curve involved in using this macro, but it is a low-cost time save once you are used to it.
+
+Cast at Cursor Macro for [Anti-Magic Zone]:
+
+#showtooltip Anti-Magic Zone
+/cast [@cursor] Anti-Magic Zone
+
+If desired, this type of macro can also be used for [Anti-Magic Zone] for caster casting with some loss in placement precision
+
+Cast on Self Macro for [Gorefiend’s Grasp]:
+
+#showtooltip Gorefiend’s Grasp
+/cast [@player] Gorefiend’s Grasp
+
+While it’s ideal to use [Gorefiend’s Grasp] on a different target when one is available, sometimes the only reliable way to hit all the enemies you need to is to use yourself as a target of this ability. As such, it can be useful to have an additional keybind dedicated to casting this ability on yourself. You might want to take a step back after casting for parrying purposes.
+
+Focus [Mind Freeze] Macro (otherwise at Target):
+
+#showtooltip Mind Freeze
+/cast [@focus,harm,nodead] [] Mind Freeze
+
+This is your standard focus-kick macro that uses [Mind Freeze] on your focus target (if you have one and if they are not dead) or on your current target. This is used because it’s not always good to be targeting the enemy you want to kick and it’s a waste of effort swapping targets needlessly. This also lowers the chance of you kicking the wrong target, assuming you have designated your focus target appropriately. In order to support this macro, you will most likely want to use simple focus and clearfocus macros to support it as shown below:
+
+/focus
+
+/clearfocus
+
+Focus Target Marker:
+
+/focus [@mouseover,exists][]
+/tm ~7
+
+This macro marks a target (which will now be your focus) with a specific marker (corresponding to “7” or whatever other number you use). The “~” prevents overriding someone else’s target kick marker.
+
+Mouseover Macro (otherwise at Target) for [Raise Ally]:
+
+#showtooltip Raise Ally
+/cast [@mouseover,help][@target] Raise Ally
+
+[Raise Ally] is an ability that we want to be able to use quickly and with minimal disruption to our normal rotation. This macro allows us to use it on mouseover (which includes mousing over their unit frame), and to (as a backup) use it on your current target. The main benefit of this macro is the fact that we don’t need to swap off of our current target to use [Raise Ally].
+
+Mouseover Macro for [Death Grip]:
+
+#showtooltip Death Grip
+/cast [@mouseover,harm][] Death Grip
+
+Some players prefer to have the ability to cast [Death Grip] on enemy mouseover targets instead of just using it on their selected target. Used well, this can allow you to [Death Grip] additional targets without disrupting your rotation on other enemies.
+
+Dungeon Pre-Pull Macro:
+
+/cleartarget
+/use Liquid Luster / /use Amani Extract
+/cast [@player] Dancing Rune Weapon
+
+Right before the dungeon starts, this macro will give you the 30s buff effect of [Liquid Luster], the 20s HoT of [Amani Extract], and instantly generate 5 Bone Shield charges without triggering combat (by self-casting [Dancing Rune Weapon]), which will make you more effective for the first <20s after the dungeon begins.
+[Heading2] Addons
+
+While UI design is highly influenced by personal preferences, this section will quickly cover a few higher-quality addons. This is not meant to be a comprehensive list.
+
+(1-Stop Shop with Standalone Modules) EllesmereUI - https://www.curseforge.com/wow/addons/ellesmereui
+
+(Action Bars) Bartender4 - https://www.curseforge.com/wow/addons/bartender4
+(Action Bars) Dominos - https://www.curseforge.com/wow/addons/dominos
+
+(Action Bar Re-Skinner) Masque - https://www.curseforge.com/wow/addons/masque
+
+(Action Wheels) OPie - https://www.curseforge.com/wow/addons/opie 
+
+(Boss Mod) Bigwigs/Littlewigs - https://www.curseforge.com/wow/addons/big-wigs | https://www.curseforge.com/wow/addons/little-wigs 
+(Boss Mod) DBM - https://www.curseforge.com/wow/addons/deadly-boss-mods 
+(Boss Mod) EXBoss - https://www.curseforge.com/wow/addons/exboss
+
+(Cast Bars) Quartz Midnight - https://www.curseforge.com/wow/addons/quartz-midnight
+
+(Cooldown Manager) Arc UI - https://www.curseforge.com/wow/addons/arc-ui
+
+(Damage Meter) Details - https://www.curseforge.com/wow/addons/details 
+
+(Dungeon Planner) Mythic Dungeon Tools - https://www.curseforge.com/wow/addons/mythic-dungeon-tools  
+
+(Dungeon Timer) MPlusTimer - https://www.curseforge.com/wow/addons/mplustimer
+(Dungeon Timer) WarpDeplete - https://www.curseforge.com/wow/addons/warpdeplete
+
+(Nameplates) Plater - https://www.curseforge.com/wow/addons/plater-nameplates
+(Nameplates) Platynator - https://www.curseforge.com/wow/addons/platynator
+
+(Quality of Life) Astral Keys - https://www.curseforge.com/wow/addons/astral-keys
+(Quality of Life) BlizzMove - https://www.curseforge.com/wow/addons/blizzmove
+(Quality of Life) ChatCopyPaste - https://www.curseforge.com/wow/addons/chat-copy-paste
+(Quality of Life) DejaCharacterStats - https://www.curseforge.com/wow/addons/dejacharacterstats
+(Quality of Life) Enhance QoL - https://www.curseforge.com/wow/addons/eqol
+(Quality of Life) Exwind Tools - https://www.curseforge.com/wow/addons/exwindtools
+(Quality of Life) Talent Loadout Ex - https://www.curseforge.com/wow/addons/talent-loadout-ex
+
+(Raid Frames) Danders Frames - https://www.curseforge.com/wow/addons/danders-frames 
+(Raid Frames) Grid2 - https://www.curseforge.com/wow/addons/grid2 
+
+(Raid Tools) Method Raid Tools - https://www.curseforge.com/wow/addons/method-raid-tools 
+
+(Resource Bars) SenseiClassResourceBar - https://www.curseforge.com/wow/addons/senseiclassresourcebar
+(Resource Bars) Twintop’s Resource Bar - https://www.curseforge.com/wow/addons/twintops-insanity-bar
+
+(Totem Bar) Totem Recall - https://www.curseforge.com/wow/addons/totemrecall
+
+(Unit Frames) Midnight Simple Unit Frames - https://www.curseforge.com/wow/addons/midnightsimpleunitframes
+[Heading2] Dungeon Routing 101
+
+Dungeon Routing 101
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===== word/header1.xml =====
+(no text)
+
+===== MEDIA FILES =====
+word/media/image1.png (7565 bytes) [image - not OCRed]
+word/media/image10.png (373451 bytes) [image - not OCRed]
+word/media/image11.png (8809 bytes) [image - not OCRed]
+word/media/image12.png (409322 bytes) [image - not OCRed]
+word/media/image2.png (71937 bytes) [image - not OCRed]
+word/media/image3.png (90563 bytes) [image - not OCRed]
+word/media/image4.png (8902 bytes) [image - not OCRed]
+word/media/image5.png (9223 bytes) [image - not OCRed]
+word/media/image6.png (8907 bytes) [image - not OCRed]
+word/media/image7.png (9464 bytes) [image - not OCRed]
+word/media/image8.png (59471 bytes) [image - not OCRed]
+word/media/image9.png (7116 bytes) [image - not OCRed]

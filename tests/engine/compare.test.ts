@@ -13,14 +13,17 @@ describe('compare', () => {
     expect(NE(1, 2)).toBe(true);
   });
 
-  it('treats only non-zero numbers as truthy', () => {
+  it('treats booleans and non-zero numbers as truthy', () => {
     expect(orN(0, 1)).toBe(true);
     expect(orN(0, null)).toBe(false);
+    expect(orN(true, 0)).toBe(true);
     expect(andN(1, 2)).toBe(true);
     expect(andN(1, 0)).toBe(false);
     expect(not(0)).toBe(true);
     expect(not(null)).toBe(true);
     expect(not(1)).toBe(false);
     expect(not('x')).toBe(true);
+    expect(not(true)).toBe(false);
+    expect(not(false)).toBe(true);
   });
 });

@@ -6,6 +6,14 @@ describe('ifL', () => {
     expect(ifL(1, () => 1, () => 2)).toBe(1);
   });
 
+  it('returns the then-branch for a boolean true condition', () => {
+    expect(ifL(true, () => 1, () => 2)).toBe(1);
+  });
+
+  it('returns the else-branch for a boolean false condition', () => {
+    expect(ifL(false, () => 1, () => 2)).toBe(2);
+  });
+
   it('returns the else-branch for 0, null, and string conditions', () => {
     expect(ifL(0, () => 1, () => 2)).toBe(2);
     expect(ifL(null, () => 1, () => 2)).toBe(2);

@@ -20,5 +20,9 @@ extracted/*__formulas.tsv
 extracted/*__values.tsv
 extracted/metadata.json
 
+# Regenerable diagnostic dumps (tests/engine/grid.dump.test.ts, tools/dump_oracle.py)
+tests/fixtures/grid_dump.json
+tests/fixtures/oracle_dump.json
+
 # OS / editor
 .DS_Store

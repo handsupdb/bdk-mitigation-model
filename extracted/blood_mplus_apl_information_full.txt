@@ -1,0 +1,144 @@
+===== SOURCE: blood_mplus_apl_information.docx =====
+[meta] m:oMath occurrences in document.xml: 0
+[meta] w:drawing occurrences: 4
+[meta] a:blip (image refs): 4
+
+[Title] Running/Modifying the Mythic+ APL
+[Heading1] [Optional] Insert M+ Player Profile (Here)
+
+[Heading2] (Option 1) San’layn M+ Profile
+# Post your Simc Addon Export text here.
+deathknight="MID2_Blood_Sanlayn_M+"
+spec=blood
+level=90
+race=night_elf
+role=tank
+position=front
+talents=CoPAAAAAAAAAAAAAAAAAAAAAAwMzyMzMmZmxgZZmZmmZxMjZmBAAAAwgZmZmZMzMjBAzMzMzAAAYgBmxiGLbgsMgNAzYAAAmZghB
+omnium_talents=rune_of_unleashed_fire/rune_of_selfmending/rune_of_lingering/rune_of_the_versatile_warrior/rune_of_overload
+
+head=baleful_graveknights_casque,id=271474,ilevel=334,gem_id=240983,redirected_base_stats=239050
+neck=aqirbane_reliquary,id=268265,ilevel=341,gem_id=240916/240916
+shoulders=baleful_graveknights_gibbets,id=271472,ilevel=334
+back=adherents_silken_shroud,id=239656,ilevel=331,embellishment=arcanoweave_lining,crafted_stats=40/36
+chest=baleful_graveknights_breastplate,id=271477,ilevel=334,redirected_base_stats=251193,enchant=mark_of_the_worldsoul_2
+wrists=spellbreakers_bracers,id=237834,ilevel=331,gem_id=240916,embellishment=arcanoweave_lining,crafted_stats=40/36
+hands=baleful_graveknights_deathgrips,id=271475,ilevel=334,redirected_base_stats=251221
+waist=sandscoured_greatbelt,id=159442,ilevel=334,gem_id=240916
+legs=baleful_graveknights_greaves,id=271473,ilevel=334,redirected_base_stats=271878,enchant=forest_hunters_armor_kit_2
+feet=poisonproof_stompers,id=273777,ilevel=334
+finger1=jade_ophidian_band,id=162544,ilevel=334,gem_id=240916,enchant=silvermoons_tenacity_2
+finger2=lightwardens_bind,id=251194,ilevel=334,gem_id=240916,enchant=silvermoons_tenacity_2
+trinket1=keepers_seething_core,id=270165,ilevel=341
+trinket2=twisted_horrors_tendril,id=281215,ilevel=341
+main_hand=luselama_lights_justice,id=280799,ilevel=341,enchant=rune_of_sanguination
+[Heading2] (Option 2) Deathbringer M+ Profile
+# Post your Simc Addon Export text here.
+deathknight="MID2_Blood_Deathbringer_M+"
+spec=blood
+level=90
+race=night_elf
+role=tank
+position=front
+talents=CoPAAAAAAAAAAAAAAAAAAAAAAwMzyMzMmxMzMMLjZmmZxMjZmBAAAAwgZmZmZMzMjBAzMzMzAAAMmtBGwSwywEYYBwMGAAMzAMYA
+omnium_talents=rune_of_unleashed_fire/rune_of_selfmending/rune_of_lingering/rune_of_the_versatile_warrior/rune_of_overload
+
+head=baleful_graveknights_casque,id=271474,ilevel=334,gem_id=240983,redirected_base_stats=239050
+neck=aqirbane_reliquary,id=268265,ilevel=341,gem_id=240916/240916
+shoulders=baleful_graveknights_gibbets,id=271472,ilevel=334
+back=adherents_silken_shroud,id=239656,ilevel=331,embellishment=arcanoweave_lining,crafted_stats=40/36
+chest=baleful_graveknights_breastplate,id=271477,ilevel=344,redirected_base_stats=251193,enchant=mark_of_the_worldsoul_2
+wrists=spellbreakers_bracers,id=237834,ilevel=331,gem_id=240918,embellishment=arcanoweave_lining,crafted_stats=40/49
+hands=baleful_graveknights_deathgrips,id=271475,ilevel=334,redirected_base_stats=251221
+waist=sandscoured_greatbelt,id=159442,ilevel=334,gem_id=240918
+legs=baleful_graveknights_greaves,id=271473,ilevel=344,redirected_base_stats=271878,enchant=forest_hunters_armor_kit_2
+feet=scaleguards_stalwart_greatboots,id=193728,ilevel=334
+finger1=jade_ophidian_band,id=162544,ilevel=334,gem_id=240916,enchant=silvermoons_tenacity_2
+finger2=lightwardens_bind,id=251194,ilevel=334,gem_id=240918,enchant=silvermoons_tenacity_2
+trinket1=keepers_seething_core,id=270165,ilevel=341
+trinket2=twisted_horrors_tendril,id=281215,ilevel=341
+main_hand=luselama_lights_justice,id=280799,ilevel=341,enchant=rune_of_sanguination
+
+[Heading1] Change Simulation Options
+
+
+For the purposes of the M+ profile and APL, we are only adjusting Fight Length to 8 Minutes in this section. Even if we want to look at a different target count (which, for Mythic+, we often do), that will be done in another section. 8 Minutes is selected mainly to achieve a desirable Bloodlust uptime while also capturing Mythic+ as a long-duration continuous encounter to some degree (this is thought to be a more accurate representation than extremely short Fight Lengths that can severely overemphasize cooldown-based abilities).
+[Heading1] Insert APL (Insert Here)
+Mainly to achieve a desirable Bloodlust uptime while also capturing
+[Heading2] Current M+ APL
+# Default consumables
+potion=lights_potential_2
+flask=flask_of_thalassian_resistance_2
+food=silvermoon_parade
+augmentation=void_touched
+temporary_enchant=main_hand:thalassian_phoenix_oil_2
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=snapshot_stats
+actions.precombat+=/deaths_caress
+
+# Executed every time the actor is available.
+actions=auto_attack
+actions+=/use_items
+actions+=/blood_fury
+actions+=/berserking
+actions+=/arcane_pulse,if=active_enemies>=2|rune<1&runic_power.deficit>60
+actions+=/lights_judgment,if=(buff.unholy_strength.up|!death_knight.runeforge.fallen_crusader)
+actions+=/ancestral_call
+actions+=/fireblood
+actions+=/bag_of_tricks
+actions+=/potion,if=buff.dancing_rune_weapon.up
+actions+=/vampiric_blood,if=!buff.vampiric_blood.up
+actions+=/raise_dead
+
+actions+=/death_strike,if=(target.time_to_die%%0.1)*10<=0.10
+actions+=/dancing_rune_weapon
+actions+=/marrowrend,if=!buff.bone_shield.up|buff.bone_shield.remains<3|buff.bone_shield.stack<=1
+actions+=/marrowrend,if=(buff.exterminate.up)&(cooldown.dancing_rune_weapon.remains<3|buff.exterminate.remains<3)
+actions+=/deaths_caress,if=(!buff.bone_shield.up|buff.bone_shield.remains<3|buff.bone_shield.stack<=1)
+actions+=/blood_boil,if=dot.blood_plague.remains<3
+actions+=/heart_strike,if=(buff.essence_of_the_blood_queen.remains<4&buff.essence_of_the_blood_queen.remains&(buff.gift_of_the_sanlayn.remains|buff.vampiric_strike.remains))
+actions+=/death_strike,if=runic_power.deficit<20
+actions+=/reapers_mark
+actions+=/marrowrend,if=buff.bone_shield.stack<6
+actions+=/marrowrend,if=(buff.exterminate.up)&((debuff.reapers_mark_debuff.up&(debuff.reapers_mark_debuff.remains<5|debuff.reapers_mark_debuff.stack>=20|buff.exterminate.stack>1))|fight_remains<10)
+actions+=/deaths_caress,if=buff.bone_shield.stack<6
+actions+=/any_dnd,if=talent.reapers_mark.enabled&!buff.death_and_decay.remains
+actions+=/any_dnd,if=talent.vampiric_strike.enabled&((buff.crimson_scourge.remains)|(active_enemies>2&!buff.death_and_decay.remains))
+actions+=/blood_boil,if=buff.boiling_point.up&!buff.boiling_point_echo.up
+actions+=/heart_strike,if=talent.vampiric_strike.enabled|cooldown.reapers_mark.remains>2|rune>2|buff.dance_of_midnight_1.up
+actions+=/consumption,empower_to=1
+actions+=/blood_boil
+actions+=/arcane_torrent,if=runic_power.deficit>20
+actions+=/deaths_caress,if=buff.bone_shield.stack<11
+[Heading1] Select SimC Expert Mode
+
+
+This is going to be necessary for the next step.
+[Heading1] Override Number of Enemies and Attack Behavior
+
+
+By Default, the enemy attack pattern is going to be based off of a raid boss. For an M+ evaluation we would rather the targets have a more consistent attack pattern. The damage enemies do is largely irrelevant outside of unique damage reflection effects (it does effect Blood Shield uptimes, to be fair, but that is not enough to put too much diligence into the damage they are dealing). What we largely care about as a result of these attacks is Bone Shield consumption rate. For multiple targets, the settings below will pseudo-desync their auto attacks. If you do not do this, at all, enemy attacks will always be perfectly synced and it will (A) cause Bone Shield consumption to be underestimated and (B) it will underestimate the extent to which increased parry reduces Bone Shield consumption since you would need to parry all of the sync’d auto attacks in one go to have any effect on the rate without any staggering.
+[Heading2] (Option 1) Single Target
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=2.0
+[Heading2] (Option 2) Five Target
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=1.333
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=1.5
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=2.0
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=3.0
+enemy=Razor_Sharp_Pillow
+actions=auto_attack,damage=250000,range=100,attack_speed=4.0
+
+
+
+
+===== MEDIA FILES =====
+word/media/image1.png (13872 bytes) [image - not OCRed]
+word/media/image2.png (2045 bytes) [image - not OCRed]
+word/media/image3.png (33896 bytes) [image - not OCRed]
+word/media/image4.png (22538 bytes) [image - not OCRed]
