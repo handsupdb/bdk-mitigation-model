@@ -16,24 +16,33 @@ Fixtures (tests/fixtures/pipeline/, committed):
   * wowhead_talents_sample.js  — trimmed WH.setPageData payload: 7 trees /
     14 nodes (warrior class tree, DK class tree, DK Frost + Blood spec trees,
     Deathbringer / San'layn / Rider-of-the-Apocalypse hero trees).
+  * (none for gamedata_diff — a synthetic XFTH v9 DBCache.bin is built
+    in-test and written to a temp file; no live retail cache needed)
 
 Covered: simc_data parsing (name -> id -> effect -> coefficient lookups,
 1-based effectN indexing, alias handling, nil-row skipping, class-flags group
 splitting), the network-free simc_diff helpers (tolerance classification,
 arithmetic formula evaluation, cell-ref parsing, spellId pinning, verdicts),
-and wowhead_diff parsing (page-data blocks, Blood DK tree discovery, node
+gamedata_diff parsing (synthetic XFTH v9 container: header + exact EOF, entry
+states, SpellEffect row decode with offsets hardcoded independently of the
+module's layout table, spellId-pinned hotfix value resolution, 1-based
+effectIndex conversion, overlay verdicts, corrupt-container rejection), and
+wowhead_diff parsing (page-data blocks, Blood DK tree discovery, node
 counts, name matching, spellModifiers reversal, the full diff model).
 
 NOT covered (needs the network or the full caches): simc_data.fetch /
-wowhead_diff.fetch / fetch_tooltip (curl), and per_rank_progression (live
-tooltip JSON). The fixture has no multi-rank matched talent, so build_diff
-stays offline here.
+wowhead_diff.fetch / fetch_tooltip (curl), per_rank_progression (live
+tooltip JSON), and gamedata_diff against the real retail DBCache.bin (the
+synthetic container only exercises the parser, not the live file). The
+fixture has no multi-rank matched talent, so build_diff stays offline here.
 """
 
 from __future__ import annotations
 
 import os
+import struct
 import sys
+import tempfile
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +52,7 @@ SIMC_FIXTURE = os.path.join(FIXTURE_DIR, "simc_spell_data_slice.inc")
 WH_FIXTURE = os.path.join(FIXTURE_DIR, "wowhead_talents_sample.js")
 
 sys.path.insert(0, HERE)
+import gamedata_diff  # noqa: E402
 import simc_data  # noqa: E402
 import simc_diff  # noqa: E402
 import wowhead_diff  # noqa: E402
@@ -258,6 +268,216 @@ class SimcDiffValueTests(unittest.TestCase):
         unmapped = simc_diff.evaluate_entry(
             dict(entry, ourCell=None), self.game({"H25": 1.64}))
         self.assertEqual(unmapped["verdict"], "unmapped")
+
+
+# -- gamedata_diff: synthetic XFTH v9 DBCache.bin --------------------------------
+
+# Synthetic-fixture constants, independent of gamedata_diff's own tables so
+# an accidental format/offset shift in the module fails these tests.
+XFTH_BUILD = 68256     # 12.0.7 — the verified 136-byte SpellEffect layout
+OTHER_SIG = 0x1234ABCD  # a non-SpellEffect DB2 table hash
+
+
+def spelleffect_row(spell_id, effect_index, ap_coeff, sp_coeff=0.0,
+                    coefficient=0.0, base_value=0.0, effect=0,
+                    pvp_multiplier=1.0, variance=0.0):
+    """Craft a 136-byte SpellEffect hotfix row (verified 12.0.7 layout).
+
+    Offsets are hardcoded here, independently of gamedata_diff's layout
+    table, so shifting a column offset in the module breaks the test.
+    """
+    row = bytearray(136)
+    struct.pack_into("<i", row, 4, effect_index)      # EffectIndex (0-based)
+    struct.pack_into("<I", row, 8, effect)            # Effect
+    struct.pack_into("<f", row, 24, sp_coeff)        # EffectBonusCoefficient
+    struct.pack_into("<f", row, 60, ap_coeff)        # BonusCoefficientFromAP
+    struct.pack_into("<f", row, 64, pvp_multiplier)   # PvpMultiplier
+    struct.pack_into("<f", row, 68, coefficient)     # Coefficient
+    struct.pack_into("<f", row, 72, variance)        # Variance
+    struct.pack_into("<f", row, 84, base_value)     # EffectBasePointsF
+    struct.pack_into("<I", row, 132, spell_id)      # SpellID (parent key last)
+    return bytes(row)
+
+
+def xfth_v9_container(entries):
+    """Build a minimal XFTH v9 DBCache.bin: 44-byte header + flat entries.
+
+    entries: [(sig, record_id, state, row_bytes), ...]
+    """
+    out = bytearray(struct.pack("<4sII32s", b"XFTH", 9, XFTH_BUILD,
+                                b"\x00" * 32))
+    for i, (sig, record_id, state, data) in enumerate(entries):
+        out += struct.pack("<4siiIIIIB3s", b"XFTH", 0, i, 700000 + i, sig,
+                           record_id, len(data), state, b"\x00\x00\x00")
+        out += data
+    return bytes(out)
+
+
+class GameDataDiffTests(unittest.TestCase):
+    """gamedata_diff against a synthetic XFTH v9 cache (fully offline).
+
+    The container is built in-test and written to a temp file: 3 entries —
+    one ENABLED SpellEffect row with known coefficients (Heart Strike
+    #206930, DB2 EffectIndex 1 = SimC effectN(2), BonusCoefficientFromAP
+    1.967 = our Baseline!H51), one REMOVED-state SpellEffect row (Blood
+    Boil #50842 — reported but never decoded), and one non-SpellEffect
+    sig entry (ignored entirely).
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.entries = [
+            (gamedata_diff.SPELLEFFECT_SIG, 1001, 1,
+             spelleffect_row(206930, 1, 1.967, sp_coeff=0.25,
+                             coefficient=0.11, base_value=-20.0,
+                             effect=2, variance=0.075)),
+            (gamedata_diff.SPELLEFFECT_SIG, 1002, 2,
+             spelleffect_row(50842, 0, 1.64)),
+            (OTHER_SIG, 1003, 1, b"\xde\xad\xbe\xef"),
+        ]
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.cache_path = os.path.join(cls.tmp.name, "DBCache.bin")
+        with open(cls.cache_path, "wb") as fh:
+            fh.write(xfth_v9_container(cls.entries))
+        cls.cache = gamedata_diff.parse_dbcache(cls.cache_path)
+        cls.se = gamedata_diff.spelleffect_rows(cls.cache)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def setUp(self):
+        # keep resolve_our_value (via evaluate_entry) off the real gitignored
+        # extracted TSVs — same pinning as SimcDiffValueTests
+        self._saved_tsv = dict(simc_diff._TSV_CACHE)
+        simc_diff._TSV_CACHE.clear()
+        simc_diff._TSV_CACHE[("Baseline", "values")] = {}
+        simc_diff._TSV_CACHE[("Baseline", "formulas")] = {}
+
+    def tearDown(self):
+        simc_diff._TSV_CACHE.clear()
+        simc_diff._TSV_CACHE.update(self._saved_tsv)
+
+    def test_container_header_and_exact_eof(self):
+        self.assertEqual(self.cache["version"], 9)
+        self.assertEqual(self.cache["build"], XFTH_BUILD)
+        self.assertEqual(len(self.cache["entries"]), 3)
+        # flat entries consumed the file to exact EOF
+        self.assertEqual(self.cache["end_offset"], self.cache["size"])
+        first = self.cache["entries"][0]
+        self.assertEqual((first["sig"], first["record_id"], first["state"],
+                          first["length"]),
+                         (gamedata_diff.SPELLEFFECT_SIG, 1001, 1, 136))
+
+    def test_enabled_spelleffect_row_decoded(self):
+        # the one enabled row: spell 206930, DB2 EffectIndex 1,
+        # BonusCoefficientFromAP 1.967 (plus the other decoded columns)
+        self.assertEqual(set(self.se["rows"]), {(206930, 1)})
+        row = self.se["rows"][(206930, 1)]
+        self.assertEqual(row["record_id"], 1001)
+        self.assertEqual(row["SpellID"], 206930)
+        self.assertEqual(row["EffectIndex"], 1)
+        # f32 round-trip: places=6, not the default 7 — binary32 half-ulp
+        # at ~1.97 is ~6e-8, which can exceed the default 5e-8 tolerance
+        self.assertAlmostEqual(row["BonusCoefficientFromAP"], 1.967,
+                               places=6)
+        self.assertAlmostEqual(row["EffectBonusCoefficient"], 0.25,
+                               places=6)
+        self.assertAlmostEqual(row["Coefficient"], 0.11, places=6)
+        self.assertAlmostEqual(row["EffectBasePointsF"], -20.0, places=6)
+        self.assertAlmostEqual(row["Variance"], 0.075, places=6)
+        self.assertEqual(row["Effect"], 2)
+        self.assertEqual(self.se["decode_errors"], [])
+        self.assertEqual(self.se["layouts_used"], {136})
+
+    def test_removed_state_reported_and_skipped(self):
+        # state 2 (REMOVED): reported under its label, never decoded —
+        # Blood Boil #50842 effectN(1) must not surface as a hotfix value
+        self.assertEqual(len(self.se["by_state"].get("removed", [])), 1)
+        self.assertNotIn((50842, 0), self.se["rows"])
+
+    def test_non_spelleffect_sig_ignored(self):
+        # the OTHER_SIG entry is not SpellEffect: absent from the state
+        # split entirely (only 2 of the 3 entries were considered)
+        counted = sum(len(v) for v in self.se["by_state"].values())
+        self.assertEqual(counted, 2)
+        sigs = {e["sig"] for v in self.se["by_state"].values() for e in v}
+        self.assertNotIn(OTHER_SIG, sigs)
+
+    def test_state_labels(self):
+        self.assertEqual(gamedata_diff.state_label(0), "disabled")
+        self.assertEqual(gamedata_diff.state_label(1), "enabled")
+        self.assertEqual(gamedata_diff.state_label(2), "removed")
+        self.assertEqual(gamedata_diff.state_label(3), "unknown")
+
+    def test_resolve_hotfix_value_spellid_and_1_based_effect(self):
+        # mapping effectIndex is 1-based (SimC effectN); the cache row's
+        # EffectIndex is the 0-based DB2 _index, so effectN(2) hits index 1
+        res = gamedata_diff.resolve_hotfix_value(
+            {"spellId": 206930, "effectIndex": 2, "field": "ap_coeff"},
+            self.se["rows"])
+        self.assertIsNone(res["error"])
+        self.assertAlmostEqual(res["value"], 1.967, places=6)
+        self.assertIn("206930", res["display"])
+        self.assertIn("effectN(2)", res["display"])
+        self.assertIn("BonusCoefficientFromAP", res["display"])
+
+    def test_resolve_hotfix_value_not_in_cache(self):
+        # a removed-state row does not count as an enabled hotfix row
+        res = gamedata_diff.resolve_hotfix_value(
+            {"spellId": 50842, "effectIndex": 1, "field": "ap_coeff"},
+            self.se["rows"])
+        self.assertIsNone(res["value"])
+        self.assertIn("no enabled SpellEffect hotfix row", res["error"])
+
+    def test_resolve_hotfix_value_bad_field_and_index(self):
+        bad_field = gamedata_diff.resolve_hotfix_value(
+            {"spellId": 206930, "effectIndex": 2, "field": "bogus"},
+            self.se["rows"])
+        self.assertIsNone(bad_field["value"])
+        self.assertIn("unknown mapping field", bad_field["error"])
+        bad_index = gamedata_diff.resolve_hotfix_value(
+            {"spellId": 206930, "effectIndex": 0, "field": "ap_coeff"},
+            self.se["rows"])
+        self.assertIsNone(bad_index["value"])
+        self.assertIn("1-based", bad_index["error"])
+
+    def test_evaluate_entry_verdicts(self):
+        entry = {"ability": "Heart Strike", "spellId": 206930,
+                 "effectIndex": 2, "field": "ap_coeff",
+                 "ourCell": "Baseline!H51"}
+        game = {"cellLiterals": {"Baseline": {"H51": 1.967}}}
+        match = gamedata_diff.evaluate_entry(entry, game, self.se["rows"])
+        self.assertEqual(match["verdict"], "match")
+        changed = gamedata_diff.evaluate_entry(
+            entry, {"cellLiterals": {"Baseline": {"H51": 1.5}}},
+            self.se["rows"])
+        self.assertEqual(changed["verdict"], "CHANGED")
+        unmapped = gamedata_diff.evaluate_entry(
+            dict(entry, ourCell=None), game, self.se["rows"])
+        self.assertEqual(unmapped["verdict"], "unmapped")
+        nic = gamedata_diff.evaluate_entry(
+            dict(entry, spellId=999999), game, self.se["rows"])
+        self.assertEqual(nic["verdict"], "not-in-cache")
+
+    def test_parse_dbcache_rejects_corrupt_containers(self):
+        def raises(blob):
+            with tempfile.TemporaryDirectory() as tmp:
+                path = os.path.join(tmp, "bad.bin")
+                with open(path, "wb") as fh:
+                    fh.write(blob)
+                with self.assertRaises(ValueError):
+                    gamedata_diff.parse_dbcache(path)
+
+        raises(b"XFTH" + b"\x00" * 8)  # 12 B — too small for the 44 B header
+        raises(struct.pack("<4sII32s", b"NOTX", 9, XFTH_BUILD, b"\x00" * 32))
+        raises(struct.pack("<4sII32s", b"XFTH", 10, XFTH_BUILD, b"\x00" * 32))
+        # truncated entry data: the header promises 136 B, only 4 follow
+        raises(struct.pack("<4sII32s", b"XFTH", 9, XFTH_BUILD, b"\x00" * 32)
+               + struct.pack("<4siiIIIIB3s", b"XFTH", 0, 0, 1,
+                             gamedata_diff.SPELLEFFECT_SIG, 1001, 136, 1,
+                             b"\x00\x00\x00")
+               + b"\x00\x00\x00\x00")
 
 
 # -- wowhead_diff: tree parsing and discovery ------------------------------------

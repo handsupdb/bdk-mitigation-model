@@ -15,6 +15,7 @@ Python: `.venv/bin/python` (repo venv). Node (only for `npm test` in step d):
 |---|---|
 | `simc_data.py` | fetch + parse SimC `sc_spell_data.inc` (name → spell id → effect fields); CLI: `.venv/bin/python tools/pipeline/simc_data.py <spell> <effect#>` |
 | `simc_diff.py` | compare our ability coefficients against SimC via `simc_mapping.json` → `extracted/simc_proposed_diffs.md` |
+| `gamedata_diff.py` | compare our ability coefficients against the live WoW hotfix cache `DBCache.bin` (XFTH SpellEffect overlay) via the same `simc_mapping.json` → `extracted/gamedata_proposed_diffs.md` |
 | `simc_mapping.json` | **curated** mapping: our ability → SimC spell/effect/field + our cell (see below) |
 | `wowhead_diff.py` | compare our talent index against Wowhead talent trees → `extracted/wowhead_proposed_diffs.md` |
 | `test_pipeline.py` | network-free unit tests (see [Tests](#tests)) |
@@ -26,11 +27,16 @@ Python: `.venv/bin/python` (repo venv). Node (only for `npm test` in step d):
 ```bash
 .venv/bin/python tools/pipeline/simc_diff.py      # SimC midnight spell data
 .venv/bin/python tools/pipeline/wowhead_diff.py   # Wowhead talent trees
+.venv/bin/python tools/pipeline/gamedata_diff.py  # live DBCache.bin hotfixes
 ```
 
 Each script downloads its source to `extracted/` on first run and reuses the
-cache afterwards (`wowhead_diff.py --refresh` forces a re-download). Both
-print a compact summary and write a full Markdown report:
+cache afterwards (`wowhead_diff.py --refresh` forces a re-download).
+`gamedata_diff.py` instead reads the game's own hotfix cache in place
+(`/Applications/World of Warcraft/_retail_/Cache/ADB/enUS/DBCache.bin`;
+`--cache` overrides) — nothing is downloaded, and the file only exists
+after WoW has pulled hotfix data on that machine. All three print a
+compact summary and write a full Markdown report:
 
 - `extracted/simc_proposed_diffs.md` — per-ability verdicts: `match` /
   `CHANGED` (proposed diff) / `unmapped`, with our value + formula, the SimC
@@ -38,6 +44,11 @@ print a compact summary and write a full Markdown report:
 - `extracted/wowhead_proposed_diffs.md` — (a) Wowhead nodes not in our
   index, (b) our talents not in the Wowhead trees, (c) text-derived per-rank
   values for multi-rank talents (reference only).
+- `extracted/gamedata_proposed_diffs.md` — per-ability verdicts against the
+  hotfix overlay: `match` / `CHANGED` / `not-in-cache` (normal — the cache
+  only carries rows Blizzard hotfixed since the last full push) /
+  `unmapped`, plus a staleness warning when the cache build differs from the
+  installed build (`.build.info`).
 
 Useful one-off lookups while reviewing:
 
@@ -136,10 +147,11 @@ then re-run step a and check the new entry's verdict.
 
 All three are download caches for the diff scripts — regenerable at any
 time, never committed (`.gitignore`). The generated reports
-(`extracted/simc_proposed_diffs.md`, `extracted/wowhead_proposed_diffs.md`)
-are likewise regenerable outputs and gitignored. The hand-written research
-notes (`extracted/simc_research.md`, `extracted/wowhead_research.md`) are
-*not* regenerable — don't delete those.
+(`extracted/simc_proposed_diffs.md`, `extracted/wowhead_proposed_diffs.md`,
+`extracted/gamedata_proposed_diffs.md`) are likewise regenerable outputs
+and gitignored. The hand-written research notes
+(`extracted/simc_research.md`, `extracted/wowhead_research.md`,
+`extracted/xfth_research.md`) are *not* regenerable — don't delete those.
 
 ## Tests
 
@@ -159,14 +171,25 @@ slices (no curl, no caches, no Node):
   playerClass filtering, DK class tree, Frost + Blood spec trees for
   guide-URL discovery, Deathbringer / San'layn / Rider hero trees for
   `shownForSpecs` filtering).
+- `gamedata_diff` needs no committed fixture: the test builds a synthetic
+  XFTH v9 `DBCache.bin` (44-byte header + 3 entries: one enabled
+  SpellEffect row with known coefficients, one removed-state row, one
+  non-SpellEffect sig) in-test, writes it to a temp file, and asserts the
+  decoded (spell_id, effect_index, BonusCoefficientFromAP) values, the
+  state handling, and corrupt-container rejection. Row offsets are
+  hardcoded in the test, independently of the module's layout table.
 
-30 tests cover: name → id → effect → coefficient lookups, 1-based
+40 tests cover: name → id → effect → coefficient lookups, 1-based
 `effectN` indexing, alias handling, nil-row skipping, the `_class_flags[4]`
 group not shifting field positions, tolerance classification, arithmetic
 formula evaluation, `spellId` pinning, verdicts, Wowhead page-data parsing,
-Blood DK tree discovery, node counts, name matching, and the full diff
-model. Not covered (needs network): `fetch`/`fetch_tooltip`/
-`per_rank_progression`.
+Blood DK tree discovery, node counts, name matching, the full diff model,
+and the XFTH hotfix-cache parser (container header + exact EOF, entry
+states, SpellEffect row decode, `spellId`-pinned hotfix value resolution,
+1-based `effectIndex` conversion, overlay verdicts, corrupt-container
+rejection). Not covered (needs network / the live cache):
+`fetch`/`fetch_tooltip`/`per_rank_progression`, and `gamedata_diff` against
+the real retail `DBCache.bin`.
 
 The tests are **not** wired into `npm test` — the pipeline is a Python
 side-tool and `npm test` stays Node-only. Run the command above directly

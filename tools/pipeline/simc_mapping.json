@@ -2,9 +2,11 @@
   {
     "ability": "Heart Strike",
     "simcSpell": "Heart Strike",
+    "spellId": 206930,
     "effectIndex": 2,
     "field": "ap_coeff",
-    "ourCell": "Baseline!H51"
+    "ourCell": "Baseline!H51",
+    "note": "spellId pins the first-occurrence id 206930 (the name matches 5 spell ids: 206930, 228645, 316575, 445504, 460501); 206930 is the id whose effectN(2) ap_coeff matches our Baseline!H51"
   },
   {
     "ability": "Blood Boil",
@@ -16,9 +18,11 @@
   {
     "ability": "Marrowrend",
     "simcSpell": "Marrowrend",
+    "spellId": 195182,
     "effectIndex": 2,
     "field": "ap_coeff",
-    "ourCell": "Baseline!H57"
+    "ourCell": "Baseline!H57",
+    "note": "spellId pins the first-occurrence id 195182 (the name also matches 316746); 195182 is the id whose effectN(2) ap_coeff matches our Baseline!H57"
   },
   {
     "ability": "Death's Caress",
@@ -47,10 +51,11 @@
   {
     "ability": "Soul Reaper",
     "simcSpell": "Soul Reaper",
+    "spellId": 343294,
     "effectIndex": 1,
     "field": "ap_coeff",
     "ourCell": null,
-    "note": "no Soul Reaper row in our workbook (closest name, Soul Rupture row 69, is a different spell)"
+    "note": "no Soul Reaper row in our workbook (closest name, Soul Rupture row 69, is a different spell); spellId pins the first-occurrence id 343294 (the name matches 4 spell ids: 343294, 343295, 448229, 1241521)"
   },
   {
     "ability": "Vampiric Blood",
