@@ -19,9 +19,18 @@ refs like C92 or $J$9 are never touched) — and matches inside quoted strings
 Outputs:
   data/wow-12.1/formulas/<stem>.tsv  rewritten in place; line/cell structure
     preserved, only substituted formulas change
-  data/wow-12.1/game.json            {"constants": [{name, value, meaning,
-    occurrences}]} — applied unambiguous entries only, sorted by name;
-    occurrences = number of applied substitution records for that constant
+  data/wow-12.1/game.json            MERGE: the existing file (if any) is
+    loaded and only the "constants" key is replaced — every other key
+    (e.g. cellLiterals, written by tools/extract_literals.py) is preserved;
+    {"constants": [{name, value, meaning, occurrences}]} — applied
+    unambiguous entries only, sorted by name; occurrences = number of
+    applied substitution records for that constant
+
+Idempotent: re-running on already-templated TSVs changes nothing. A
+substitution whose {{name}} is already present in the cell (applied by a
+previous run) counts as applied — toward occurrences and the constants
+section — without touching the formula, so the rewritten game.json is
+byte-identical and no other key is dropped.
 
 Safety gate (aborts with NO writes if it fails): for every modified formula,
 resolving each {{name}} back to its value must reproduce a formula that
@@ -97,6 +106,19 @@ def replace_literal(formula, literal, name):
     return "".join(out), n
 
 
+def template_present(formula, name):
+    """True iff {{name}} occurs in `formula` outside quoted strings — i.e.
+    this substitution was already applied to the cell by a previous run."""
+    tmpl = "{{" + name + "}}"
+    strings = [m.span() for m in STRING_RE.finditer(formula)]
+    pos = formula.find(tmpl)
+    while pos != -1:
+        if not any(a <= pos < b for a, b in strings):
+            return True
+        pos = formula.find(tmpl, pos + 1)
+    return False
+
+
 def load_norm(content):
     """Normalize raw TSV cell content the way formula_ast.load_formulas does
     (literal backslash-n -> space, strip) so it is parseable."""
@@ -123,9 +145,13 @@ def verify_cell(sheet, cell, original, new, name_value):
         return repr(name_value[name])
 
     try:
+        # resolve BOTH sides: `original` may itself contain {{...}} templates
+        # applied by a previous run (partial re-templating); on a fresh run
+        # resolving orig is a no-op.
+        resolved_orig = TEMPLATE_RE.sub(resolve, orig)
         resolved = TEMPLATE_RE.sub(resolve, load_norm(new))
         formula_ast.parse(resolved, sheet=sheet)   # grammar-level check
-        return token_stream(orig) == token_stream(resolved)
+        return token_stream(resolved_orig) == token_stream(resolved)
     except (KeyError, SyntaxError):
         return False
 
@@ -196,6 +222,7 @@ def main():
     applied_records = 0
     tokens_replaced = 0
     cells_modified = 0
+    already_applied = 0
     per_sheet_applied = Counter()
     applied_by_value = Counter()
     zero_token = []      # (sheet, cell, literal, name, reason)
@@ -227,6 +254,13 @@ def main():
             new = content
             cell_applied, cell_tokens, cell_values = 0, 0, []
             for literal, name in by_sheet[sheet][cell]:
+                if template_present(content, name):
+                    # already applied by a previous run — counts as applied
+                    # (occurrences), formula left untouched
+                    already_applied += 1
+                    cell_applied += 1
+                    cell_values.append(literal)
+                    continue
                 new, n = replace_literal(new, literal, name)
                 if n:
                     cell_applied += 1
@@ -237,12 +271,13 @@ def main():
                                        "0 tokens matched"))
             if not cell_applied:
                 continue
-            if not verify_cell(sheet, cell, content, new, name_value):
-                verify_fail.append((sheet, cell))
-                continue
-            lines[i] = head + "\t" + new
-            changed = True
-            cells_modified += 1
+            if new != content:
+                if not verify_cell(sheet, cell, content, new, name_value):
+                    verify_fail.append((sheet, cell))
+                    continue
+                lines[i] = head + "\t" + new
+                changed = True
+                cells_modified += 1
             applied_records += cell_applied
             tokens_replaced += cell_tokens
             per_sheet_applied[sheet] += cell_applied
@@ -287,9 +322,30 @@ def main():
         constants.append({"name": names[0], "value": v,
                           "meaning": entry["meaning"], "occurrences": n})
     constants.sort(key=lambda c: c["name"])
+    # MERGE into the existing game.json: replace only the "constants" key,
+    # preserve every other key (e.g. cellLiterals from
+    # tools/extract_literals.py) so re-running never drops them.
+    try:
+        with open(GAME_JSON_PATH, encoding="utf-8") as f:
+            game = json.load(f)
+        if not isinstance(game, dict):
+            raise ValueError("top level is not a JSON object")
+    except FileNotFoundError:
+        game = {}                      # first run — no file to merge into
+    except ValueError as e:
+        print(f"error: cannot load {GAME_JSON_PATH}: {e} — not overwritten",
+              file=sys.stderr)
+        return 1
+    old_other = {k: v for k, v in game.items() if k != "constants"}
+    game["constants"] = constants
+    text = json.dumps(game, indent=2) + "\n"
+    if {k: v for k, v in json.loads(text).items() if k != "constants"} \
+            != old_other:
+        print("error: merge would change other game.json keys — "
+              "not written", file=sys.stderr)
+        return 1
     with open(GAME_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump({"constants": constants}, f, indent=2)
-        f.write("\n")
+        f.write(text)
 
     # ---------------- report ----------------
     amb_values = sorted(v for v, ns in value_names.items() if len(ns) > 1)
@@ -301,6 +357,9 @@ def main():
     print(f"applied substitutions: {applied_records} records "
           f"({tokens_replaced} number tokens replaced, {cells_modified} "
           f"cells modified, {len(pending)} files rewritten)")
+    if already_applied:
+        print(f"already templated by a previous run: {already_applied} "
+              f"records (counted as applied, formulas untouched)")
     print("per-sheet applied substitution counts:")
     for sheet in sorted(per_sheet_applied):
         print(f"  {sheet}: {per_sheet_applied[sheet]}")
@@ -322,7 +381,8 @@ def main():
           f"templates resolved to values — all token-identical to originals; "
           f"formula counts unchanged ({sum(pre_counts.values())} formulas)")
     print(f"wrote {os.path.relpath(GAME_JSON_PATH, ROOT)}: {len(constants)} "
-          f"constants (applied unambiguous entries only, sorted by name)")
+          f"constants (applied unambiguous entries only, sorted by name; "
+          f"{len(old_other)} other key(s) preserved)")
     return 0
 
 
