@@ -13,7 +13,8 @@
  *   - Hero Class            (rows 132-133: label B, value C, uptime D)
  *   - Deathbringer Talents  (rows 136-141: label B, value C)
  *   - San'layn Talents      (rows 138-143: label D, value E)
- *   - Conditional Variables (rows 146-156: label B, value C)
+ *   - Conditional Variables (rows 146-156: label B, value C; the Armor
+ *     Constant row carries a per-difficulty hint note under its field)
  *   - Tier Set              (rows 159-160: label B, value C)
  *
  * Runeforging and Race are 0/1 flag blocks rather than label/value rows, so
@@ -76,6 +77,11 @@ interface SectionSpec {
    * missing label falls back to `Row <n>`.
    */
   fallbackLabels?: string[]
+  /**
+   * Per-row hint text, keyed by row number: a small muted note rendered
+   * under that row's value field (e.g. the Armor Constant difficulty note).
+   */
+  rowHints?: Record<number, string>
 }
 
 const SECTIONS: SectionSpec[] = [
@@ -157,6 +163,9 @@ const SECTIONS: SectionSpec[] = [
       'Target Level',
       'Armor Constant',
     ],
+    rowHints: {
+      156: 'Set per content difficulty — 12.1.5: 4531.03 (Mythic+) / 5656.07 (Mythic Raid). The saved profile\'s 3966.55 is stale.',
+    },
   },
   {
     titleRef: 'Inputs!B158',
@@ -297,6 +306,13 @@ const resetStyle: CSSProperties = {
 
 /** Slight indent tying a row's variable field to the talent row above it. */
 const variableRowStyle: CSSProperties = { paddingLeft: '1.1rem' }
+
+/** Small muted note under a row's field (per-row hint). */
+const hintStyle: CSSProperties = {
+  margin: 0,
+  fontSize: '0.75rem',
+  color: '#999',
+}
 
 /** Small muted label naming a comparison input column ('Set' / '+/-'). */
 const miniLabelStyle: CSSProperties = {
@@ -461,6 +477,7 @@ function GenericSection({
         const hasVariable =
           variableRef !== null &&
           (section.variableAlways || (grid[`Inputs!${variableRef}`] ?? null) !== null)
+        const hint = section.rowHints?.[row]
         return (
           <Fragment key={row}>
             <NumberField
@@ -474,6 +491,7 @@ function GenericSection({
               onSet={setOverride}
               onClear={clearOverride}
             />
+            {hint !== undefined && <p style={hintStyle}>{hint}</p>}
             {hasVariable && variableRef !== null && (
               <div style={variableRowStyle}>
                 <NumberField

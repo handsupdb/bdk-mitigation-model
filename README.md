@@ -23,6 +23,13 @@ npm run build          # type-check (tsc -b) + production build -> dist/
 npm run build:single   # self-contained single HTML file -> dist-single/index.html
 ```
 
+### Content difficulty (Armor Constant)
+
+The Armor Constant input (Conditional Variables → Armor Constant,
+`Inputs!C156`) is a **per-difficulty user value**, not fixed game data.
+For 12.1.5 set it to **4531.03** (Mythic+) or **5656.07** (Mythic Raid);
+the saved profile's 3966.55 is stale.
+
 ## How it works
 
 - The calculation engine is **TypeScript modules generated from tracked
